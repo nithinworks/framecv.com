@@ -3,7 +3,7 @@ import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 
 const PortfolioPreview: React.FC = () => {
-  const { portfolioData, currentView } = usePortfolio();
+  const { portfolioData, currentView, showEditor } = usePortfolio();
   const { settings, sections, navigation, footer } = portfolioData;
 
   // Function to generate inline styles based on the portfolio settings
