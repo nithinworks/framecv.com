@@ -1,10 +1,11 @@
 
 import { PortfolioProvider } from "@/context/PortfolioContext";
 import BuilderPage from "@/components/BuilderPage";
+import { samplePortfolioData } from "@/data/samplePortfolio";
 
 const Builder = () => {
   return (
-    <PortfolioProvider>
+    <PortfolioProvider initialData={samplePortfolioData}>
       <BuilderPage />
     </PortfolioProvider>
   );

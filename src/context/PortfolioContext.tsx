@@ -21,8 +21,16 @@ interface PortfolioContextType {
 
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
 
-export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [portfolioData, setPortfolioData] = useState<PortfolioData>(DEFAULT_PORTFOLIO_DATA);
+interface PortfolioProviderProps {
+  children: ReactNode;
+  initialData?: PortfolioData;
+}
+
+export const PortfolioProvider: React.FC<PortfolioProviderProps> = ({ 
+  children, 
+  initialData = DEFAULT_PORTFOLIO_DATA 
+}) => {
+  const [portfolioData, setPortfolioData] = useState<PortfolioData>(initialData);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentView, setCurrentView] = useState<"mobile" | "desktop">("desktop");
   const [activeSection, setActiveSection] = useState("settings");

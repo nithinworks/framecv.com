@@ -1,10 +1,10 @@
-
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Upload, ArrowRight } from "lucide-react";
+import { samplePortfolioData } from "@/data/samplePortfolio";
 
 const LandingPage: React.FC = () => {
   const [dragActive, setDragActive] = useState(false);
@@ -98,21 +98,17 @@ const LandingPage: React.FC = () => {
       
       // Simulate API call to Gemini for processing
       setTimeout(() => {
-        import("@/data/samplePortfolio").then(({ samplePortfolioData }) => {
-          setPortfolioData(samplePortfolioData);
-          setIsProcessing(false);
-          navigate("/builder");
-        });
+        setPortfolioData(samplePortfolioData);
+        setIsProcessing(false);
+        navigate("/builder");
       }, 2000);
     },
     [file, navigate, setIsProcessing, setPortfolioData, toast]
   );
 
   const handleUseTemplate = () => {
-    import("@/data/samplePortfolio").then(({ samplePortfolioData }) => {
-      setPortfolioData(samplePortfolioData);
-      navigate("/builder");
-    });
+    setPortfolioData(samplePortfolioData);
+    navigate("/builder");
   };
 
   return (

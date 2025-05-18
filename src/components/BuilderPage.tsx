@@ -1,8 +1,6 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
@@ -12,30 +10,12 @@ import DeployOptions from "./builder/DeployOptions";
 
 const BuilderPage: React.FC = () => {
   const { 
-    portfolioData, 
     isProcessing, 
     showEditor, 
     showCode, 
     showDeploy, 
-    currentView 
   } = usePortfolio();
   
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  // Check if we have data to display
-  useEffect(() => {
-    // If no name is set, we may not have processed a resume yet
-    if (!portfolioData.settings.name || portfolioData.settings.name === "Your Name") {
-      toast({
-        title: "No portfolio data",
-        description: "Please upload a resume on the home page first",
-        variant: "destructive",
-      });
-      navigate("/");
-    }
-  }, [portfolioData, navigate, toast]);
-
   if (isProcessing) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
