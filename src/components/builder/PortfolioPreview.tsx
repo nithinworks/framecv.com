@@ -1,7 +1,6 @@
 
 import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
-import PreviewControls from "./preview/PreviewControls";
 import PortfolioPreviewFrame from "./preview/PortfolioPreviewFrame";
 
 const PortfolioPreview: React.FC = () => {
@@ -16,9 +15,7 @@ const PortfolioPreview: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center py-4">
-      <PreviewControls />
-      
+    <div className="flex flex-col justify-center items-center py-4">      
       <div className={getContainerClass()}>
         <PortfolioPreviewFrame />
       </div>

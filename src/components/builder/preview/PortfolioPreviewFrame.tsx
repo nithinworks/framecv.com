@@ -6,20 +6,28 @@ const PortfolioPreviewFrame: React.FC = () => {
   const { portfolioData, currentView } = usePortfolio();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-
+  
   // Initialize iframe when component mounts and when portfolio data changes
   useEffect(() => {
-    const renderPortfolio = () => {
-      if (iframeRef.current) {
-        const iframeDoc = iframeRef.current.contentDocument || 
-                         iframeRef.current.contentWindow?.document;
+    // Add a small delay to ensure the iframe is ready before writing to it
+    const timer = setTimeout(() => {
+      renderPortfolio();
+    }, 50);
+    
+    return () => clearTimeout(timer);
+  }, [portfolioData, currentView]);
+
+  const renderPortfolio = () => {
+    if (iframeRef.current) {
+      const iframeDoc = iframeRef.current.contentDocument || 
+                      (iframeRef.current.contentWindow?.document);
+      
+      if (iframeDoc) {
+        // Start with a clean document
+        iframeDoc.open();
         
-        if (iframeDoc) {
-          // Start with a clean document
-          iframeDoc.open();
-          
-          // Generate the full HTML document
-          const html = `
+        // Generate the full HTML document
+        const html = `
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
@@ -426,21 +434,21 @@ const PortfolioPreviewFrame: React.FC = () => {
 
       // Initialize the portfolio
       renderPortfolio();
+      
+      // Tell the parent frame that we've loaded successfully
+      window.parent.postMessage('iframe-loaded', '*');
     </script>
   </body>
 </html>
-          `;
-          
-          // Write the HTML to the iframe
-          iframeDoc.write(html);
-          iframeDoc.close();
-          setIsLoaded(true);
-        }
+        `;
+        
+        // Write the HTML to the iframe
+        iframeDoc.write(html);
+        iframeDoc.close();
+        setIsLoaded(true);
       }
-    };
-    
-    renderPortfolio();
-  }, [portfolioData, currentView]);
+    }
+  };
 
   return (
     <iframe
