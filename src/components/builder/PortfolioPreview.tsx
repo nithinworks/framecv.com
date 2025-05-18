@@ -1,17 +1,29 @@
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 
 const PortfolioPreview: React.FC = () => {
   const { portfolioData, currentView, showEditor } = usePortfolio();
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
+  // Force render on component mount
   useEffect(() => {
     if (iframeRef.current) {
+      setTimeout(() => {
+        renderPortfolioInIframe();
+        setHasLoaded(true);
+      }, 100); // Small delay to ensure iframe is ready
+    }
+  }, []);
+
+  // Re-render when data or view changes
+  useEffect(() => {
+    if (iframeRef.current && hasLoaded) {
       renderPortfolioInIframe();
     }
-  }, [portfolioData, currentView]);
+  }, [portfolioData, currentView, hasLoaded]);
 
   const renderPortfolioInIframe = () => {
     if (!iframeRef.current) return;
@@ -530,11 +542,17 @@ const PortfolioPreview: React.FC = () => {
     `;
   };
 
-  const containerClass = currentView === "mobile" ? "max-w-[375px] mx-auto border border-gray-300 rounded-lg overflow-hidden" : "";
+  // Calculate container class based on view mode
+  const getContainerClass = () => {
+    if (currentView === "mobile") {
+      return "max-w-[375px] mx-auto border border-gray-300 rounded-lg overflow-hidden";
+    }
+    return "w-full max-w-[1280px] mx-auto";
+  };
 
   return (
     <div className="flex justify-center py-8">
-      <div ref={previewContainerRef} className={containerClass}>
+      <div ref={previewContainerRef} className={getContainerClass()}>
         <iframe
           ref={iframeRef}
           className="w-full bg-white"
@@ -543,7 +561,6 @@ const PortfolioPreview: React.FC = () => {
             border: "none"
           }}
           title="Portfolio Preview"
-          onLoad={() => renderPortfolioInIframe()}
         ></iframe>
       </div>
     </div>
