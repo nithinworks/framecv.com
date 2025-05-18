@@ -1,13 +1,13 @@
 
 import { PortfolioProvider } from "@/context/PortfolioContext";
-import LandingPage from "@/components/LandingPage";
+import BuilderPage from "@/components/BuilderPage";
 
-const Index = () => {
+const Builder = () => {
   return (
     <PortfolioProvider>
-      <LandingPage />
+      <BuilderPage />
     </PortfolioProvider>
   );
 };
 
-export default Index;
+export default Builder;
