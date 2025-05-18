@@ -533,20 +533,18 @@ const PortfolioPreview: React.FC = () => {
   const containerClass = currentView === "mobile" ? "max-w-[375px] mx-auto border border-gray-300 rounded-lg overflow-hidden" : "";
 
   return (
-    <div className={`portfolio-preview-container transition-all duration-300 ${showEditor ? "ml-80" : ""}`}>
-      <div className="flex justify-center py-8">
-        <div className={containerClass}>
-          <iframe
-            ref={iframeRef}
-            className="w-full bg-white"
-            style={{ 
-              height: currentView === "mobile" ? "667px" : "800px", 
-              border: "none"
-            }}
-            title="Portfolio Preview"
-            onLoad={() => renderPortfolioInIframe()}
-          ></iframe>
-        </div>
+    <div className="flex justify-center py-8">
+      <div ref={previewContainerRef} className={containerClass}>
+        <iframe
+          ref={iframeRef}
+          className="w-full bg-white"
+          style={{ 
+            height: currentView === "mobile" ? "667px" : "800px", 
+            border: "none"
+          }}
+          title="Portfolio Preview"
+          onLoad={() => renderPortfolioInIframe()}
+        ></iframe>
       </div>
     </div>
   );

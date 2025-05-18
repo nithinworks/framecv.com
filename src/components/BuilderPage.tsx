@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
@@ -38,9 +38,7 @@ const BuilderPage: React.FC = () => {
         
         {/* Main Preview Area */}
         <div className={`flex-1 transition-all duration-300 ${showEditor ? "ml-80" : ""}`}>
-          <div className="py-8 flex justify-center">
-            <PortfolioPreview />
-          </div>
+          <PortfolioPreview />
         </div>
         
         {/* Code View */}
