@@ -7,20 +7,33 @@ const PortfolioPreviewFrame: React.FC = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   
-  // Initialize iframe when component mounts and when portfolio data changes
+  // Initialize iframe when component mounts or when portfolio data changes
   useEffect(() => {
-    // Add a small delay to ensure the iframe is ready before writing to it
+    // Reset loaded state when data or view changes
+    setIsLoaded(false);
+    
+    // Add a delay to ensure the iframe is ready before writing to it
     const timer = setTimeout(() => {
       renderPortfolio();
-    }, 50);
+    }, 100);
     
     return () => clearTimeout(timer);
   }, [portfolioData, currentView]);
 
+  // Function to handle iframe load events
+  const handleIframeLoad = () => {
+    if (!isLoaded) {
+      // If iframe just loaded but content not yet inserted, render it
+      renderPortfolio();
+    }
+  };
+
   const renderPortfolio = () => {
-    if (iframeRef.current) {
+    if (!iframeRef.current) return;
+    
+    try {
       const iframeDoc = iframeRef.current.contentDocument || 
-                      (iframeRef.current.contentWindow?.document);
+                       (iframeRef.current.contentWindow?.document);
       
       if (iframeDoc) {
         // Start with a clean document
@@ -144,9 +157,6 @@ const PortfolioPreviewFrame: React.FC = () => {
     <div id="app"></div>
 
     <script>
-      // Portfolio data
-      const portfolioData = ${JSON.stringify(portfolioData)};
-
       // Icon SVG function
       function getIconSVG(name) {
         switch (name) {
@@ -204,7 +214,8 @@ const PortfolioPreviewFrame: React.FC = () => {
 
       // Main rendering logic
       function renderPortfolio() {
-        const data = portfolioData;
+        // Get data from parent scope, don't redeclare portfolioData
+        const data = ${JSON.stringify(portfolioData)};
 
         // Set primary color and light version
         document.documentElement.style.setProperty(
@@ -436,7 +447,11 @@ const PortfolioPreviewFrame: React.FC = () => {
       renderPortfolio();
       
       // Tell the parent frame that we've loaded successfully
-      window.parent.postMessage('iframe-loaded', '*');
+      try {
+        window.parent.postMessage('iframe-loaded', '*');
+      } catch (e) {
+        console.error('Failed to notify parent window', e);
+      }
     </script>
   </body>
 </html>
@@ -447,6 +462,8 @@ const PortfolioPreviewFrame: React.FC = () => {
         iframeDoc.close();
         setIsLoaded(true);
       }
+    } catch (error) {
+      console.error("Error rendering portfolio preview:", error);
     }
   };
 
@@ -457,6 +474,7 @@ const PortfolioPreviewFrame: React.FC = () => {
       style={{ border: "none" }}
       title="Portfolio Preview"
       sandbox="allow-scripts allow-same-origin"
+      onLoad={handleIframeLoad}
     />
   );
 };
