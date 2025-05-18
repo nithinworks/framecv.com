@@ -5,7 +5,7 @@ import PreviewControls from "./preview/PreviewControls";
 import PortfolioPreviewFrame from "./preview/PortfolioPreviewFrame";
 
 const PortfolioPreview: React.FC = () => {
-  const { currentView, showEditor } = usePortfolio();
+  const { currentView } = usePortfolio();
   
   // Function to get container class based on view mode
   const getContainerClass = () => {

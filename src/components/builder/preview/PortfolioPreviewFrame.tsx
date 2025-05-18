@@ -4,19 +4,20 @@ import { usePortfolio } from "@/context/PortfolioContext";
 import { generatePortfolioHTML } from "@/services/portfolioRenderer";
 
 const PortfolioPreviewFrame: React.FC = () => {
-  const { portfolioData } = usePortfolio();
+  const { portfolioData, currentView } = usePortfolio();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Initialize iframe when component mounts and when portfolio data changes
   useEffect(() => {
-    const initIframe = () => {
+    const updateIframeContent = () => {
       if (iframeRef.current) {
         const html = generatePortfolioHTML(portfolioData);
         const iframeDoc = iframeRef.current.contentDocument || 
                           iframeRef.current.contentWindow?.document;
         
         if (iframeDoc) {
+          // Clear previous content
           iframeDoc.open();
           iframeDoc.write(html);
           iframeDoc.close();
@@ -25,10 +26,10 @@ const PortfolioPreviewFrame: React.FC = () => {
       }
     };
     
-    // Set a timeout to ensure the iframe is ready
-    const timer = setTimeout(initIframe, 100);
+    // Use a small delay to ensure iframe is ready
+    const timer = setTimeout(updateIframeContent, 100);
     return () => clearTimeout(timer);
-  }, [portfolioData]);
+  }, [portfolioData, currentView]);
 
   return (
     <iframe
@@ -36,6 +37,7 @@ const PortfolioPreviewFrame: React.FC = () => {
       className="w-full h-full bg-white"
       style={{ border: "none" }}
       title="Portfolio Preview"
+      sandbox="allow-scripts allow-same-origin"
     />
   );
 };
