@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const HeroEditor: React.FC = () => {
   const { portfolioData, setPortfolioData } = usePortfolio();
@@ -121,6 +122,26 @@ const HeroEditor: React.FC = () => {
                       value={button.url} 
                       onChange={(e) => handleButtonChange(index, "url", e.target.value)}
                     />
+                  </div>
+
+                  <div>
+                    <Label htmlFor={`button-icon-${index}`}>Icon</Label>
+                    <Select
+                      value={button.icon || ""}
+                      onValueChange={(value) => handleButtonChange(index, "icon", value)}
+                    >
+                      <SelectTrigger id={`button-icon-${index}`}>
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="mail">Email</SelectItem>
+                        <SelectItem value="document">Document</SelectItem>
+                        <SelectItem value="globe">Globe</SelectItem>
+                        <SelectItem value="phone">Phone</SelectItem>
+                        <SelectItem value="linkedin">LinkedIn</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   
                   <div className="flex items-center">

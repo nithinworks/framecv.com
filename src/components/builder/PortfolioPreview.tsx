@@ -9,7 +9,8 @@ const PortfolioPreview: React.FC = () => {
   // Function to get container class based on view mode
   const getContainerClass = () => {
     if (currentView === "mobile") {
-      return "max-w-[375px] h-[667px] mx-auto border border-gray-300 rounded-lg shadow-md overflow-hidden";
+      // Increased width for mobile preview to match standard Android device size
+      return "max-w-[412px] h-[732px] mx-auto border border-gray-300 rounded-lg shadow-md overflow-hidden";
     }
     return "w-full h-[80vh] max-w-[1280px] mx-auto border border-gray-200 shadow-sm rounded-md overflow-hidden";
   };
