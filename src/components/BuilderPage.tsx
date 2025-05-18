@@ -1,6 +1,7 @@
 
 import React, { useEffect } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
+import { toast } from "sonner";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
@@ -21,6 +22,11 @@ const BuilderPage: React.FC = () => {
   // Set default view to desktop and force initial render
   useEffect(() => {
     setCurrentView("desktop");
+    
+    // Show a welcome message to guide the user
+    toast.success("Portfolio builder loaded", {
+      description: "Use the editor sidebar to customize your portfolio"
+    });
   }, [setCurrentView]);
   
   if (isProcessing) {
