@@ -295,7 +295,7 @@ const PortfolioPreviewFrame: React.FC = () => {
             }</span></a>\`;
           });
           hero = \`<div class="hero-bg w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full">
-                    <img src="\${data.settings.profileImage}" alt="Profile" class="rounded-full w-28 mb-8 border-4 border-white shadow-md animate-fade-in" />
+                    <img src="${data.settings.profileImage}" alt="Profile" class="rounded-full w-28 h-28 object-cover mb-8 border-4 border-white shadow-md animate-fade-in" />
                     <h2 class="font-Ovo text-xl mb-3 animate-slide-up">Hi! I'm \${data.settings.name} <span class="inline-block">👋</span></h2>
                     <h1 class="font-Ovo text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 animate-slide-up">\${data.settings.title}<br />based in \${data.settings.location}.</h1>
                     <p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">\${data.settings.summary}</p>
