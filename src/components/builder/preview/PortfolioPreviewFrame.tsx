@@ -21,7 +21,7 @@ const PortfolioPreviewFrame: React.FC = () => {
           // Generate the full HTML document
           const html = `
 <!DOCTYPE html>
-<html lang="en" class="${portfolioData.settings.darkMode ? "dark" : ""} scroll-smooth">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
