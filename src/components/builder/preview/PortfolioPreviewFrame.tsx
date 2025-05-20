@@ -6,18 +6,32 @@ const PortfolioPreviewFrame: React.FC = () => {
   const { portfolioData, currentView } = usePortfolio();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [renderTimer, setRenderTimer] = useState<NodeJS.Timeout | null>(null);
   
   // Initialize iframe when component mounts or when portfolio data changes
   useEffect(() => {
-    // Reset loaded state when data or view changes
-    setIsLoaded(false);
+    // Reset loaded state when view changes
+    if (currentView) {
+      setIsLoaded(false);
+    }
     
-    // Add a delay to ensure the iframe is ready before writing to it
+    // Clear any existing timer
+    if (renderTimer) {
+      clearTimeout(renderTimer);
+    }
+    
+    // Add a delay to prevent too frequent refreshes when typing in form fields
     const timer = setTimeout(() => {
       renderPortfolio();
-    }, 100);
+    }, 300); // 300ms debounce
     
-    return () => clearTimeout(timer);
+    setRenderTimer(timer);
+    
+    return () => {
+      if (renderTimer) {
+        clearTimeout(renderTimer);
+      }
+    };
   }, [portfolioData, currentView]);
 
   // Function to handle iframe load events
@@ -226,7 +240,7 @@ const PortfolioPreviewFrame: React.FC = () => {
 
       // Main rendering logic
       function renderPortfolio() {
-        // Get data from parent scope, don't redeclare portfolioData
+        // Use the data directly from parent scope
         const data = ${JSON.stringify(portfolioData)};
 
         // Set primary color and light version
