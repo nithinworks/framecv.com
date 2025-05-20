@@ -127,14 +127,14 @@ const HeroEditor: React.FC = () => {
                   <div>
                     <Label htmlFor={`button-icon-${index}`}>Icon</Label>
                     <Select
-                      value={button.icon || ""}
+                      value={button.icon || "none"}
                       onValueChange={(value) => handleButtonChange(index, "icon", value)}
                     >
                       <SelectTrigger id={`button-icon-${index}`}>
                         <SelectValue placeholder="Select icon" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         <SelectItem value="mail">Email</SelectItem>
                         <SelectItem value="document">Document</SelectItem>
                         <SelectItem value="globe">Globe</SelectItem>
