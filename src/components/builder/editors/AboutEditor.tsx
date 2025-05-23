@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, FileText, ListChecks, Bookmark } from "lucide-react";
 
 const AboutEditor: React.FC = () => {
   const { portfolioData, setPortfolioData } = usePortfolio();
@@ -128,7 +128,7 @@ const AboutEditor: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Label htmlFor="about-enabled">Enable About Section</Label>
+        <Label htmlFor="about-enabled">Show About Section</Label>
         <Switch 
           id="about-enabled" 
           checked={about.enabled}
@@ -138,28 +138,42 @@ const AboutEditor: React.FC = () => {
 
       {about.enabled && (
         <>
-          <div>
-            <Label htmlFor="about-title">Section Title</Label>
-            <Input 
-              id="about-title" 
-              value={about.title} 
-              onChange={(e) => handleChange("title", e.target.value)}
-            />
-          </div>
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center space-x-3">
+              <FileText className="w-4 h-4 text-gray-500" />
+              <div className="w-full">
+                <Label htmlFor="about-title">Section Title</Label>
+                <Input 
+                  id="about-title" 
+                  placeholder="About Me"
+                  value={about.title} 
+                  onChange={(e) => handleChange("title", e.target.value)}
+                />
+              </div>
+            </div>
 
-          <div>
-            <Label htmlFor="about-content">Content</Label>
-            <Textarea 
-              id="about-content" 
-              value={about.content} 
-              onChange={(e) => handleChange("content", e.target.value)}
-              rows={5}
-            />
+            <div className="flex items-start space-x-3 pt-1">
+              <FileText className="w-4 h-4 text-gray-500 mt-2" />
+              <div className="w-full">
+                <Label htmlFor="about-content">About Text</Label>
+                <Textarea 
+                  id="about-content" 
+                  placeholder="Write about yourself, your experience, and what you're passionate about."
+                  value={about.content} 
+                  onChange={(e) => handleChange("content", e.target.value)}
+                  rows={4}
+                  className="resize-none"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="border-t pt-4">
             <div className="flex items-center justify-between mb-4">
-              <Label htmlFor="skills-enabled">Enable Skills Section</Label>
+              <div className="flex items-center space-x-3">
+                <ListChecks className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="skills-enabled">Show Skills</Label>
+              </div>
               <Switch 
                 id="skills-enabled" 
                 checked={about.skills.enabled}
@@ -169,37 +183,45 @@ const AboutEditor: React.FC = () => {
 
             {about.skills.enabled && (
               <>
-                <div className="mb-4">
-                  <Label htmlFor="skills-title">Skills Title</Label>
-                  <Input 
-                    id="skills-title" 
-                    value={about.skills.title} 
-                    onChange={(e) => handleSkillsTitleChange(e.target.value)}
-                  />
+                <div className="mb-4 flex items-center space-x-3">
+                  <Bookmark className="w-4 h-4 text-gray-500" />
+                  <div className="w-full">
+                    <Label htmlFor="skills-title">Skills Title</Label>
+                    <Input 
+                      id="skills-title" 
+                      placeholder="Skills & Technologies"
+                      value={about.skills.title} 
+                      onChange={(e) => handleSkillsTitleChange(e.target.value)}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <Label>Skills List</Label>
+                <div className="space-y-3">
+                  <Label className="block mb-2">Skills List</Label>
                   {about.skills.items.map((skill, index) => (
-                    <div key={index} className="flex items-center gap-2 mt-2">
+                    <div key={index} className="flex items-center gap-2 bg-gray-50 rounded-md p-2">
                       <Input 
                         value={skill} 
+                        placeholder={`Skill #${index + 1}, e.g. JavaScript`}
                         onChange={(e) => handleSkillChange(index, e.target.value)}
                       />
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => handleRemoveSkill(index)}
+                        className="p-1 h-auto"
                       >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
                   ))}
+                  
                   <Button 
                     variant="outline" 
                     type="button" 
                     onClick={handleAddSkill} 
-                    className="w-full mt-4"
+                    className="w-full mt-3"
+                    size="sm"
                   >
                     Add Skill
                   </Button>

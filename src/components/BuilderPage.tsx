@@ -15,11 +15,10 @@ const BuilderPage: React.FC = () => {
     showEditor, 
     showCode, 
     showDeploy,
-    currentView,
     setCurrentView 
   } = usePortfolio();
   
-  // Set default view to desktop and force initial render
+  // Always set view to desktop
   useEffect(() => {
     setCurrentView("desktop");
     

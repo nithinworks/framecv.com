@@ -3,8 +3,6 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
   PanelLeft, 
-  Smartphone, 
-  Monitor, 
   Code, 
   Upload, 
   ChevronLeft
@@ -14,8 +12,6 @@ import { useNavigate } from "react-router-dom";
 
 const BuilderToolbar: React.FC = () => {
   const { 
-    currentView, 
-    setCurrentView, 
     showEditor, 
     setShowEditor,
     showCode,
@@ -48,29 +44,6 @@ const BuilderToolbar: React.FC = () => {
           <PanelLeft className="h-4 w-4 mr-2" />
           Editor
         </Button>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <div className="border rounded-md overflow-hidden flex">
-          <Button
-            variant={currentView === "desktop" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setCurrentView("desktop")}
-            className="rounded-none border-none"
-          >
-            <Monitor className="h-4 w-4" />
-            <span className="ml-2 text-xs">Desktop</span>
-          </Button>
-          <Button
-            variant={currentView === "mobile" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setCurrentView("mobile")}
-            className="rounded-none border-none"
-          >
-            <Smartphone className="h-4 w-4" />
-            <span className="ml-2 text-xs">Mobile</span>
-          </Button>
-        </div>
       </div>
 
       <div className="flex items-center gap-2">
