@@ -3,11 +3,11 @@ import { PortfolioData } from "@/types/portfolio";
 
 export const samplePortfolioData: PortfolioData = {
   "settings": {
-    "name": "Kollipara Yuvanaga Nithin",
+    "name": "Alex Johnson",
     "title": "Full Stack Developer",
-    "location": "India",
-    "summary": "A dedicated and tech-savvy individual with a B.Tech in Computer Science Engineering seeking a challenging role at a progressive organization that offers immense growth opportunities.",
-    "profileImage": "https://media.licdn.com/dms/image/v2/D5603AQFzMJaF4hG5Dw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1727192931451?e=1752710400&v=beta&t=fwPmFbTPBP6TK-aJbS9GMh__RtbWgkmcopHLGIoKfV8",
+    "location": "San Francisco, CA",
+    "summary": "Passionate full-stack developer with 5+ years of experience building scalable web applications. I love creating efficient solutions and learning new technologies to solve complex problems.",
+    "profileImage": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     "primaryColor": "#0067c7"
   },
   "sections": {
@@ -15,14 +15,14 @@ export const samplePortfolioData: PortfolioData = {
       "enabled": true,
       "ctaButtons": [
         {
-          "text": "Connect via Email",
-          "url": "mailto:connect.naganithin@gmail.com",
+          "text": "Get In Touch",
+          "url": "mailto:alex.johnson@example.com",
           "isPrimary": true,
           "icon": "mail"
         },
         {
           "text": "View Resume",
-          "url": "https://drive.google.com/your-resume-link",
+          "url": "https://drive.google.com/file/d/sample-resume-link",
           "isPrimary": false,
           "icon": "download"
         }
@@ -31,67 +31,68 @@ export const samplePortfolioData: PortfolioData = {
     "about": {
       "enabled": true,
       "title": "About Me",
-      "content": "A Computer Science Engineering graduate with a passion for technology and problem-solving. Experienced in web technologies, Android development, and SAP Quality Management. Seeking opportunities to apply and expand my skills in a challenging and growth-oriented environment.",
+      "content": "I'm a passionate full-stack developer with expertise in modern web technologies. I enjoy building user-friendly applications that solve real-world problems and have a strong foundation in both frontend and backend development.",
       "skills": {
         "enabled": true,
-        "title": "Skills",
+        "title": "Technical Skills",
         "items": [
-          "C",
-          "C++",
-          "Java",
-          "Web Technologies (HTML, CSS, JavaScript, PHP)",
-          "Flutter (Intermediate)",
-          "SAP QM",
-          "SEO",
-          "Digital Marketing"
+          "JavaScript",
+          "TypeScript",
+          "React",
+          "Node.js",
+          "Python",
+          "PostgreSQL",
+          "AWS",
+          "Docker",
+          "Git"
         ]
       }
     },
     "experience": {
       "enabled": true,
-      "title": "Experience",
+      "title": "Work Experience",
       "items": [
         {
-          "company": "Cognizant",
-          "position": "SAP Quality Management",
-          "period": "09/2022 - Present",
-          "description": "Worked as an Intern initially, gaining experience in web technologies (HTML, CSS, JavaScript, PHP) and SAP Quality Management. Transitioned to a Full-time role after training in SAP QM. Served as a Point of Contact (POC) for 30 interns."
+          "company": "TechCorp Solutions",
+          "position": "Senior Full Stack Developer",
+          "period": "01/2022 - Present",
+          "description": "Lead development of scalable web applications using React and Node.js. Collaborated with cross-functional teams to deliver high-quality software solutions. Mentored junior developers and implemented best practices for code quality."
         },
         {
-          "company": "SP Technologies",
-          "position": "Android Developer",
-          "period": "11/2018 - 05/2019",
-          "description": "Completed a 6-month industrial training. Troubleshooted technical issues (90% success rate), enhanced application features, fixed bugs, and optimized performance. Developed an Advanced Weather Application using the OpenWeather API."
+          "company": "StartupXYZ",
+          "position": "Frontend Developer",
+          "period": "06/2020 - 12/2021",
+          "description": "Built responsive user interfaces using React and TypeScript. Worked closely with designers to implement pixel-perfect designs. Optimized application performance and improved user experience metrics by 40%."
         }
       ]
     },
     "projects": {
       "enabled": true,
-      "title": "Projects",
+      "title": "Featured Projects",
       "items": [
         {
-          "title": "Grow Wiser - Placement News App",
-          "description": "Developed a news application using Flutter 2.5 to display the latest company hiring information. Utilized Firebase Cloud Firestore for data storage and retrieval.",
-          "tags": ["Flutter", "Firebase", "Mobile Development"],
-          "previewUrl": "#"
+          "title": "E-Commerce Platform",
+          "description": "Built a full-featured e-commerce platform with React, Node.js, and PostgreSQL. Includes user authentication, payment processing, and admin dashboard with real-time analytics.",
+          "tags": ["React", "Node.js", "PostgreSQL", "Stripe"],
+          "previewUrl": "https://demo-ecommerce.example.com"
         },
         {
-          "title": "Weather Tracking App",
-          "description": "Developed a weather tracking application using the OpenWeather API. Features include weather tracking for the current location and other cities with a responsive user interface.",
-          "tags": ["Android Development", "OpenWeather API", "Java"],
-          "previewUrl": "https://google.com"
+          "title": "Task Management App",
+          "description": "Developed a collaborative task management application with real-time updates using Socket.io. Features include team collaboration, file sharing, and progress tracking.",
+          "tags": ["React", "Socket.io", "MongoDB", "Express"],
+          "previewUrl": "https://taskapp-demo.example.com"
         },
         {
-          "title": "Weather Tracking App",
-          "description": "Developed a weather tracking application using the OpenWeather API. Features include weather tracking for the current location and other cities with a responsive user interface.",
-          "tags": ["Android Development", "OpenWeather API", "Java"],
-          "previewUrl": "#"
+          "title": "Weather Dashboard",
+          "description": "Created a responsive weather dashboard that displays current conditions and forecasts. Integrated with multiple weather APIs and includes location-based services.",
+          "tags": ["JavaScript", "Weather API", "Charts.js", "CSS Grid"],
+          "previewUrl": "https://weather-dashboard.example.com"
         },
         {
-          "title": "COVID-19 Tracker App",
-          "description": "Developed a COVID-19 tracker application using the Open Disease Data API and Volley Library. Provides data on total cases, deaths, critical cases, recoveries, total tests, and vaccination counts for all countries.",
-          "tags": ["Android Development", "API Integration", "Java", "Volley"],
-          "previewUrl": "#"
+          "title": "Portfolio Website",
+          "description": "Designed and developed a modern portfolio website with smooth animations and responsive design. Built with React and deployed on Vercel with continuous integration.",
+          "tags": ["React", "Framer Motion", "Tailwind CSS", "Vercel"],
+          "previewUrl": "https://portfolio.example.com"
         }
       ]
     },
@@ -100,20 +101,20 @@ export const samplePortfolioData: PortfolioData = {
       "title": "Education",
       "items": [
         {
-          "institution": "Vidya Jyothi Institute of Technology",
-          "degree": "B.Tech in Computer Science",
-          "period": "07/2019 - Present",
-          "description": "Hyderabad"
+          "institution": "University of California, Berkeley",
+          "degree": "Bachelor of Science in Computer Science",
+          "period": "09/2016 - 06/2020",
+          "description": "Graduated with honors, specializing in software engineering and web technologies."
         },
         {
-          "institution": "RRS College of Engineering & Technology",
-          "degree": "Diploma in Computer Engineering",
-          "period": "06/2016 - 04/2019"
+          "institution": "FreeCodeCamp",
+          "degree": "Full Stack Web Development Certification",
+          "period": "01/2019 - 12/2019"
         },
         {
-          "institution": "ST. Anthony's High School",
-          "degree": "10th Board",
-          "period": "03/2015 - 03/2016"
+          "institution": "Coursera",
+          "degree": "Machine Learning Specialization",
+          "period": "06/2021 - 12/2021"
         }
       ]
     },
@@ -122,33 +123,33 @@ export const samplePortfolioData: PortfolioData = {
       "title": "Achievements & Certifications",
       "items": [
         {
-          "title": "2nd Prize in Coding Quiz",
-          "period": "03/2017",
-          "description": "Won 2nd prize in the coding quiz at Stanza & Waves - 2K17, RRS College of Engineering & Technology."
+          "title": "AWS Certified Developer",
+          "period": "03/2023",
+          "description": "Achieved AWS Developer Associate certification demonstrating expertise in developing and maintaining applications on AWS."
         },
         {
-          "title": "National Level Tech Fest Participant",
-          "period": "09/2017",
-          "description": "Participated in THE TECH FEST 2017 national event conducted by JNTU, Hyderabad."
+          "title": "Tech Innovation Award",
+          "period": "12/2022",
+          "description": "Received company-wide recognition for developing an innovative solution that improved system performance by 60%."
         },
         {
-          "title": "Aptech Certified Programmer",
-          "period": "04/2016 - 04/2017",
-          "description": "Learned C, C++, Java, SQL, and MS Office."
+          "title": "Open Source Contributor",
+          "period": "01/2021 - Present",
+          "description": "Active contributor to popular open source projects with 500+ GitHub stars and multiple merged pull requests."
         },
         {
-          "title": "Certified Android Developer",
-          "period": "11/2018 - 05/2019",
-          "description": "Completed 6-month industrial training in Android development."
+          "title": "Hackathon Winner",
+          "period": "09/2020",
+          "description": "Won first place at the Bay Area Tech Hackathon for developing a sustainability-focused mobile application."
         }
       ]
     },
     "contact": {
       "enabled": true,
       "title": "Contact",
-      "email": "connect.naganithin@gmail.com",
-      "phone": "+91 9398945849",
-      "location": "Sangareddy, India",
+      "email": "alex.johnson@example.com",
+      "phone": "+1 (555) 123-4567",
+      "location": "San Francisco, CA",
       "icon": "phone"
     },
     "social": {
@@ -156,7 +157,7 @@ export const samplePortfolioData: PortfolioData = {
       "items": [
         {
           "platform": "LinkedIn",
-          "url": "https://linkedin.com/in/nithintalks",
+          "url": "https://linkedin.com/in/alexjohnson",
           "icon": "globe"
         }
       ]
@@ -174,6 +175,6 @@ export const samplePortfolioData: PortfolioData = {
   },
   "footer": {
     "enabled": true,
-    "copyright": "© 2024 Kollipara Yuvanaga Nithin. All rights reserved."
+    "copyright": "© 2024 Alex Johnson. All rights reserved."
   }
 };

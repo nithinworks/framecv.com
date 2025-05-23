@@ -68,7 +68,7 @@ const BuilderPage: React.FC = () => {
         <EditorSidebar />
         
         {/* Main Preview Area */}
-        <div className={`flex-1 transition-all duration-300 ${showEditor ? "ml-80" : ""}`}>
+        <div className={`flex-1 transition-all duration-300 ${showEditor ? "ml-96" : ""}`}>
           <PortfolioPreview />
         </div>
         
