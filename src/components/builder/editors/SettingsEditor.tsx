@@ -4,7 +4,7 @@ import { usePortfolio } from "@/context/PortfolioContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Palette, ToggleLeft, Navigation, Footer } from "lucide-react";
+import { Palette, ToggleLeft, Navigation, Copyright } from "lucide-react";
 
 const SettingsEditor: React.FC = () => {
   const { portfolioData, setPortfolioData } = usePortfolio();
@@ -153,7 +153,7 @@ const SettingsEditor: React.FC = () => {
       <div className="border-t pt-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
-            <Footer className="w-4 h-4 text-gray-500" />
+            <Copyright className="w-4 h-4 text-gray-500" />
             <Label htmlFor="footer-enabled" className="text-sm font-medium">Footer</Label>
           </div>
           <Switch 
