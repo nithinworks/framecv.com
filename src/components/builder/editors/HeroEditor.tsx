@@ -22,7 +22,7 @@ const HeroEditor: React.FC = () => {
     });
   };
 
-  const handleCtaChange = (index: number, field: string, value: string) => {
+  const handleCtaChange = (index: number, field: string, value: string | boolean) => {
     const updatedCtas = [...(sections.hero.ctaButtons || [])];
     updatedCtas[index] = { ...updatedCtas[index], [field]: value };
     
