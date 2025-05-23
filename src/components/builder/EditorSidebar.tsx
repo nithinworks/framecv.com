@@ -28,31 +28,31 @@ const EditorSidebar: React.FC = () => {
   const currentSection = sections.find(section => section.id === activeSection) || sections[0];
 
   return (
-    <div className={`fixed top-[60px] left-0 bottom-0 w-72 bg-white border-r transition-all duration-300 z-30 overflow-hidden ${showEditor ? "" : "-translate-x-full"}`}>
-      <div className="flex justify-between items-center px-3 py-2.5 border-b">
+    <div className={`fixed top-[60px] left-0 bottom-0 w-80 bg-white border-r transition-all duration-300 z-30 overflow-hidden ${showEditor ? "" : "-translate-x-full"}`}>
+      <div className="flex justify-between items-center px-3 py-2 border-b">
         <h3 className="font-medium text-sm">Portfolio Editor</h3>
-        <Button variant="ghost" size="sm" onClick={() => setShowEditor(false)} className="h-7 w-7 p-0">
-          <X className="h-3.5 w-3.5" />
+        <Button variant="ghost" size="sm" onClick={() => setShowEditor(false)} className="h-6 w-6 p-0">
+          <X className="h-3 w-3" />
         </Button>
       </div>
 
-      <div className="flex h-[calc(100vh-60px-49px)]">
+      <div className="flex h-[calc(100vh-60px-41px)]">
         {/* Side Navigation */}
-        <div className="w-12 border-r bg-gray-50 flex flex-col items-center py-2 space-y-1">
+        <div className="w-11 border-r bg-gray-50 flex flex-col items-center py-1.5 space-y-0.5">
           {sections.map((section) => {
             const IconComponent = section.icon;
             return (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`p-2 rounded-md transition-colors ${
+                className={`p-1.5 rounded-md transition-colors ${
                   activeSection === section.id 
                     ? 'bg-primary text-white' 
                     : 'hover:bg-gray-200 text-gray-600'
                 }`}
                 title={section.label}
               >
-                <IconComponent className="h-4 w-4" />
+                <IconComponent className="h-3.5 w-3.5" />
               </button>
             );
           })}
@@ -63,8 +63,8 @@ const EditorSidebar: React.FC = () => {
           <div className="px-3 py-2 border-b flex-shrink-0">
             <h4 className="font-medium text-sm">{currentSection.label}</h4>
           </div>
-          <ScrollArea className="flex-1 h-[calc(100vh-60px-49px-37px)]">
-            <div className="p-3">
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-4">
               {currentSection.component}
             </div>
           </ScrollArea>

@@ -101,9 +101,9 @@ const ExperienceEditor: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <Label htmlFor="experience-enabled">Enable Experience Section</Label>
+        <Label htmlFor="experience-enabled" className="text-xs">Enable Experience Section</Label>
         <Switch 
           id="experience-enabled" 
           checked={experience.enabled}
@@ -113,8 +113,8 @@ const ExperienceEditor: React.FC = () => {
 
       {experience.enabled && (
         <>
-          <div>
-            <Label htmlFor="experience-title">Section Title</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="experience-title" className="text-xs">Section Title</Label>
             <Input 
               id="experience-title" 
               value={experience.title} 
@@ -123,24 +123,25 @@ const ExperienceEditor: React.FC = () => {
           </div>
 
           <div className="border-t pt-4">
-            <h3 className="font-medium mb-4">Experience Items</h3>
+            <h3 className="font-medium mb-3 text-xs">Experience Items</h3>
             
             {experience.items.map((item, index) => (
-              <div key={index} className="mb-6 p-4 border rounded-md">
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-sm font-semibold">{item.company || `Experience ${index + 1}`}</h4>
+              <div key={index} className="mb-4 p-3 border rounded-md space-y-3">
+                <div className="flex justify-between items-center">
+                  <h4 className="text-xs font-semibold">{item.company || `Experience ${index + 1}`}</h4>
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={() => removeExperienceItem(index)}
+                    className="h-6 w-6 p-0"
                   >
-                    <Trash className="h-4 w-4" />
+                    <Trash className="h-3 w-3" />
                   </Button>
                 </div>
                 
                 <div className="space-y-3">
-                  <div>
-                    <Label htmlFor={`company-${index}`}>Company</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor={`company-${index}`} className="text-xs">Company</Label>
                     <Input 
                       id={`company-${index}`} 
                       value={item.company} 
@@ -148,8 +149,8 @@ const ExperienceEditor: React.FC = () => {
                     />
                   </div>
                   
-                  <div>
-                    <Label htmlFor={`position-${index}`}>Position</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor={`position-${index}`} className="text-xs">Position</Label>
                     <Input 
                       id={`position-${index}`} 
                       value={item.position} 
@@ -157,8 +158,8 @@ const ExperienceEditor: React.FC = () => {
                     />
                   </div>
                   
-                  <div>
-                    <Label htmlFor={`period-${index}`}>Period</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor={`period-${index}`} className="text-xs">Period</Label>
                     <Input 
                       id={`period-${index}`} 
                       value={item.period} 
@@ -167,13 +168,13 @@ const ExperienceEditor: React.FC = () => {
                     />
                   </div>
                   
-                  <div>
-                    <Label htmlFor={`description-${index}`}>Description</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor={`description-${index}`} className="text-xs">Description</Label>
                     <Textarea 
                       id={`description-${index}`} 
                       value={item.description} 
                       onChange={(e) => updateExperienceItem(index, "description", e.target.value)}
-                      rows={3}
+                      rows={2}
                     />
                   </div>
                 </div>
@@ -184,7 +185,7 @@ const ExperienceEditor: React.FC = () => {
               variant="outline" 
               type="button" 
               onClick={addExperienceItem} 
-              className="w-full mt-2"
+              className="w-full mt-2 h-7 text-xs"
             >
               Add Experience
             </Button>
