@@ -1,7 +1,6 @@
 
 import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { X, User, Brain, Briefcase, FolderOpen, GraduationCap, Mail, Settings } from "lucide-react";
 import SettingsEditor from "./editors/SettingsEditor";
@@ -25,8 +24,10 @@ const EditorSidebar: React.FC = () => {
     { id: "settings", label: "Settings", component: <SettingsEditor />, icon: Settings }
   ];
 
+  const currentSection = sections.find(section => section.id === activeSection) || sections[0];
+
   return (
-    <div className={`fixed top-[60px] left-0 bottom-0 w-80 bg-white border-r transition-all duration-300 z-30 overflow-auto ${showEditor ? "" : "-translate-x-full"}`}>
+    <div className={`fixed top-[60px] left-0 bottom-0 w-80 bg-white border-r transition-all duration-300 z-30 overflow-hidden ${showEditor ? "" : "-translate-x-full"}`}>
       <div className="flex justify-between items-center p-4 border-b">
         <h3 className="font-display font-semibold">Portfolio Editor</h3>
         <Button variant="ghost" size="sm" onClick={() => setShowEditor(false)}>
@@ -34,29 +35,38 @@ const EditorSidebar: React.FC = () => {
         </Button>
       </div>
 
-      <Tabs defaultValue="hero" value={activeSection} onValueChange={setActiveSection}>
-        <div className="px-2 pt-2 border-b overflow-x-auto">
-          <TabsList className="inline-flex w-auto overflow-x-auto pb-2 justify-start">
-            {sections.map((section) => {
-              const IconComponent = section.icon;
-              return (
-                <TabsTrigger key={section.id} value={section.id} className="whitespace-nowrap flex items-center gap-2">
-                  <IconComponent className="h-4 w-4" />
-                  {section.label}
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+      <div className="flex h-full">
+        {/* Side Navigation */}
+        <div className="w-16 border-r bg-gray-50 flex flex-col items-center py-4 space-y-2">
+          {sections.map((section) => {
+            const IconComponent = section.icon;
+            return (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={`p-3 rounded-lg transition-colors ${
+                  activeSection === section.id 
+                    ? 'bg-primary text-white' 
+                    : 'hover:bg-gray-200 text-gray-600'
+                }`}
+                title={section.label}
+              >
+                <IconComponent className="h-5 w-5" />
+              </button>
+            );
+          })}
         </div>
 
-        <div className="p-4">
-          {sections.map((section) => (
-            <TabsContent key={section.id} value={section.id}>
-              {section.component}
-            </TabsContent>
-          ))}
+        {/* Content Area */}
+        <div className="flex-1 overflow-auto">
+          <div className="p-4 border-b">
+            <h4 className="font-medium">{currentSection.label}</h4>
+          </div>
+          <div className="p-4">
+            {currentSection.component}
+          </div>
         </div>
-      </Tabs>
+      </div>
     </div>
   );
 };

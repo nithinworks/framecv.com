@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 
@@ -118,7 +117,8 @@ const PortfolioPreviewFrame: React.FC = () => {
       html, body {
         margin: 0;
         padding: 0;
-        min-height: 100vh;
+        height: 100%;
+        overflow-x: hidden;
       }
       #app {
         min-height: 100vh;
@@ -196,7 +196,7 @@ const PortfolioPreviewFrame: React.FC = () => {
           case "map":
             return \`<svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mr-2 flex-shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'/></svg>\`;
           case "globe":
-            return \`<svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mr-2 flex-shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm0 0v20m0-20C7.52 2 2 6.48 2 12m10-10c4.52 0 10 4.48 10 10m-10-10v10m0 0l5-5m-5 5l-5-5'/></svg>\`;
+            return \`<svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mr-2 flex-shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12m0 0v20m0-20C7.52 2 2 6.48 2 12m10-10c4.52 0 10 4.48 10 10m-10-10v10m0 0l5-5m-5 5l-5-5'/></svg>\`;
           case "linkedin":
             return \`<svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mr-2 flex-shrink-0' fill='currentColor' viewBox='0 0 24 24'><path d='M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z'/></svg>\`;
           case "github":
@@ -466,14 +466,17 @@ const PortfolioPreviewFrame: React.FC = () => {
                 </section>\`;
         }
 
-        // Footer
+        // Footer - ensure it fills remaining space
         let footer = "";
         if (data.footer && data.footer.enabled) {
-          footer = \`<footer class="footer-bg-smoke py-8 sm:py-12 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto">
+          footer = \`<footer class="footer-bg-smoke py-12 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto">
                     <div class="max-w-2xl mx-auto px-4">
                         \${data.footer.copyright}
                     </div>
                 </footer>\`;
+        } else {
+          // Add a minimal footer to fill space even when disabled
+          footer = \`<footer class="py-4 mt-auto"></footer>\`;
         }
 
         // Combine all sections with proper structure
