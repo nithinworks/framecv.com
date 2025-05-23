@@ -3,15 +3,14 @@ import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash, User, Briefcase, MapPin, FileText, Image, ExternalLink, Link } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Trash2 } from "lucide-react";
 
 const HeroEditor: React.FC = () => {
   const { portfolioData, setPortfolioData } = usePortfolio();
-  const { sections, settings } = portfolioData;
+  const { settings, sections } = portfolioData;
 
   const handleSettingsChange = (field: string, value: string) => {
     setPortfolioData({
@@ -23,42 +22,9 @@ const HeroEditor: React.FC = () => {
     });
   };
 
-  const handleEnabledChange = (enabled: boolean) => {
-    setPortfolioData({
-      ...portfolioData,
-      sections: {
-        ...sections,
-        hero: {
-          ...sections.hero,
-          enabled
-        }
-      }
-    });
-  };
-
-  const handleButtonChange = (index: number, field: string, value: string | boolean) => {
-    const updatedButtons = [...sections.hero.ctaButtons];
-    updatedButtons[index] = {
-      ...updatedButtons[index],
-      [field]: value
-    };
-
-    setPortfolioData({
-      ...portfolioData,
-      sections: {
-        ...sections,
-        hero: {
-          ...sections.hero,
-          ctaButtons: updatedButtons
-        }
-      }
-    });
-  };
-
-  const addButton = () => {
-    if (sections.hero.ctaButtons.length >= 2) {
-      return; // Maximum two buttons allowed
-    }
+  const handleCtaChange = (index: number, field: string, value: string) => {
+    const updatedCtas = [...(sections.hero.ctaButtons || [])];
+    updatedCtas[index] = { ...updatedCtas[index], [field]: value };
     
     setPortfolioData({
       ...portfolioData,
@@ -66,206 +32,210 @@ const HeroEditor: React.FC = () => {
         ...sections,
         hero: {
           ...sections.hero,
-          ctaButtons: [
-            ...sections.hero.ctaButtons,
-            { text: "New Button", url: "#", isPrimary: false, icon: "none" }
-          ]
+          ctaButtons: updatedCtas
         }
       }
     });
   };
 
-  const removeButton = (index: number) => {
-    const updatedButtons = [...sections.hero.ctaButtons];
-    updatedButtons.splice(index, 1);
-
+  const addCtaButton = () => {
+    if ((sections.hero.ctaButtons || []).length >= 2) return;
+    
+    const newCta = {
+      text: "Contact Me",
+      url: "#contact",
+      isPrimary: (sections.hero.ctaButtons || []).length === 0,
+      icon: "mail"
+    };
+    
     setPortfolioData({
       ...portfolioData,
       sections: {
         ...sections,
         hero: {
           ...sections.hero,
-          ctaButtons: updatedButtons
+          ctaButtons: [...(sections.hero.ctaButtons || []), newCta]
         }
       }
     });
   };
 
+  const removeCtaButton = (index: number) => {
+    const updatedCtas = (sections.hero.ctaButtons || []).filter((_, i) => i !== index);
+    
+    setPortfolioData({
+      ...portfolioData,
+      sections: {
+        ...sections,
+        hero: {
+          ...sections.hero,
+          ctaButtons: updatedCtas
+        }
+      }
+    });
+  };
+
+  const iconOptions = [
+    { value: "none", label: "None" },
+    { value: "mail", label: "Email" },
+    { value: "download", label: "Download" },
+    { value: "phone", label: "Phone" },
+    { value: "globe", label: "Website" },
+    { value: "linkedin", label: "LinkedIn" },
+    { value: "github", label: "GitHub" },
+    { value: "twitter", label: "Twitter" },
+    { value: "instagram", label: "Instagram" },
+    { value: "document", label: "Document" }
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Label htmlFor="hero-enabled">Show Personal Information</Label>
-        <Switch 
-          id="hero-enabled" 
-          checked={sections.hero.enabled}
-          onCheckedChange={handleEnabledChange}
-        />
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="name" className="text-sm font-medium">Full Name</Label>
+          <Input 
+            id="name"
+            value={settings.name} 
+            onChange={(e) => handleSettingsChange("name", e.target.value)}
+            placeholder="John Doe"
+            className="mt-1"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="title" className="text-sm font-medium">Professional Title</Label>
+          <Input 
+            id="title"
+            value={settings.title} 
+            onChange={(e) => handleSettingsChange("title", e.target.value)}
+            placeholder="Full Stack Developer"
+            className="mt-1"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="location" className="text-sm font-medium">Location</Label>
+          <Input 
+            id="location"
+            value={settings.location} 
+            onChange={(e) => handleSettingsChange("location", e.target.value)}
+            placeholder="New York, USA"
+            className="mt-1"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="summary" className="text-sm font-medium">Short Summary</Label>
+          <Textarea 
+            id="summary"
+            value={settings.summary} 
+            onChange={(e) => handleSettingsChange("summary", e.target.value)}
+            placeholder="Passionate developer with expertise in modern web technologies..."
+            className="mt-1"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="profileImage" className="text-sm font-medium">Profile Image URL</Label>
+          <Input 
+            id="profileImage"
+            value={settings.profileImage} 
+            onChange={(e) => handleSettingsChange("profileImage", e.target.value)}
+            placeholder="https://example.com/profile.jpg"
+            className="mt-1"
+          />
+        </div>
       </div>
 
-      {sections.hero.enabled && (
-        <>
-          <div className="space-y-4 border-t pt-4">
-            <div className="flex items-center space-x-3">
-              <User className="w-4 h-4 text-gray-500" />
-              <div className="w-full">
-                <Label htmlFor="name">Full Name</Label>
-                <Input 
-                  id="name" 
-                  placeholder="John Doe"
-                  value={settings.name} 
-                  onChange={(e) => handleSettingsChange("name", e.target.value)}
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Briefcase className="w-4 h-4 text-gray-500" />
-              <div className="w-full">
-                <Label htmlFor="title">Professional Title</Label>
-                <Input 
-                  id="title" 
-                  placeholder="Full Stack Developer"
-                  value={settings.title} 
-                  onChange={(e) => handleSettingsChange("title", e.target.value)}
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <MapPin className="w-4 h-4 text-gray-500" />
-              <div className="w-full">
-                <Label htmlFor="location">Location</Label>
-                <Input 
-                  id="location" 
-                  placeholder="San Francisco, CA"
-                  value={settings.location} 
-                  onChange={(e) => handleSettingsChange("location", e.target.value)}
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-start space-x-3 pt-1">
-              <FileText className="w-4 h-4 text-gray-500 mt-2" />
-              <div className="w-full">
-                <Label htmlFor="summary">Short Summary</Label>
-                <Textarea 
-                  id="summary" 
-                  placeholder="A brief introduction about yourself and your professional background."
-                  value={settings.summary} 
-                  onChange={(e) => handleSettingsChange("summary", e.target.value)}
-                  rows={3}
-                  className="resize-none"
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Image className="w-4 h-4 text-gray-500" />
-              <div className="w-full">
-                <Label htmlFor="profileImage">Profile Image URL</Label>
-                <Input 
-                  id="profileImage" 
-                  placeholder="https://example.com/your-image.jpg"
-                  value={settings.profileImage} 
-                  onChange={(e) => handleSettingsChange("profileImage", e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t pt-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium text-sm">Call to Action Buttons</h3>
-              {sections.hero.ctaButtons.length < 2 && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={addButton}
-                >
-                  Add Button
-                </Button>
-              )}
-            </div>
-            
-            {sections.hero.ctaButtons.map((button, index) => (
-              <div key={index} className="mb-6 p-4 border rounded-md bg-gray-50">
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-sm font-semibold">Button {index + 1}</h4>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => removeButton(index)}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <ExternalLink className="w-4 h-4 text-gray-500" />
-                    <div className="w-full">
-                      <Label htmlFor={`button-text-${index}`}>Button Text</Label>
-                      <Input 
-                        id={`button-text-${index}`} 
-                        placeholder="Connect with me"
-                        value={button.text} 
-                        onChange={(e) => handleButtonChange(index, "text", e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-3">
-                    <Link className="w-4 h-4 text-gray-500" />
-                    <div className="w-full">
-                      <Label htmlFor={`button-url-${index}`}>URL</Label>
-                      <Input 
-                        id={`button-url-${index}`} 
-                        placeholder="https://example.com or mailto:email@example.com"
-                        value={button.url} 
-                        onChange={(e) => handleButtonChange(index, "url", e.target.value)}
-                      />
-                    </div>
-                  </div>
+      <div className="border-t pt-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-medium">Call to Action Buttons</h3>
+          <Button 
+            onClick={addCtaButton} 
+            size="sm" 
+            variant="outline"
+            disabled={(sections.hero.ctaButtons || []).length >= 2}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Button
+          </Button>
+        </div>
 
-                  <div className="flex items-center space-x-3">
-                    <Image className="w-4 h-4 text-gray-500" />
-                    <div className="w-full">
-                      <Label htmlFor={`button-icon-${index}`}>Icon</Label>
-                      <Select
-                        value={button.icon || "none"}
-                        onValueChange={(value) => handleButtonChange(index, "icon", value)}
-                      >
-                        <SelectTrigger id={`button-icon-${index}`}>
-                          <SelectValue placeholder="Select icon" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
-                          <SelectItem value="mail">Email</SelectItem>
-                          <SelectItem value="document">Document</SelectItem>
-                          <SelectItem value="globe">Globe</SelectItem>
-                          <SelectItem value="phone">Phone</SelectItem>
-                          <SelectItem value="linkedin">LinkedIn</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor={`button-primary-${index}`} className="flex-grow">
-                      Primary Style
-                    </Label>
-                    <Switch 
-                      id={`button-primary-${index}`} 
-                      checked={button.isPrimary}
-                      onCheckedChange={(value) => handleButtonChange(index, "isPrimary", value)}
-                    />
-                  </div>
+        <div className="space-y-4">
+          {(sections.hero.ctaButtons || []).map((cta, index) => (
+            <div key={index} className="p-4 border rounded-lg space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Button {index + 1}</span>
+                <Button 
+                  onClick={() => removeCtaButton(index)} 
+                  size="sm" 
+                  variant="ghost"
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Button Text</Label>
+                  <Input 
+                    value={cta.text} 
+                    onChange={(e) => handleCtaChange(index, "text", e.target.value)}
+                    placeholder="Contact Me"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">URL</Label>
+                  <Input 
+                    value={cta.url} 
+                    onChange={(e) => handleCtaChange(index, "url", e.target.value)}
+                    placeholder="#contact"
+                    className="mt-1"
+                  />
                 </div>
               </div>
-            ))}
-          </div>
-        </>
-      )}
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Icon</Label>
+                  <Select value={cta.icon || "none"} onValueChange={(value) => handleCtaChange(index, "icon", value === "none" ? "" : value)}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select icon" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {iconOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Style</Label>
+                  <Select value={cta.isPrimary ? "primary" : "secondary"} onValueChange={(value) => handleCtaChange(index, "isPrimary", value === "primary")}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="primary">Primary</SelectItem>
+                      <SelectItem value="secondary">Secondary</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {(sections.hero.ctaButtons || []).length === 0 && (
+          <p className="text-sm text-gray-500 text-center py-4">No call-to-action buttons added yet.</p>
+        )}
+      </div>
     </div>
   );
 };

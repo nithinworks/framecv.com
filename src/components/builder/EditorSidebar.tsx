@@ -3,7 +3,7 @@ import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, User, Brain, Briefcase, FolderOpen, GraduationCap, Mail, Settings } from "lucide-react";
 import SettingsEditor from "./editors/SettingsEditor";
 import HeroEditor from "./editors/HeroEditor";
 import AboutEditor from "./editors/AboutEditor";
@@ -16,13 +16,13 @@ const EditorSidebar: React.FC = () => {
   const { activeSection, setActiveSection, showEditor, setShowEditor } = usePortfolio();
 
   const sections = [
-    { id: "settings", label: "Settings", component: <SettingsEditor /> },
-    { id: "hero", label: "Personal Info", component: <HeroEditor /> },
-    { id: "about", label: "Skills", component: <AboutEditor /> },
-    { id: "experience", label: "Experience", component: <ExperienceEditor /> },
-    { id: "projects", label: "Projects", component: <ProjectsEditor /> },
-    { id: "education", label: "Education", component: <EducationEditor /> },
-    { id: "contact", label: "Contact", component: <ContactEditor /> }
+    { id: "hero", label: "Personal Info", component: <HeroEditor />, icon: User },
+    { id: "about", label: "Skills", component: <AboutEditor />, icon: Brain },
+    { id: "experience", label: "Experience", component: <ExperienceEditor />, icon: Briefcase },
+    { id: "projects", label: "Projects", component: <ProjectsEditor />, icon: FolderOpen },
+    { id: "education", label: "Education", component: <EducationEditor />, icon: GraduationCap },
+    { id: "contact", label: "Contact", component: <ContactEditor />, icon: Mail },
+    { id: "settings", label: "Settings", component: <SettingsEditor />, icon: Settings }
   ];
 
   return (
@@ -34,14 +34,18 @@ const EditorSidebar: React.FC = () => {
         </Button>
       </div>
 
-      <Tabs defaultValue="settings" value={activeSection} onValueChange={setActiveSection}>
+      <Tabs defaultValue="hero" value={activeSection} onValueChange={setActiveSection}>
         <div className="px-2 pt-2 border-b overflow-x-auto">
           <TabsList className="inline-flex w-auto overflow-x-auto pb-2 justify-start">
-            {sections.map((section) => (
-              <TabsTrigger key={section.id} value={section.id} className="whitespace-nowrap">
-                {section.label}
-              </TabsTrigger>
-            ))}
+            {sections.map((section) => {
+              const IconComponent = section.icon;
+              return (
+                <TabsTrigger key={section.id} value={section.id} className="whitespace-nowrap flex items-center gap-2">
+                  <IconComponent className="h-4 w-4" />
+                  {section.label}
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
         </div>
 

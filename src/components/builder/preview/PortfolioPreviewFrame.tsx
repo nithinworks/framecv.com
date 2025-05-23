@@ -115,6 +115,19 @@ const PortfolioPreviewFrame: React.FC = () => {
           #000 100%
         ) !important;
       }
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      #app {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .main-content {
+        flex: 1;
+      }
     </style>
 
     <script>
@@ -456,15 +469,21 @@ const PortfolioPreviewFrame: React.FC = () => {
         // Footer
         let footer = "";
         if (data.footer && data.footer.enabled) {
-          footer = \`<footer class="footer-bg-smoke py-6 sm:py-8 text-center text-sm text-gray-600 dark:text-gray-400">
+          footer = \`<footer class="footer-bg-smoke py-8 sm:py-12 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto">
                     <div class="max-w-2xl mx-auto px-4">
                         \${data.footer.copyright}
                     </div>
                 </footer>\`;
         }
 
-        // Combine all sections
-        const content = \`\${nav}\${hero}\${about}\${projects}\${experience}\${education}\${contact}\${social}\${footer}\`;
+        // Combine all sections with proper structure
+        const content = \`
+          \${nav}
+          <div class="main-content">
+            \${hero}\${about}\${projects}\${experience}\${education}\${contact}\${social}
+          </div>
+          \${footer}
+        \`;
         document.getElementById("app").innerHTML = content;
         setThemeIcon();
       }

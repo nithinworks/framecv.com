@@ -4,7 +4,7 @@ import { usePortfolio } from "@/context/PortfolioContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Palette, ToggleLeft, Navigation, Copyright } from "lucide-react";
+import { ToggleLeft, Navigation, Copyright } from "lucide-react";
 
 const SettingsEditor: React.FC = () => {
   const { portfolioData, setPortfolioData } = usePortfolio();
@@ -56,33 +56,33 @@ const SettingsEditor: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="flex items-center space-x-3">
-          <Palette className="w-4 h-4 text-gray-500" />
-          <div className="w-full">
-            <Label htmlFor="primaryColor">Theme Color</Label>
-            <div className="flex gap-2 mt-1 items-center">
-              <div 
-                className="w-8 h-8 rounded border"
-                style={{ backgroundColor: settings.primaryColor }}
-              ></div>
-              <Input 
-                id="primaryColor" 
-                value={settings.primaryColor} 
-                onChange={(e) => handleChange("primaryColor", e.target.value)}
-                className="flex-1"
-              />
-            </div>
+        <div>
+          <Label htmlFor="primaryColor" className="text-sm font-medium mb-2 block">Theme Color</Label>
+          <div className="flex gap-3 items-center">
+            <input 
+              type="color"
+              id="primaryColor" 
+              value={settings.primaryColor} 
+              onChange={(e) => handleChange("primaryColor", e.target.value)}
+              className="w-12 h-10 rounded-md border border-gray-300 cursor-pointer"
+            />
+            <Input 
+              value={settings.primaryColor} 
+              onChange={(e) => handleChange("primaryColor", e.target.value)}
+              className="flex-1"
+              placeholder="#0067C7"
+            />
           </div>
         </div>
       </div>
       
       <div className="border-t pt-4">
-        <div className="flex items-center space-x-3 mb-3">
+        <div className="flex items-center space-x-3 mb-4">
           <ToggleLeft className="w-4 h-4 text-gray-500" />
           <h3 className="text-sm font-medium">Sections Visibility</h3>
         </div>
         
-        <div className="space-y-2 ml-7">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Label htmlFor="toggle-hero" className="text-sm">Personal Information</Label>
             <Switch 
@@ -145,7 +145,7 @@ const SettingsEditor: React.FC = () => {
           <h3 className="text-sm font-medium">Navigation Menu</h3>
         </div>
         
-        <div className="ml-7 space-y-3">
+        <div className="space-y-3">
           <p className="text-xs text-gray-500">Navigation items are automatically generated based on enabled sections.</p>
         </div>
       </div>
@@ -164,7 +164,7 @@ const SettingsEditor: React.FC = () => {
         </div>
         
         {footer.enabled && (
-          <div className="ml-7 mt-3">
+          <div className="mt-3">
             <Label htmlFor="copyright" className="text-sm">Copyright Text</Label>
             <Input 
               id="copyright" 
