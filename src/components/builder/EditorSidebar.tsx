@@ -36,7 +36,7 @@ const EditorSidebar: React.FC = () => {
         </Button>
       </div>
 
-      <div className="flex h-full">
+      <div className="flex h-[calc(100vh-60px-73px)]">
         {/* Side Navigation */}
         <div className="w-16 border-r bg-gray-50 flex flex-col items-center py-4 space-y-2">
           {sections.map((section) => {
@@ -59,11 +59,11 @@ const EditorSidebar: React.FC = () => {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 flex flex-col h-full">
+        <div className="flex-1 flex flex-col">
           <div className="p-4 border-b flex-shrink-0">
             <h4 className="font-medium">{currentSection.label}</h4>
           </div>
-          <ScrollArea className="flex-1">
+          <ScrollArea className="flex-1 h-[calc(100vh-60px-73px-65px)]">
             <div className="p-4">
               {currentSection.component}
             </div>
