@@ -59,10 +59,10 @@ const AboutEditor: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
+    <div className="space-y-4">
+      <div className="space-y-3">
         <div>
-          <Label htmlFor="aboutTitle" className="text-sm font-medium">Section Title</Label>
+          <Label htmlFor="aboutTitle" className="text-xs font-medium">Section Title</Label>
           <Input 
             id="aboutTitle"
             value={sections.about.title} 
@@ -73,23 +73,21 @@ const AboutEditor: React.FC = () => {
         </div>
 
         <div>
-          <Label htmlFor="aboutContent" className="text-sm font-medium">About Me Content</Label>
+          <Label htmlFor="aboutContent" className="text-xs font-medium">About Me Content</Label>
           <Textarea 
             id="aboutContent"
             value={sections.about.content} 
             onChange={(e) => handleAboutChange("content", e.target.value)}
             placeholder="I'm a passionate developer with experience in building modern web applications..."
             className="mt-1"
-            rows={5}
+            rows={4}
           />
         </div>
       </div>
 
-      <div className="border-t pt-4">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <Label htmlFor="skills-enabled" className="text-sm font-medium">Skills Section</Label>
-          </div>
+      <div className="border-t pt-3">
+        <div className="flex items-center justify-between mb-3">
+          <Label htmlFor="skills-enabled" className="text-xs font-medium">Skills Section</Label>
           <Switch 
             id="skills-enabled"
             checked={sections.about.skills?.enabled || false}
@@ -98,9 +96,9 @@ const AboutEditor: React.FC = () => {
         </div>
 
         {sections.about.skills?.enabled && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div>
-              <Label htmlFor="skillsTitle" className="text-sm font-medium">Skills Title</Label>
+              <Label htmlFor="skillsTitle" className="text-xs font-medium">Skills Title</Label>
               <Input 
                 id="skillsTitle"
                 value={sections.about.skills.title} 
@@ -111,17 +109,17 @@ const AboutEditor: React.FC = () => {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <Label className="text-sm font-medium">Skills List</Label>
-                <Button onClick={addSkill} size="sm" variant="outline" className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Skill
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-xs font-medium">Skills List</Label>
+                <Button onClick={addSkill} size="sm" variant="outline" className="h-7 px-2 text-xs">
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add
                 </Button>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {(sections.about.skills.items || []).map((skill, index) => (
-                  <div key={index} className="flex gap-2">
+                  <div key={index} className="flex gap-1.5">
                     <Input 
                       value={skill} 
                       onChange={(e) => updateSkill(index, e.target.value)}
@@ -132,16 +130,16 @@ const AboutEditor: React.FC = () => {
                       onClick={() => removeSkill(index)} 
                       size="sm" 
                       variant="ghost"
-                      className="text-red-500 hover:text-red-700"
+                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 ))}
               </div>
               
               {(!sections.about.skills.items || sections.about.skills.items.length === 0) && (
-                <p className="text-sm text-gray-500 text-center py-4">No skills added yet.</p>
+                <p className="text-xs text-gray-500 text-center py-3">No skills added yet.</p>
               )}
             </div>
           </div>
