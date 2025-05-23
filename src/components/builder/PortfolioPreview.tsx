@@ -9,14 +9,14 @@ const PortfolioPreview: React.FC = () => {
   // Function to get container class based on view mode
   const getContainerClass = () => {
     if (currentView === "mobile") {
-      // Increased width for mobile preview to match standard Android device size
-      return "max-w-[412px] h-[732px] mx-auto border border-gray-300 rounded-lg shadow-md overflow-hidden";
+      // Mobile preview with no rounded corners
+      return "max-w-[412px] h-[732px] mx-auto border border-gray-300 overflow-hidden";
     }
-    return "w-full h-[80vh] max-w-[1280px] mx-auto border border-gray-200 shadow-sm rounded-md overflow-hidden";
+    return "w-full h-full max-w-[1280px] mx-auto border border-gray-200 overflow-hidden";
   };
 
   return (
-    <div className="flex flex-col justify-center items-center py-4">      
+    <div className="flex flex-col justify-center items-center h-full">      
       <div className={getContainerClass()}>
         <PortfolioPreviewFrame />
       </div>

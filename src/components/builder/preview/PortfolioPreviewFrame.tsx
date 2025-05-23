@@ -117,7 +117,7 @@ const PortfolioPreviewFrame: React.FC = () => {
       html, body {
         margin: 0;
         padding: 0;
-        height: 100%;
+        height: 100vh;
         overflow-x: hidden;
       }
       #app {
@@ -466,17 +466,17 @@ const PortfolioPreviewFrame: React.FC = () => {
                 </section>\`;
         }
 
-        // Footer - ensure it fills remaining space
+        // Footer - ensure it covers full width and bottom
         let footer = "";
         if (data.footer && data.footer.enabled) {
-          footer = \`<footer class="footer-bg-smoke py-12 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto">
+          footer = \`<footer class="footer-bg-smoke py-8 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto w-full">
                     <div class="max-w-2xl mx-auto px-4">
                         \${data.footer.copyright}
                     </div>
                 </footer>\`;
         } else {
-          // Add a minimal footer to fill space even when disabled
-          footer = \`<footer class="py-4 mt-auto"></footer>\`;
+          // Add a minimal footer to fill remaining space with background
+          footer = \`<footer class="bg-white dark:bg-darkTheme py-4 mt-auto w-full"></footer>\`;
         }
 
         // Combine all sections with proper structure

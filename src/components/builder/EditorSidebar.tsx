@@ -2,6 +2,7 @@
 import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, User, Brain, Briefcase, FolderOpen, GraduationCap, Mail, Settings } from "lucide-react";
 import SettingsEditor from "./editors/SettingsEditor";
 import HeroEditor from "./editors/HeroEditor";
@@ -58,13 +59,15 @@ const EditorSidebar: React.FC = () => {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-auto">
-          <div className="p-4 border-b">
+        <div className="flex-1 flex flex-col h-full">
+          <div className="p-4 border-b flex-shrink-0">
             <h4 className="font-medium">{currentSection.label}</h4>
           </div>
-          <div className="p-4">
-            {currentSection.component}
-          </div>
+          <ScrollArea className="flex-1">
+            <div className="p-4">
+              {currentSection.component}
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>
