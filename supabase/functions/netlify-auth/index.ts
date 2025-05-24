@@ -13,30 +13,46 @@ serve(async (req) => {
   }
 
   try {
+    // Get environment variables
     const clientId = Deno.env.get('NETLIFY_CLIENT_ID');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    
+    console.log('Environment check:', {
+      hasClientId: !!clientId,
+      hasSupabaseUrl: !!supabaseUrl,
+      clientIdPrefix: clientId ? clientId.substring(0, 8) + '...' : 'missing'
+    });
     
     if (!clientId) {
-      throw new Error('Netlify client ID not configured');
+      throw new Error('NETLIFY_CLIENT_ID environment variable is not set');
+    }
+    
+    if (!supabaseUrl) {
+      throw new Error('SUPABASE_URL environment variable is not set');
     }
 
-    // Generate a random state for security
+    const redirectUri = `${supabaseUrl}/functions/v1/netlify-callback`;
+    console.log('Using redirect URI:', redirectUri);
+
+    // Generate state parameter for security
     const state = crypto.randomUUID();
+    console.log('Generated state:', state);
     
-    // Netlify OAuth URL with correct scope
+    // Construct Netlify OAuth URL
     const authUrl = new URL('https://app.netlify.com/authorize');
     authUrl.searchParams.set('client_id', clientId);
+    authUrl.searchParams.set('redirect_uri', redirectUri);
     authUrl.searchParams.set('response_type', 'code');
-    authUrl.searchParams.set('redirect_uri', `${Deno.env.get('SUPABASE_URL')}/functions/v1/netlify-callback`);
     authUrl.searchParams.set('state', state);
-    // Use empty scope or remove scope parameter as Netlify doesn't require specific scopes for basic site management
-    // The access is controlled by the OAuth app permissions in Netlify dashboard
 
-    console.log('Generated OAuth URL:', authUrl.toString());
+    const finalAuthUrl = authUrl.toString();
+    console.log('Generated OAuth URL:', finalAuthUrl);
 
     return new Response(
-      JSON.stringify({ 
-        authUrl: authUrl.toString(),
-        state 
+      JSON.stringify({
+        success: true,
+        authUrl: finalAuthUrl,
+        state: state
       }),
       {
         headers: { 
@@ -49,7 +65,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in netlify-auth:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
+      }),
       { 
         status: 500,
         headers: { 
