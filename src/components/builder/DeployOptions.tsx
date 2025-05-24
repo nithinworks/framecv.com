@@ -44,69 +44,112 @@ const DeployOptions: React.FC = () => {
       }
 
       setDeploymentStatus("Please authorize Netlify access...");
+      console.log('Opening OAuth URL:', authData.authUrl);
 
-      // Step 2: Open OAuth popup
+      // Step 2: Open OAuth popup with proper settings to avoid sandbox restrictions
       const popup = window.open(
         authData.authUrl,
         'netlify-auth',
-        'width=600,height=600,scrollbars=yes,resizable=yes'
+        'width=600,height=700,scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=yes'
       );
 
       if (!popup) {
         throw new Error('Popup blocked. Please allow popups and try again.');
       }
 
-      // Step 3: Wait for OAuth callback with improved message handling
+      // Step 3: Wait for OAuth callback with improved polling and message handling
       const accessToken = await new Promise<string>((resolve, reject) => {
         let messageReceived = false;
+        let pollCount = 0;
+        const maxPolls = 300; // 5 minutes at 1 second intervals
         
         const handleMessage = (event: MessageEvent) => {
-          // Security check: ensure message is from Supabase domain
-          if (!event.origin.includes('supabase.co')) {
+          console.log('Received message from:', event.origin, 'Data:', event.data);
+          
+          // Accept messages from Supabase domains or the popup itself
+          if (!event.origin.includes('supabase.co') && event.origin !== window.location.origin) {
+            console.log('Ignoring message from:', event.origin);
             return;
           }
-          
-          console.log('Received message:', event.data);
           
           if (event.data.type === 'NETLIFY_AUTH_SUCCESS' && !messageReceived) {
             messageReceived = true;
             window.removeEventListener('message', handleMessage);
-            clearInterval(checkClosed);
+            clearInterval(pollInterval);
             console.log('OAuth success, access token received');
             resolve(event.data.accessToken);
           } else if (event.data.type === 'NETLIFY_AUTH_ERROR' && !messageReceived) {
             messageReceived = true;
             window.removeEventListener('message', handleMessage);
-            clearInterval(checkClosed);
+            clearInterval(pollInterval);
             reject(new Error(event.data.error || 'Authorization failed'));
           }
         };
 
-        // Add message listener immediately
+        // Add message listener
         window.addEventListener('message', handleMessage);
 
-        // Check if popup was closed manually
-        const checkClosed = setInterval(() => {
+        // Poll for popup status and try to communicate
+        const pollInterval = setInterval(() => {
+          pollCount++;
+          
           if (popup.closed && !messageReceived) {
             messageReceived = true;
-            clearInterval(checkClosed);
+            clearInterval(pollInterval);
             window.removeEventListener('message', handleMessage);
             reject(new Error('Authorization was cancelled'));
+            return;
           }
-        }, 1000);
 
-        // Timeout after 5 minutes
-        setTimeout(() => {
-          if (!messageReceived) {
+          // Try to check if popup has navigated to our callback
+          try {
+            if (popup.location && popup.location.href.includes('netlify-callback')) {
+              console.log('Popup navigated to callback URL');
+              // Try to access the popup content
+              try {
+                const popupDoc = popup.document;
+                if (popupDoc && popupDoc.body) {
+                  console.log('Trying to extract token from popup document');
+                  // Look for script content that might contain our token
+                  const scripts = popupDoc.getElementsByTagName('script');
+                  for (let script of scripts) {
+                    if (script.textContent && script.textContent.includes('NETLIFY_AUTH_SUCCESS')) {
+                      console.log('Found success script in popup');
+                      // Try to execute the postMessage manually
+                      try {
+                        const match = script.textContent.match(/accessToken:\s*'([^']+)'/);
+                        if (match && match[1] && !messageReceived) {
+                          messageReceived = true;
+                          clearInterval(pollInterval);
+                          window.removeEventListener('message', handleMessage);
+                          popup.close();
+                          resolve(match[1]);
+                          return;
+                        }
+                      } catch (e) {
+                        console.log('Failed to extract token:', e);
+                      }
+                    }
+                  }
+                }
+              } catch (e) {
+                console.log('Cannot access popup document (cross-origin):', e);
+              }
+            }
+          } catch (e) {
+            // Cross-origin access blocked, this is expected
+          }
+
+          if (pollCount >= maxPolls && !messageReceived) {
             messageReceived = true;
-            clearInterval(checkClosed);
+            clearInterval(pollInterval);
             window.removeEventListener('message', handleMessage);
             if (!popup.closed) {
               popup.close();
             }
             reject(new Error('Authorization timeout. Please try again.'));
           }
-        }, 300000); // 5 minutes
+        }, 1000);
       });
 
       setDeploymentStatus("Creating site on Netlify...");
