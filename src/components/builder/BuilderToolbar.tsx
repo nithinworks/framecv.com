@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -207,12 +206,13 @@ document.addEventListener("DOMContentLoaded", async function() {
             Editor
           </Button>
           
-          {/* Editor hint tooltip */}
+          {/* Editor hint tooltip - positioned more accurately */}
           {showEditorHint && !showEditor && !isMobile && (
-            <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 z-50">
+            <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-1 z-50">
               <div className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-medium relative whitespace-nowrap">
                 <span>Click to edit</span>
-                <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-l-[4px] border-transparent border-l-gray-800"></div>
+                {/* Left pointing arrow - better positioned */}
+                <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-gray-800"></div>
               </div>
             </div>
           )}

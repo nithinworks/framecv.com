@@ -55,17 +55,6 @@ const BuilderPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <BuilderToolbar showEditorHint={showEditorHint} />
       
-      {/* Compact hint message beside the editor button */}
-      {showEditorHint && !showEditor && !isMobile && (
-        <div className="fixed top-[18px] left-[240px] z-40">
-          <div className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-medium relative">
-            <span>Click to edit</span>
-            {/* Left pointing arrow */}
-            <div className="absolute left-[-4px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-r-[4px] border-transparent border-r-gray-800"></div>
-          </div>
-        </div>
-      )}
-      
       <div className="pt-[60px] flex min-h-screen">
         {/* Editor Sidebar */}
         <EditorSidebar />
