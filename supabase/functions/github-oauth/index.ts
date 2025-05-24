@@ -6,6 +6,8 @@ interface GitHubTokenResponse {
   access_token: string;
   token_type: string;
   scope: string;
+  error?: string;
+  error_description?: string;
 }
 
 Deno.serve(async (req) => {
@@ -15,10 +17,15 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log('GitHub OAuth request received');
+    
     // Get the authenticated user
     const authHeader = req.headers.get('Authorization')!;
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    console.log('Supabase URL:', supabaseUrl);
+    console.log('Auth header present:', !!authHeader);
     
     const supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false }
@@ -29,6 +36,7 @@ Deno.serve(async (req) => {
     );
 
     if (authError || !user) {
+      console.error('Auth error:', authError);
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { 
@@ -38,16 +46,23 @@ Deno.serve(async (req) => {
       );
     }
 
+    console.log('User authenticated:', user.id);
+
     const { action, code, name, description, owner, repo, files } = await req.json();
     console.log('GitHub OAuth action:', action);
 
     const githubClientId = Deno.env.get('GITHUB_CLIENT_ID');
     const githubClientSecret = Deno.env.get('GITHUB_CLIENT_SECRET');
 
+    console.log('GitHub Client ID:', githubClientId);
+    console.log('GitHub Client Secret present:', !!githubClientSecret);
+
     if (!githubClientId || !githubClientSecret) {
-      console.error('GitHub OAuth credentials not configured');
+      console.error('GitHub OAuth credentials missing');
+      console.error('GITHUB_CLIENT_ID:', githubClientId);
+      console.error('GITHUB_CLIENT_SECRET present:', !!githubClientSecret);
       return new Response(
-        JSON.stringify({ error: 'GitHub OAuth not configured' }),
+        JSON.stringify({ error: 'GitHub OAuth credentials not configured in Supabase secrets' }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -57,27 +72,50 @@ Deno.serve(async (req) => {
 
     switch (action) {
       case 'exchangeCode':
+        console.log('Exchanging code for token, code length:', code?.length);
+        
         // Exchange authorization code for access token
+        const tokenRequestBody = {
+          client_id: githubClientId,
+          client_secret: githubClientSecret,
+          code: code,
+        };
+
+        console.log('Token request body:', { ...tokenRequestBody, client_secret: '[REDACTED]' });
+
         const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'User-Agent': 'Portfolio-Creator-App',
           },
-          body: JSON.stringify({
-            client_id: githubClientId,
-            client_secret: githubClientSecret,
-            code: code,
-          }),
+          body: JSON.stringify(tokenRequestBody),
         });
 
+        console.log('GitHub token response status:', tokenResponse.status);
+
         if (!tokenResponse.ok) {
-          throw new Error('Failed to exchange code for token');
+          const errorText = await tokenResponse.text();
+          console.error('GitHub token exchange failed:', errorText);
+          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorText}`);
         }
 
         const githubTokenData: GitHubTokenResponse = await tokenResponse.json();
+        console.log('GitHub token response:', { ...githubTokenData, access_token: '[REDACTED]' });
+
+        if (githubTokenData.error) {
+          console.error('GitHub OAuth error:', githubTokenData.error, githubTokenData.error_description);
+          throw new Error(`GitHub OAuth error: ${githubTokenData.error} - ${githubTokenData.error_description}`);
+        }
+
+        if (!githubTokenData.access_token) {
+          console.error('No access token in response:', githubTokenData);
+          throw new Error('No access token received from GitHub');
+        }
 
         // Store the token for this user
+        console.log('Storing token for user:', user.id);
         const { error: insertError } = await supabase
           .from('user_github_tokens')
           .upsert({
@@ -92,6 +130,7 @@ Deno.serve(async (req) => {
           throw new Error('Failed to store GitHub token');
         }
 
+        console.log('Token stored successfully');
         return new Response(
           JSON.stringify({ success: true }),
           { 
@@ -133,6 +172,7 @@ Deno.serve(async (req) => {
           'Authorization': `token ${userToken.access_token}`,
           'Accept': 'application/vnd.github.v3+json',
           'Content-Type': 'application/json',
+          'User-Agent': 'Portfolio-Creator-App',
         };
 
         if (action === 'getUser') {
@@ -263,8 +303,12 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('GitHub OAuth error:', error);
+    console.error('Error stack:', error.stack);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: 'Check edge function logs for more information'
+      }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

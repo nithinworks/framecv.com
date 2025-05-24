@@ -19,7 +19,13 @@ const GitHubCallback: React.FC = () => {
         const state = urlParams.get('state');
         const error = urlParams.get('error');
 
-        console.log('GitHub callback received:', { code: !!code, state: !!state, error });
+        console.log('GitHub callback received:', { 
+          code: !!code, 
+          codeLength: code?.length,
+          state: !!state, 
+          error,
+          fullUrl: window.location.href 
+        });
 
         if (error) {
           throw new Error(`GitHub OAuth error: ${error}`);
@@ -34,10 +40,12 @@ const GitHubCallback: React.FC = () => {
           throw new Error('Invalid state parameter - possible CSRF attack');
         }
 
-        console.log('Exchanging code for token...');
+        console.log('State validated successfully, exchanging code for token...');
         
         // Exchange code for access token
         const success = await githubService.exchangeCodeForToken(code);
+        
+        console.log('Token exchange result:', success);
         
         if (success) {
           setStatus('success');
@@ -51,7 +59,7 @@ const GitHubCallback: React.FC = () => {
             navigate('/builder');
           }, 2000);
         } else {
-          throw new Error('Failed to exchange code for token');
+          throw new Error('Failed to exchange code for token - check Supabase secrets');
         }
       } catch (error) {
         console.error('GitHub OAuth callback error:', error);
@@ -107,7 +115,13 @@ const GitHubCallback: React.FC = () => {
             <h2 className="text-xl font-semibold mb-2 text-red-800">Connection Failed</h2>
             <p className="text-gray-600 mb-2">There was an issue connecting your GitHub account.</p>
             {errorDetails && (
-              <p className="text-sm text-red-600 mb-4">Error: {errorDetails}</p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-red-600 font-medium">Error Details:</p>
+                <p className="text-sm text-red-600">{errorDetails}</p>
+                <p className="text-xs text-red-500 mt-2">
+                  Check browser console and Supabase Edge Function logs for more details.
+                </p>
+              </div>
             )}
             <p className="text-gray-600">You'll be redirected back to the builder shortly.</p>
           </>
