@@ -6,7 +6,7 @@ export class GitHubOAuthService {
   constructor() {
     // This will be set from environment/config
     this.clientId = 'Ov23liZQK9TuSVrxZuox'; // This should come from your GitHub OAuth App
-    this.redirectUri = `${window.location.origin}/auth/github/callback`;
+    this.redirectUri = 'https://framecv.com/auth/github/callback'; // Fixed to your production domain
   }
 
   // Start OAuth flow
