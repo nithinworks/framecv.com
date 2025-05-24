@@ -14,7 +14,16 @@ const SettingsEditor: React.FC = () => {
   // Ensure we have default values for all required properties
   const safeNavigation = navigation || { items: [] };
   const safeFooter = footer || { enabled: true, copyright: "" };
-  const safeSections = sections || {};
+  const safeSections = sections || {
+    hero: { enabled: true, ctaButtons: [] },
+    about: { enabled: true, title: "About Me", content: "", skills: { enabled: true, title: "Skills", items: [] } },
+    experience: { enabled: true, title: "Experience", items: [] },
+    projects: { enabled: true, title: "Projects", items: [] },
+    education: { enabled: true, title: "Education", items: [] },
+    achievements: { enabled: true, title: "Achievements", items: [] },
+    contact: { enabled: true, title: "Contact", email: "", phone: "", location: "" },
+    social: { enabled: true, items: [] }
+  };
 
   const predefinedColors = [
     "#d65822", "#0067C7", "#7C3AED", "#059669", "#DC2626", 
@@ -37,7 +46,7 @@ const SettingsEditor: React.FC = () => {
       sections: {
         ...safeSections,
         [section]: {
-          ...safeSections[section],
+          ...safeSections[section as keyof typeof safeSections],
           enabled
         }
       }
