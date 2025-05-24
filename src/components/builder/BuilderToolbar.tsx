@@ -10,7 +10,11 @@ import {
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 
-const BuilderToolbar: React.FC = () => {
+interface BuilderToolbarProps {
+  showEditorHint?: boolean;
+}
+
+const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false }) => {
   const { 
     showEditor, 
     setShowEditor,
@@ -46,7 +50,6 @@ const BuilderToolbar: React.FC = () => {
   </body>
 </html>`;
 
-    // CSS template
     const cssCode = `:root {
   --primary-color: ${portfolioData.settings.primaryColor};
   --primary-color-light: rgba(214, 88, 34, 0.08);
@@ -81,7 +84,6 @@ const BuilderToolbar: React.FC = () => {
   background: linear-gradient(120deg, rgba(252, 186, 3, 0.1) 0%, #000 100%) !important;
 }`;
 
-    // Tailwind config
     const twConfigCode = `tailwind.config = {
   theme: {
     extend: {
@@ -127,7 +129,6 @@ const BuilderToolbar: React.FC = () => {
   darkMode: "selector",
 };`;
 
-    // Basic JavaScript template (simplified for now)
     const jsCode = `// Portfolio rendering script
 document.addEventListener("DOMContentLoaded", async function() {
   try {
@@ -144,10 +145,8 @@ document.addEventListener("DOMContentLoaded", async function() {
   }
 });`;
 
-    // JSON data
     const jsonCode = JSON.stringify(portfolioData, null, 2);
 
-    // Create files as blobs
     const files = [
       { name: "index.html", content: htmlCode },
       { name: "styles.css", content: cssCode },
@@ -156,7 +155,6 @@ document.addEventListener("DOMContentLoaded", async function() {
       { name: "portfolio-data.json", content: jsonCode }
     ];
 
-    // Create zip using JSZip
     import('jszip').then(JSZip => {
       const zip = new JSZip.default();
       
@@ -192,14 +190,21 @@ document.addEventListener("DOMContentLoaded", async function() {
 
         <div className="h-6 border-r border-gray-300"></div>
 
-        <Button
-          variant={showEditor ? "default" : "outline"}
-          size="sm"
-          onClick={() => setShowEditor(!showEditor)}
-        >
-          <PanelLeft className="h-4 w-4 mr-2" />
-          Editor
-        </Button>
+        <div className="relative">
+          <Button
+            variant={showEditor ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowEditor(!showEditor)}
+            className={`${
+              showEditorHint && !showEditor 
+                ? "animate-pulse border-2 border-blue-500 shadow-lg shadow-blue-500/25" 
+                : ""
+            }`}
+          >
+            <PanelLeft className="h-4 w-4 mr-2" />
+            Editor
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
