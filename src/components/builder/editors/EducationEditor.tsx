@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { Trash } from "lucide-react";
 
 const EducationEditor: React.FC = () => {
@@ -51,8 +50,7 @@ const EducationEditor: React.FC = () => {
             {
               institution: "New Institution",
               degree: "Degree Title",
-              period: "YYYY - YYYY",
-              description: ""
+              period: "YYYY - YYYY"
             }
           ]
         }
@@ -158,16 +156,6 @@ const EducationEditor: React.FC = () => {
                       id={`period-${index}`} 
                       value={item.period} 
                       onChange={(e) => updateEducationItem(index, "period", e.target.value)}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor={`edu-description-${index}`}>Description (Optional)</Label>
-                    <Textarea 
-                      id={`edu-description-${index}`} 
-                      value={item.description || ""} 
-                      onChange={(e) => updateEducationItem(index, "description", e.target.value)}
-                      rows={2}
                     />
                   </div>
                 </div>

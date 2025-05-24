@@ -1,13 +1,12 @@
-
 import { PortfolioData } from "@/types/portfolio";
 
 export const samplePortfolioData: PortfolioData = {
   "settings": {
-    "name": "Alex Johnson",
+    "name": "Sarah Johnson",
     "title": "Full Stack Developer",
     "location": "San Francisco, CA",
     "summary": "Passionate full-stack developer with 5+ years of experience building scalable web applications. I love creating efficient solutions and learning new technologies to solve complex problems.",
-    "profileImage": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    "profileImage": "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face",
     "primaryColor": "#0067c7"
   },
   "sections": {
@@ -16,7 +15,7 @@ export const samplePortfolioData: PortfolioData = {
       "ctaButtons": [
         {
           "text": "Get In Touch",
-          "url": "mailto:alex.johnson@example.com",
+          "url": "mailto:sarah.johnson@example.com",
           "isPrimary": true,
           "icon": "mail"
         },
@@ -103,8 +102,7 @@ export const samplePortfolioData: PortfolioData = {
         {
           "institution": "University of California, Berkeley",
           "degree": "Bachelor of Science in Computer Science",
-          "period": "09/2016 - 06/2020",
-          "description": "Graduated with honors, specializing in software engineering and web technologies."
+          "period": "09/2016 - 06/2020"
         },
         {
           "institution": "FreeCodeCamp",
@@ -147,7 +145,7 @@ export const samplePortfolioData: PortfolioData = {
     "contact": {
       "enabled": true,
       "title": "Contact",
-      "email": "alex.johnson@example.com",
+      "email": "sarah.johnson@example.com",
       "phone": "+1 (555) 123-4567",
       "location": "San Francisco, CA",
       "icon": "phone"
@@ -157,7 +155,7 @@ export const samplePortfolioData: PortfolioData = {
       "items": [
         {
           "platform": "LinkedIn",
-          "url": "https://linkedin.com/in/alexjohnson",
+          "url": "https://linkedin.com/in/sarahjohnson",
           "icon": "globe"
         }
       ]
@@ -175,6 +173,6 @@ export const samplePortfolioData: PortfolioData = {
   },
   "footer": {
     "enabled": true,
-    "copyright": "© 2024 Alex Johnson. All rights reserved."
+    "copyright": "© 2024 Sarah Johnson. All rights reserved."
   }
 };
