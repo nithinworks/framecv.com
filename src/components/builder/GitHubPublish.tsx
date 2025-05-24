@@ -65,92 +65,124 @@ const GitHubPublish: React.FC = () => {
             <div class="flex justify-between items-center py-4">
                 <div class="font-bold text-xl text-gray-800">${portfolioData.settings.name}</div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#hero" class="text-gray-600 hover:text-gray-900 transition">Home</a>
-                    <a href="#about" class="text-gray-600 hover:text-gray-900 transition">About</a>
-                    <a href="#experience" class="text-gray-600 hover:text-gray-900 transition">Experience</a>
-                    <a href="#projects" class="text-gray-600 hover:text-gray-900 transition">Projects</a>
-                    <a href="#contact" class="text-gray-600 hover:text-gray-900 transition">Contact</a>
+                    ${portfolioData.navigation.items.map(item => `
+                        <a href="${item.url}" class="text-gray-600 hover:text-gray-900 transition">${item.name}</a>
+                    `).join('')}
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
+    ${portfolioData.sections.hero.enabled ? `
     <section id="hero" class="gradient-bg text-white min-h-screen flex items-center pt-16">
         <div class="max-w-6xl mx-auto px-4 text-center fade-in">
-            <h1 class="text-5xl md:text-6xl font-bold mb-6">${portfolioData.hero.name}</h1>
-            <p class="text-xl md:text-2xl mb-8 opacity-90">${portfolioData.hero.title}</p>
-            <p class="text-lg mb-8 max-w-2xl mx-auto opacity-80">${portfolioData.hero.description}</p>
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">${portfolioData.settings.name}</h1>
+            <p class="text-xl md:text-2xl mb-8 opacity-90">${portfolioData.settings.title}</p>
+            <p class="text-lg mb-8 max-w-2xl mx-auto opacity-80">${portfolioData.settings.summary}</p>
             <div class="space-x-4">
-                <a href="#contact" class="bg-white text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">Get In Touch</a>
-                <a href="#projects" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-gray-800 transition">View Work</a>
+                ${portfolioData.sections.hero.ctaButtons.map(button => `
+                    <a href="${button.url}" class="${button.isPrimary ? 'bg-white text-gray-800' : 'border-2 border-white text-white hover:bg-white hover:text-gray-800'} px-8 py-3 rounded-lg font-semibold transition">${button.text}</a>
+                `).join('')}
             </div>
         </div>
     </section>
+    ` : ''}
 
     <!-- About Section -->
+    ${portfolioData.sections.about.enabled ? `
     <section id="about" class="py-20 bg-white">
         <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-16 text-gray-800">About Me</h2>
+            <h2 class="text-4xl font-bold text-center mb-16 text-gray-800">${portfolioData.sections.about.title}</h2>
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                    <p class="text-lg text-gray-600 leading-relaxed">${portfolioData.about.description}</p>
+                    <p class="text-lg text-gray-600 leading-relaxed">${portfolioData.sections.about.content}</p>
                 </div>
+                ${portfolioData.sections.about.skills.enabled ? `
                 <div class="space-y-4">
-                    ${portfolioData.about.skills.map(skill => `
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm font-medium text-gray-700">${skill.name}</span>
-                                <span class="text-sm text-gray-500">${skill.level}%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-blue-600 h-2 rounded-full" style="width: ${skill.level}%"></div>
-                            </div>
+                    <h3 class="text-xl font-semibold mb-4">${portfolioData.sections.about.skills.title}</h3>
+                    ${portfolioData.sections.about.skills.items.map(skill => `
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">${skill}</span>
                         </div>
                     `).join('')}
                 </div>
+                ` : ''}
             </div>
         </div>
     </section>
+    ` : ''}
 
     <!-- Projects Section -->
+    ${portfolioData.sections.projects.enabled ? `
     <section id="projects" class="py-20 bg-gray-50">
         <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-16 text-gray-800">Projects</h2>
+            <h2 class="text-4xl font-bold text-center mb-16 text-gray-800">${portfolioData.sections.projects.title}</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                ${portfolioData.projects.map(project => `
+                ${portfolioData.sections.projects.items.map(project => `
                     <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
                         <div class="p-6">
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">${project.title}</h3>
                             <p class="text-gray-600 mb-4">${project.description}</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                ${project.technologies.map(tech => `
-                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">${tech}</span>
+                                ${project.tags.map(tag => `
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">${tag}</span>
                                 `).join('')}
                             </div>
-                            ${project.liveUrl ? `<a href="${project.liveUrl}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">View Project →</a>` : ''}
+                            ${project.previewUrl && project.previewUrl !== '#' ? `<a href="${project.previewUrl}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">View Project →</a>` : ''}
                         </div>
                     </div>
                 `).join('')}
             </div>
         </div>
     </section>
+    ` : ''}
+
+    <!-- Experience Section -->
+    ${portfolioData.sections.experience.enabled ? `
+    <section id="experience" class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-16 text-gray-800">${portfolioData.sections.experience.title}</h2>
+            <div class="space-y-8">
+                ${portfolioData.sections.experience.items.map(exp => `
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-gray-800">${exp.position}</h3>
+                        <p class="text-lg text-blue-600 mb-2">${exp.company}</p>
+                        <p class="text-sm text-gray-500 mb-4">${exp.period}</p>
+                        <p class="text-gray-600">${exp.description}</p>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>
+    ` : ''}
 
     <!-- Contact Section -->
+    ${portfolioData.sections.contact.enabled ? `
     <section id="contact" class="py-20 bg-white">
         <div class="max-w-6xl mx-auto px-4 text-center">
-            <h2 class="text-4xl font-bold mb-16 text-gray-800">Get In Touch</h2>
+            <h2 class="text-4xl font-bold mb-16 text-gray-800">${portfolioData.sections.contact.title}</h2>
             <div class="max-w-2xl mx-auto">
                 <p class="text-lg text-gray-600 mb-8">
                     I'm always interested in new opportunities and collaborations. 
                     Feel free to reach out if you'd like to work together!
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    ${portfolioData.contact.email ? `<a href="mailto:${portfolioData.contact.email}" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Email Me</a>` : ''}
+                    ${portfolioData.sections.contact.email ? `<a href="mailto:${portfolioData.sections.contact.email}" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Email Me</a>` : ''}
                 </div>
             </div>
         </div>
     </section>
+    ` : ''}
+
+    <!-- Footer -->
+    ${portfolioData.footer.enabled ? `
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p>${portfolioData.footer.copyright}</p>
+        </div>
+    </footer>
+    ` : ''}
 </body>
 </html>`;
 
@@ -160,7 +192,7 @@ This is the personal portfolio website for ${portfolioData.settings.name}.
 
 ## About
 
-${portfolioData.about.description}
+${portfolioData.sections.about.content}
 
 ## Technologies Used
 
@@ -170,8 +202,8 @@ ${portfolioData.about.description}
 
 ## Contact
 
-- Email: ${portfolioData.contact.email || 'N/A'}
-- Phone: ${portfolioData.contact.phone || 'N/A'}
+- Email: ${portfolioData.sections.contact.email || 'N/A'}
+- Phone: ${portfolioData.sections.contact.phone || 'N/A'}
 
 ## License
 
