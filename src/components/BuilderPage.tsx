@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
@@ -19,6 +20,7 @@ const BuilderPage: React.FC = () => {
   } = usePortfolio();
   
   const [showEditorHint, setShowEditorHint] = useState(true);
+  const isMobile = useIsMobile();
   
   // Always set view to desktop
   useEffect(() => {
@@ -39,11 +41,11 @@ const BuilderPage: React.FC = () => {
   
   if (isProcessing) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-2xl font-display font-bold mb-2">Processing Your Resume</h2>
-          <p className="text-gray-600">Please wait while our AI analyzes your resume...</p>
+          <h2 className="text-xl md:text-2xl font-display font-bold mb-2">Processing Your Resume</h2>
+          <p className="text-gray-600 text-sm md:text-base">Please wait while our AI analyzes your resume...</p>
         </div>
       </div>
     );
@@ -53,13 +55,13 @@ const BuilderPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <BuilderToolbar showEditorHint={showEditorHint} />
       
-      {/* Clean tooltip message beside the editor button */}
-      {showEditorHint && !showEditor && (
-        <div className="fixed top-[15px] left-[240px] z-40">
-          <div className="bg-gray-900 text-white px-3 py-2 rounded-md shadow-lg text-sm font-medium relative">
-            <span>Click to edit your portfolio</span>
+      {/* Compact hint message beside the editor button */}
+      {showEditorHint && !showEditor && !isMobile && (
+        <div className="fixed top-[18px] left-[240px] z-40">
+          <div className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-medium relative">
+            <span>Click to edit</span>
             {/* Left pointing arrow */}
-            <div className="absolute left-[-6px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-gray-900"></div>
+            <div className="absolute left-[-4px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-r-[4px] border-transparent border-r-gray-800"></div>
           </div>
         </div>
       )}
@@ -69,7 +71,9 @@ const BuilderPage: React.FC = () => {
         <EditorSidebar />
         
         {/* Main Preview Area */}
-        <div className={`flex-1 transition-all duration-300 ${showEditor ? "ml-96" : ""}`}>
+        <div className={`flex-1 transition-all duration-300 ${
+          showEditor && !isMobile ? "ml-96" : ""
+        } ${isMobile ? "px-2" : ""}`}>
           <PortfolioPreview />
         </div>
         

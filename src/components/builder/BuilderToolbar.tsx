@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
@@ -23,6 +24,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
     portfolioData
   } = usePortfolio();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const downloadSourceCode = () => {
     // HTML template
@@ -185,7 +187,7 @@ document.addEventListener("DOMContentLoaded", async function() {
           className="text-gray-600"
         >
           <ChevronLeft className="h-4 w-4 mr-1" />
-          Back
+          {!isMobile && "Back"}
         </Button>
 
         <div className="h-6 border-r border-gray-300"></div>
@@ -214,7 +216,7 @@ document.addEventListener("DOMContentLoaded", async function() {
           onClick={downloadSourceCode}
         >
           <Download className="h-4 w-4 mr-2" />
-          Download Source Code
+          {!isMobile && "Download Source Code"}
         </Button>
 
         <Button
