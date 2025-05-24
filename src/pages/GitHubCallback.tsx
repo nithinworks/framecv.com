@@ -9,6 +9,7 @@ const GitHubCallback: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
+  const [errorDetails, setErrorDetails] = useState<string>('');
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -17,6 +18,8 @@ const GitHubCallback: React.FC = () => {
         const code = urlParams.get('code');
         const state = urlParams.get('state');
         const error = urlParams.get('error');
+
+        console.log('GitHub callback received:', { code: !!code, state: !!state, error });
 
         if (error) {
           throw new Error(`GitHub OAuth error: ${error}`);
@@ -31,6 +34,8 @@ const GitHubCallback: React.FC = () => {
           throw new Error('Invalid state parameter - possible CSRF attack');
         }
 
+        console.log('Exchanging code for token...');
+        
         // Exchange code for access token
         const success = await githubService.exchangeCodeForToken(code);
         
@@ -50,17 +55,19 @@ const GitHubCallback: React.FC = () => {
         }
       } catch (error) {
         console.error('GitHub OAuth callback error:', error);
+        const errorMessage = error instanceof Error ? error.message : "Failed to connect GitHub account";
+        setErrorDetails(errorMessage);
         setStatus('error');
         toast({
           title: "Connection Failed",
-          description: error instanceof Error ? error.message : "Failed to connect GitHub account",
+          description: errorMessage,
           variant: "destructive",
         });
         
         // Redirect to builder after a short delay
         setTimeout(() => {
           navigate('/builder');
-        }, 3000);
+        }, 5000);
       }
     };
 
@@ -98,7 +105,11 @@ const GitHubCallback: React.FC = () => {
               </svg>
             </div>
             <h2 className="text-xl font-semibold mb-2 text-red-800">Connection Failed</h2>
-            <p className="text-gray-600">There was an issue connecting your GitHub account. Please try again.</p>
+            <p className="text-gray-600 mb-2">There was an issue connecting your GitHub account.</p>
+            {errorDetails && (
+              <p className="text-sm text-red-600 mb-4">Error: {errorDetails}</p>
+            )}
+            <p className="text-gray-600">You'll be redirected back to the builder shortly.</p>
           </>
         )}
       </div>
