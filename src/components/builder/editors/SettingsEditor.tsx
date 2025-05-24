@@ -11,6 +11,11 @@ const SettingsEditor: React.FC = () => {
   const { portfolioData, setPortfolioData } = usePortfolio();
   const { settings, sections, navigation, footer } = portfolioData;
 
+  // Ensure we have default values for all required properties
+  const safeNavigation = navigation || { items: [] };
+  const safeFooter = footer || { enabled: true, copyright: "" };
+  const safeSections = sections || {};
+
   const predefinedColors = [
     "#d65822", "#0067C7", "#7C3AED", "#059669", "#DC2626", 
     "#EA580C", "#9333EA", "#0891B2", "#16A34A", "#DB2777"
@@ -30,9 +35,9 @@ const SettingsEditor: React.FC = () => {
     setPortfolioData({
       ...portfolioData,
       sections: {
-        ...sections,
+        ...safeSections,
         [section]: {
-          ...sections[section],
+          ...safeSections[section],
           enabled
         }
       }
@@ -43,7 +48,7 @@ const SettingsEditor: React.FC = () => {
     setPortfolioData({
       ...portfolioData,
       footer: {
-        ...footer,
+        ...safeFooter,
         enabled
       }
     });
@@ -53,7 +58,7 @@ const SettingsEditor: React.FC = () => {
     setPortfolioData({
       ...portfolioData,
       footer: {
-        ...footer,
+        ...safeFooter,
         copyright: value
       }
     });
@@ -63,9 +68,9 @@ const SettingsEditor: React.FC = () => {
     setPortfolioData({
       ...portfolioData,
       navigation: {
-        ...navigation,
+        ...safeNavigation,
         items: [
-          ...navigation.items,
+          ...(safeNavigation.items || []),
           { name: "New Link", url: "#" }
         ]
       }
@@ -73,7 +78,7 @@ const SettingsEditor: React.FC = () => {
   };
 
   const updateNavItem = (index: number, field: string, value: string) => {
-    const updatedItems = [...navigation.items];
+    const updatedItems = [...(safeNavigation.items || [])];
     updatedItems[index] = {
       ...updatedItems[index],
       [field]: value
@@ -82,20 +87,20 @@ const SettingsEditor: React.FC = () => {
     setPortfolioData({
       ...portfolioData,
       navigation: {
-        ...navigation,
+        ...safeNavigation,
         items: updatedItems
       }
     });
   };
 
   const removeNavItem = (index: number) => {
-    const updatedItems = [...navigation.items];
+    const updatedItems = [...(safeNavigation.items || [])];
     updatedItems.splice(index, 1);
 
     setPortfolioData({
       ...portfolioData,
       navigation: {
-        ...navigation,
+        ...safeNavigation,
         items: updatedItems
       }
     });
@@ -112,7 +117,7 @@ const SettingsEditor: React.FC = () => {
                 key={color}
                 onClick={() => handleChange("primaryColor", color)}
                 className={`w-8 h-8 rounded-md border-2 transition-all ${
-                  settings.primaryColor === color ? 'border-gray-800 scale-110' : 'border-gray-300'
+                  settings?.primaryColor === color ? 'border-gray-800 scale-110' : 'border-gray-300'
                 }`}
                 style={{ backgroundColor: color }}
                 title={color}
@@ -123,7 +128,7 @@ const SettingsEditor: React.FC = () => {
             <Label htmlFor="customColor" className="text-xs">Custom:</Label>
             <Input 
               id="customColor"
-              value={settings.primaryColor} 
+              value={settings?.primaryColor || "#0067C7"} 
               onChange={(e) => handleChange("primaryColor", e.target.value)}
               className="flex-1 text-xs"
               placeholder="#0067C7"
@@ -140,7 +145,7 @@ const SettingsEditor: React.FC = () => {
             <Label htmlFor="toggle-hero" className="text-sm">Personal Information</Label>
             <Switch 
               id="toggle-hero" 
-              checked={sections.hero.enabled}
+              checked={safeSections.hero?.enabled || false}
               onCheckedChange={(enabled) => handleSectionToggle("hero", enabled)}
             />
           </div>
@@ -149,7 +154,7 @@ const SettingsEditor: React.FC = () => {
             <Label htmlFor="toggle-about" className="text-sm">About & Skills</Label>
             <Switch 
               id="toggle-about" 
-              checked={sections.about.enabled}
+              checked={safeSections.about?.enabled || false}
               onCheckedChange={(enabled) => handleSectionToggle("about", enabled)}
             />
           </div>
@@ -158,7 +163,7 @@ const SettingsEditor: React.FC = () => {
             <Label htmlFor="toggle-experience" className="text-sm">Experience</Label>
             <Switch 
               id="toggle-experience" 
-              checked={sections.experience.enabled}
+              checked={safeSections.experience?.enabled || false}
               onCheckedChange={(enabled) => handleSectionToggle("experience", enabled)}
             />
           </div>
@@ -167,7 +172,7 @@ const SettingsEditor: React.FC = () => {
             <Label htmlFor="toggle-projects" className="text-sm">Projects</Label>
             <Switch 
               id="toggle-projects" 
-              checked={sections.projects.enabled}
+              checked={safeSections.projects?.enabled || false}
               onCheckedChange={(enabled) => handleSectionToggle("projects", enabled)}
             />
           </div>
@@ -176,7 +181,7 @@ const SettingsEditor: React.FC = () => {
             <Label htmlFor="toggle-education" className="text-sm">Education</Label>
             <Switch 
               id="toggle-education" 
-              checked={sections.education.enabled}
+              checked={safeSections.education?.enabled || false}
               onCheckedChange={(enabled) => handleSectionToggle("education", enabled)}
             />
           </div>
@@ -185,7 +190,7 @@ const SettingsEditor: React.FC = () => {
             <Label htmlFor="toggle-contact" className="text-sm">Contact</Label>
             <Switch 
               id="toggle-contact" 
-              checked={sections.contact.enabled}
+              checked={safeSections.contact?.enabled || false}
               onCheckedChange={(enabled) => handleSectionToggle("contact", enabled)}
             />
           </div>
@@ -207,11 +212,11 @@ const SettingsEditor: React.FC = () => {
         </div>
         
         <div className="space-y-3">
-          {navigation.items.map((item, index) => (
+          {(safeNavigation.items || []).map((item, index) => (
             <div key={index} className="flex items-center gap-2">
               <div className="flex-1">
                 <Input 
-                  value={item.name} 
+                  value={item?.name || ""} 
                   onChange={(e) => updateNavItem(index, "name", e.target.value)}
                   placeholder="Link text"
                   className="text-xs"
@@ -219,7 +224,7 @@ const SettingsEditor: React.FC = () => {
               </div>
               <div className="flex-1">
                 <Input 
-                  value={item.url} 
+                  value={item?.url || ""} 
                   onChange={(e) => updateNavItem(index, "url", e.target.value)}
                   placeholder="URL"
                   className="text-xs"
@@ -235,7 +240,7 @@ const SettingsEditor: React.FC = () => {
               </Button>
             </div>
           ))}
-          {navigation.items.length === 0 && (
+          {(!safeNavigation.items || safeNavigation.items.length === 0) && (
             <p className="text-xs text-gray-500 text-center py-2">No navigation items added yet.</p>
           )}
         </div>
@@ -246,17 +251,17 @@ const SettingsEditor: React.FC = () => {
           <Label htmlFor="footer-enabled" className="text-sm font-medium">Footer</Label>
           <Switch 
             id="footer-enabled" 
-            checked={footer.enabled}
+            checked={safeFooter.enabled || false}
             onCheckedChange={handleFooterToggle}
           />
         </div>
         
-        {footer.enabled && (
+        {safeFooter.enabled && (
           <div className="mt-3">
             <Label htmlFor="copyright" className="text-sm">Copyright Text</Label>
             <Input 
               id="copyright" 
-              value={footer.copyright} 
+              value={safeFooter.copyright || ""} 
               onChange={(e) => handleFooterChange(e.target.value)}
               placeholder="© 2024 Your Name. All rights reserved."
               className="mt-1"
