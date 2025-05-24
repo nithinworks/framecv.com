@@ -12,11 +12,14 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('Callback complete page accessed');
+  
   // Return a simple HTML page that communicates with the parent window
   const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *;">
   <title>Authorization Complete</title>
   <style>
     body {
@@ -64,6 +67,7 @@ serve(async (req) => {
       try {
         console.log('Callback complete page loaded');
         console.log('Current URL:', window.location.href);
+        console.log('Hash:', window.location.hash);
         
         // Get data from URL fragment
         const fragment = window.location.hash.substring(1);
@@ -81,6 +85,7 @@ serve(async (req) => {
 
         console.log('Parsed params:', { 
           hasToken: !!accessToken, 
+          tokenLength: accessToken ? accessToken.length : 0,
           state, 
           error,
           errorDescription
@@ -88,52 +93,36 @@ serve(async (req) => {
 
         // Function to send message to parent
         function sendMessageToParent(data) {
-          console.log('Attempting to send message:', data);
+          console.log('Sending message to parent:', data);
           
-          // Try multiple methods to reach the parent
-          const origins = ['*'];
-          let messageSent = false;
-          
-          // Method 1: Try window.opener
-          if (window.opener && !window.opener.closed) {
-            try {
-              origins.forEach(origin => {
-                window.opener.postMessage(data, origin);
-              });
+          try {
+            // Try window.opener first (popup)
+            if (window.opener && !window.opener.closed) {
+              window.opener.postMessage(data, '*');
               console.log('Message sent to opener');
-              messageSent = true;
-            } catch (e) {
-              console.error('Failed to send to opener:', e);
+              return true;
             }
-          }
-          
-          // Method 2: Try parent window
-          if (window.parent && window.parent !== window) {
-            try {
-              origins.forEach(origin => {
-                window.parent.postMessage(data, origin);
-              });
+            
+            // Try parent window (iframe)
+            if (window.parent && window.parent !== window) {
+              window.parent.postMessage(data, '*');
               console.log('Message sent to parent');
-              messageSent = true;
-            } catch (e) {
-              console.error('Failed to send to parent:', e);
+              return true;
             }
-          }
-          
-          // Method 3: Try top window
-          if (window.top && window.top !== window) {
-            try {
-              origins.forEach(origin => {
-                window.top.postMessage(data, origin);
-              });
+            
+            // Try top window
+            if (window.top && window.top !== window) {
+              window.top.postMessage(data, '*');
               console.log('Message sent to top');
-              messageSent = true;
-            } catch (e) {
-              console.error('Failed to send to top:', e);
+              return true;
             }
+            
+            console.log('No valid parent window found');
+            return false;
+          } catch (e) {
+            console.error('Error sending message:', e);
+            return false;
           }
-          
-          return messageSent;
         }
 
         // Send appropriate message
@@ -144,52 +133,56 @@ serve(async (req) => {
             error: error + (errorDescription ? ': ' + errorDescription : ''),
             timestamp: Date.now()
           };
-        } else if (accessToken) {
+        } else if (accessToken && accessToken.length > 0) {
           messageData = {
             type: 'NETLIFY_AUTH_SUCCESS',
             accessToken: accessToken,
-            state: state,
+            state: state || '',
             timestamp: Date.now()
           };
         } else {
           messageData = {
             type: 'NETLIFY_AUTH_ERROR',
-            error: 'No access token received',
+            error: 'No access token received in callback',
             timestamp: Date.now()
           };
         }
 
+        console.log('Final message data:', messageData);
         const messageSent = sendMessageToParent(messageData);
         
         if (!messageSent) {
           console.error('Failed to send message to any parent window');
+        } else {
+          console.log('Message sent successfully');
         }
 
         // Auto-close after a delay
         setTimeout(function() {
           try {
             console.log('Attempting to close window');
-            window.close();
+            if (window.opener) {
+              window.close();
+            }
           } catch (e) {
             console.log('Could not auto-close window:', e);
           }
-        }, 2000);
+        }, 3000);
 
       } catch (e) {
         console.error('Error in callback complete page:', e);
         
         // Try to send error message
+        const errorData = {
+          type: 'NETLIFY_AUTH_ERROR',
+          error: 'Failed to process authorization: ' + e.message,
+          timestamp: Date.now()
+        };
+        
         try {
-          const errorData = {
-            type: 'NETLIFY_AUTH_ERROR',
-            error: 'Failed to process authorization: ' + e.message,
-            timestamp: Date.now()
-          };
-          
-          if (window.opener) {
+          if (window.opener && !window.opener.closed) {
             window.opener.postMessage(errorData, '*');
-          }
-          if (window.parent && window.parent !== window) {
+          } else if (window.parent && window.parent !== window) {
             window.parent.postMessage(errorData, '*');
           }
         } catch (msgError) {
@@ -203,7 +196,7 @@ serve(async (req) => {
 
   return new Response(html, {
     headers: {
-      'Content-Type': 'text/html',
+      'Content-Type': 'text/html; charset=UTF-8',
       ...corsHeaders
     }
   });

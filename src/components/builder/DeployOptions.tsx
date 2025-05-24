@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Button } from "@/components/ui/button";
@@ -32,10 +33,13 @@ const DeployOptions: React.FC = () => {
       setDeploymentStatus("Connecting to Netlify...");
       setDeploymentResult(null);
 
+      console.log('Starting Netlify deployment process');
+
       // Step 1: Get OAuth URL
       const { data: authData, error: authError } = await supabase.functions.invoke('netlify-auth');
       
       if (authError) {
+        console.error('Auth error:', authError);
         throw new Error(authError.message);
       }
 
@@ -50,7 +54,7 @@ const DeployOptions: React.FC = () => {
       const popup = window.open(
         authData.authUrl,
         'netlify-auth',
-        'width=600,height=700,scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=yes'
+        'width=600,height=700,scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=yes,status=yes'
       );
 
       if (!popup) {
@@ -58,25 +62,38 @@ const DeployOptions: React.FC = () => {
       }
 
       // Step 3: Wait for OAuth callback
+      console.log('Waiting for OAuth callback...');
       const accessToken = await new Promise<string>((resolve, reject) => {
         let messageReceived = false;
         let pollCount = 0;
         const maxPolls = 300; // 5 minutes
         
         const handleMessage = (event: MessageEvent) => {
-          console.log('Received message:', event.data);
+          console.log('Received message in DeployOptions:', event.data);
           
           // Only process Netlify auth messages
-          if (!event.data || !event.data.type || !event.data.type.startsWith('NETLIFY_AUTH_')) {
-            console.log('Ignoring non-Netlify message');
+          if (!event.data || typeof event.data !== 'object' || !event.data.type) {
+            console.log('Ignoring invalid message format');
+            return;
+          }
+          
+          if (!event.data.type.startsWith('NETLIFY_AUTH_')) {
+            console.log('Ignoring non-Netlify message:', event.data.type);
             return;
           }
           
           if (event.data.type === 'NETLIFY_AUTH_SUCCESS' && !messageReceived) {
             messageReceived = true;
             cleanup();
-            console.log('OAuth success, access token received');
-            resolve(event.data.accessToken);
+            
+            const token = event.data.accessToken;
+            if (!token || typeof token !== 'string' || token.length === 0) {
+              reject(new Error('Invalid access token received'));
+              return;
+            }
+            
+            console.log('OAuth success, access token received, length:', token.length);
+            resolve(token);
           } else if (event.data.type === 'NETLIFY_AUTH_ERROR' && !messageReceived) {
             messageReceived = true;
             cleanup();
@@ -85,6 +102,7 @@ const DeployOptions: React.FC = () => {
         };
 
         const cleanup = () => {
+          console.log('Cleaning up OAuth listeners');
           window.removeEventListener('message', handleMessage);
           if (pollInterval) clearInterval(pollInterval);
           try {
@@ -98,6 +116,7 @@ const DeployOptions: React.FC = () => {
 
         // Add message listener
         window.addEventListener('message', handleMessage);
+        console.log('Added message listener for OAuth callback');
 
         // Poll for popup status
         const pollInterval = setInterval(() => {
@@ -127,15 +146,24 @@ const DeployOptions: React.FC = () => {
         }, 300000); // 5 minutes
       });
 
+      console.log('Access token received, starting deployment...');
       setDeploymentStatus("Creating site on Netlify...");
-      console.log('Starting deployment with access token');
 
       // Step 4: Deploy to Netlify
+      const finalSiteName = siteName || `${portfolioData.settings.name.replace(/\s+/g, '-').toLowerCase()}-portfolio`;
+      
+      console.log('Calling netlify-deploy function with:', {
+        hasAccessToken: !!accessToken,
+        tokenLength: accessToken.length,
+        siteName: finalSiteName,
+        hasPortfolioData: !!portfolioData
+      });
+
       const { data: deployData, error: deployError } = await supabase.functions.invoke('netlify-deploy', {
         body: {
           accessToken,
           portfolioData,
-          siteName: siteName || `${portfolioData.settings.name.replace(/\s+/g, '-').toLowerCase()}-portfolio`
+          siteName: finalSiteName
         }
       });
 
@@ -149,6 +177,7 @@ const DeployOptions: React.FC = () => {
         throw new Error(deployData?.error || 'Deployment failed');
       }
 
+      console.log('Deployment successful:', deployData);
       setDeploymentStatus("Deployment successful!");
       setDeploymentResult({
         success: true,

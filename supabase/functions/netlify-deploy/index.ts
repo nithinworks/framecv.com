@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -18,12 +17,14 @@ serve(async (req) => {
 
     console.log('Deploy request received:', { 
       hasAccessToken: !!accessToken, 
+      tokenLength: accessToken ? accessToken.length : 0,
       hasSiteName: !!siteName,
       hasPortfolioData: !!portfolioData 
     });
 
-    if (!accessToken) {
-      throw new Error('Access token is required');
+    if (!accessToken || typeof accessToken !== 'string' || accessToken.length === 0) {
+      console.error('Invalid access token:', { accessToken: typeof accessToken, length: accessToken ? accessToken.length : 0 });
+      throw new Error('Valid access token is required');
     }
 
     if (!portfolioData) {
@@ -34,9 +35,10 @@ serve(async (req) => {
 
     // Generate HTML content for the portfolio
     const htmlContent = generatePortfolioHTML(portfolioData);
+    console.log('Generated HTML content, length:', htmlContent.length);
     
     // Create a new site on Netlify
-    console.log('Creating site on Netlify...');
+    console.log('Creating site on Netlify with token length:', accessToken.length);
     const siteResponse = await fetch('https://api.netlify.com/api/v1/sites', {
       method: 'POST',
       headers: {
@@ -56,7 +58,12 @@ serve(async (req) => {
 
     if (!siteResponse.ok) {
       const errorText = await siteResponse.text();
-      console.error('Site creation failed:', siteResponse.status, errorText);
+      console.error('Site creation failed:', {
+        status: siteResponse.status,
+        statusText: siteResponse.statusText,
+        error: errorText,
+        headers: Object.fromEntries(siteResponse.headers.entries())
+      });
       throw new Error(`Failed to create site: ${siteResponse.status} ${errorText}`);
     }
 
@@ -80,7 +87,12 @@ serve(async (req) => {
 
     if (!deployResponse.ok) {
       const errorText = await deployResponse.text();
-      console.error('Deployment failed:', deployResponse.status, errorText);
+      console.error('Deployment failed:', {
+        status: deployResponse.status,
+        statusText: deployResponse.statusText,
+        error: errorText,
+        headers: Object.fromEntries(deployResponse.headers.entries())
+      });
       throw new Error(`Failed to deploy: ${deployResponse.status} ${errorText}`);
     }
 
@@ -90,6 +102,8 @@ serve(async (req) => {
     // Wait for deployment to be ready (optional polling)
     const finalUrl = siteData.ssl_url || siteData.url;
     const adminUrl = `https://app.netlify.com/sites/${siteData.name}/overview`;
+
+    console.log('Returning success response:', { finalUrl, adminUrl });
 
     return new Response(
       JSON.stringify({
