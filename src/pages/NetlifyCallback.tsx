@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,12 +46,12 @@ const NetlifyCallback = () => {
         console.log('Exchanging code for access token...', code.substring(0, 10) + '...');
         
         // Call edge function with code as URL parameter
-        const { data, error: functionError } = await supabase.functions.invoke('netlify-oauth', {
+        const functionUrl = `netlify-oauth?code=${encodeURIComponent(code)}`;
+        const { data, error: functionError } = await supabase.functions.invoke(functionUrl, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-          },
-          body: new URLSearchParams({ code }).toString()
+          }
         });
 
         console.log('Token exchange result:', { data, error: functionError });

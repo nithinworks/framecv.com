@@ -14,28 +14,13 @@ Deno.serve(async (req) => {
     console.log('Request method:', req.method);
     console.log('Request URL:', req.url);
 
-    let code: string | null = null;
-
-    // Try to get code from URL parameters first
+    // Get code from URL parameters
     const url = new URL(req.url);
-    code = url.searchParams.get('code');
-
-    // If not in URL params, try to get from request body
-    if (!code && req.method === 'GET') {
-      try {
-        const body = await req.text();
-        console.log('Request body:', body);
-        if (body) {
-          const params = new URLSearchParams(body);
-          code = params.get('code');
-        }
-      } catch (bodyError) {
-        console.log('No body or body parsing failed:', bodyError);
-      }
-    }
+    const code = url.searchParams.get('code');
 
     console.log('Authorization code present:', !!code);
     console.log('Code preview:', code ? code.substring(0, 10) + '...' : 'none');
+    console.log('All URL params:', Object.fromEntries(url.searchParams.entries()));
 
     if (!code) {
       console.error('No authorization code provided');
