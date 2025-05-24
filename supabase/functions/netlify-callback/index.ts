@@ -17,16 +17,19 @@ serve(async (req) => {
     const code = url.searchParams.get('code');
     const state = url.searchParams.get('state');
     const error = url.searchParams.get('error');
+    const errorDescription = url.searchParams.get('error_description');
+
+    console.log('Callback received with params:', { code: !!code, state, error, errorDescription });
 
     if (error) {
-      console.error('OAuth error:', error);
+      console.error('OAuth error:', error, errorDescription);
       return new Response(`
         <html>
           <body>
             <script>
               window.opener.postMessage({ 
                 type: 'NETLIFY_AUTH_ERROR', 
-                error: '${error}' 
+                error: '${error}: ${errorDescription || 'Unknown error'}' 
               }, '*');
               window.close();
             </script>
@@ -48,6 +51,8 @@ serve(async (req) => {
       throw new Error('Netlify credentials not configured');
     }
 
+    console.log('Exchanging code for token...');
+
     // Exchange code for access token
     const tokenResponse = await fetch('https://api.netlify.com/oauth/token', {
       method: 'POST',
@@ -65,12 +70,12 @@ serve(async (req) => {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error('Token exchange failed:', errorText);
-      throw new Error('Failed to exchange authorization code');
+      console.error('Token exchange failed:', tokenResponse.status, errorText);
+      throw new Error(`Failed to exchange authorization code: ${tokenResponse.status} ${errorText}`);
     }
 
     const tokenData = await tokenResponse.json();
-    console.log('Token exchange successful');
+    console.log('Token exchange successful, access token received');
 
     // Return success page that posts message to parent window
     return new Response(`

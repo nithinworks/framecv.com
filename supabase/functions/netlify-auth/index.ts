@@ -22,13 +22,14 @@ serve(async (req) => {
     // Generate a random state for security
     const state = crypto.randomUUID();
     
-    // Netlify OAuth URL
+    // Netlify OAuth URL with correct scope
     const authUrl = new URL('https://app.netlify.com/authorize');
     authUrl.searchParams.set('client_id', clientId);
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('redirect_uri', `${Deno.env.get('SUPABASE_URL')}/functions/v1/netlify-callback`);
     authUrl.searchParams.set('state', state);
-    authUrl.searchParams.set('scope', 'deploy');
+    // Use empty scope or remove scope parameter as Netlify doesn't require specific scopes for basic site management
+    // The access is controlled by the OAuth app permissions in Netlify dashboard
 
     console.log('Generated OAuth URL:', authUrl.toString());
 
