@@ -4,8 +4,8 @@ export class GitHubOAuthService {
   private redirectUri: string;
 
   constructor() {
-    // You'll need to set this Client ID from your GitHub OAuth App
-    this.clientId = 'Ov23liZQK9TuSVrxZuox'; // Replace with your actual Client ID
+    // This will be set from environment/config
+    this.clientId = 'Ov23liZQK9TuSVrxZuox'; // This should come from your GitHub OAuth App
     this.redirectUri = `${window.location.origin}/auth/github/callback`;
   }
 
