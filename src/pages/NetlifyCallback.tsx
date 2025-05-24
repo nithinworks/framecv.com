@@ -20,7 +20,8 @@ const NetlifyCallback = () => {
       console.log('Callback params:', { 
         hasCode: !!code, 
         error, 
-        errorDescription 
+        errorDescription,
+        fullCode: code 
       });
 
       if (error) {
@@ -42,19 +43,34 @@ const NetlifyCallback = () => {
       }
 
       try {
-        console.log('Exchanging code for access token...');
+        console.log('Exchanging code for access token...', code.substring(0, 10) + '...');
         
-        // Exchange code for access token using our edge function
+        // Call edge function with code as URL parameter instead of body
         const { data, error: functionError } = await supabase.functions.invoke('netlify-oauth', {
-          body: { code }
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }, {
+          // Pass code as URL parameter
+          query: { code }
         });
 
         console.log('Token exchange result:', { data, error: functionError });
 
-        if (functionError || !data?.access_token) {
-          console.error('Token exchange failed:', functionError);
+        if (functionError) {
+          console.error('Edge function error:', functionError);
           toast.error('Authorization failed', {
-            description: functionError?.message || 'Failed to exchange authorization code.'
+            description: functionError.message || 'Failed to exchange authorization code.'
+          });
+          navigate('/builder');
+          return;
+        }
+
+        if (!data?.access_token) {
+          console.error('No access token received:', data);
+          toast.error('Authorization failed', {
+            description: 'No access token received from Netlify.'
           });
           navigate('/builder');
           return;
