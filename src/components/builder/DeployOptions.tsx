@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Button } from "@/components/ui/button";
@@ -57,31 +56,61 @@ const DeployOptions: React.FC = () => {
         throw new Error('Popup blocked. Please allow popups and try again.');
       }
 
-      // Step 3: Wait for OAuth callback
+      // Step 3: Wait for OAuth callback with improved message handling
       const accessToken = await new Promise<string>((resolve, reject) => {
+        let messageReceived = false;
+        
         const handleMessage = (event: MessageEvent) => {
-          if (event.data.type === 'NETLIFY_AUTH_SUCCESS') {
+          // Security check: ensure message is from Supabase domain
+          if (!event.origin.includes('supabase.co')) {
+            return;
+          }
+          
+          console.log('Received message:', event.data);
+          
+          if (event.data.type === 'NETLIFY_AUTH_SUCCESS' && !messageReceived) {
+            messageReceived = true;
             window.removeEventListener('message', handleMessage);
+            clearInterval(checkClosed);
+            console.log('OAuth success, access token received');
             resolve(event.data.accessToken);
-          } else if (event.data.type === 'NETLIFY_AUTH_ERROR') {
+          } else if (event.data.type === 'NETLIFY_AUTH_ERROR' && !messageReceived) {
+            messageReceived = true;
             window.removeEventListener('message', handleMessage);
+            clearInterval(checkClosed);
             reject(new Error(event.data.error || 'Authorization failed'));
           }
         };
 
+        // Add message listener immediately
         window.addEventListener('message', handleMessage);
 
         // Check if popup was closed manually
         const checkClosed = setInterval(() => {
-          if (popup.closed) {
+          if (popup.closed && !messageReceived) {
+            messageReceived = true;
             clearInterval(checkClosed);
             window.removeEventListener('message', handleMessage);
             reject(new Error('Authorization was cancelled'));
           }
         }, 1000);
+
+        // Timeout after 5 minutes
+        setTimeout(() => {
+          if (!messageReceived) {
+            messageReceived = true;
+            clearInterval(checkClosed);
+            window.removeEventListener('message', handleMessage);
+            if (!popup.closed) {
+              popup.close();
+            }
+            reject(new Error('Authorization timeout. Please try again.'));
+          }
+        }, 300000); // 5 minutes
       });
 
       setDeploymentStatus("Creating site on Netlify...");
+      console.log('Starting deployment with access token');
 
       // Step 4: Deploy to Netlify
       const { data: deployData, error: deployError } = await supabase.functions.invoke('netlify-deploy', {
@@ -93,10 +122,12 @@ const DeployOptions: React.FC = () => {
       });
 
       if (deployError) {
+        console.error('Deploy error:', deployError);
         throw new Error(deployError.message);
       }
 
       if (!deployData?.success) {
+        console.error('Deploy failed:', deployData);
         throw new Error(deployData?.error || 'Deployment failed');
       }
 
