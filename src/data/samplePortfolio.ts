@@ -1,3 +1,4 @@
+
 import { PortfolioData } from "@/types/portfolio";
 
 export const samplePortfolioData: PortfolioData = {
@@ -6,7 +7,7 @@ export const samplePortfolioData: PortfolioData = {
     "title": "Full Stack Developer",
     "location": "San Francisco, CA",
     "summary": "Passionate full-stack developer with 5+ years of experience building scalable web applications. I love creating efficient solutions and learning new technologies to solve complex problems.",
-    "profileImage": "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face",
+    "profileImage": "https://media.istockphoto.com/id/1309328823/photo/headshot-portrait-of-smiling-male-employee-in-office.jpg?s=612x612&w=0&k=20&c=kPvoBm6qCYzQXMAn9JUtqLREXe9-PlZyMl9i-ibaVuY=",
     "primaryColor": "#0067c7"
   },
   "sections": {

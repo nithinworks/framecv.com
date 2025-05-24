@@ -178,13 +178,13 @@ document.addEventListener("DOMContentLoaded", async function() {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-[60px] bg-white border-b shadow-sm z-40 flex justify-between items-center px-4">
-      <div className="flex items-center gap-3">
+    <div className="fixed top-0 left-0 right-0 h-[60px] bg-white border-b shadow-sm z-40 flex justify-between items-center px-2 sm:px-4">
+      <div className="flex items-center gap-2 sm:gap-3">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate('/')}
-          className="text-gray-600"
+          className="text-gray-600 px-2 sm:px-3"
         >
           <ChevronLeft className="h-4 w-4 mr-1" />
           {!isMobile && "Back"}
@@ -197,25 +197,36 @@ document.addEventListener("DOMContentLoaded", async function() {
             variant={showEditor ? "default" : "outline"}
             size="sm"
             onClick={() => setShowEditor(!showEditor)}
-            className={`${
+            className={`px-2 sm:px-3 ${
               showEditorHint && !showEditor 
                 ? "animate-pulse border-2 border-blue-500 shadow-lg shadow-blue-500/25" 
                 : ""
             }`}
           >
-            <PanelLeft className="h-4 w-4 mr-2" />
+            <PanelLeft className="h-4 w-4 mr-1 sm:mr-2" />
             Editor
           </Button>
+          
+          {/* Editor hint tooltip */}
+          {showEditorHint && !showEditor && !isMobile && (
+            <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 z-50">
+              <div className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-medium relative whitespace-nowrap">
+                <span>Click to edit</span>
+                <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-l-[4px] border-transparent border-l-gray-800"></div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         <Button
           variant="outline"
           size="sm"
           onClick={downloadSourceCode}
+          className="px-2 sm:px-3"
         >
-          <Download className="h-4 w-4 mr-2" />
+          <Download className="h-4 w-4 sm:mr-2" />
           {!isMobile && "Download Source Code"}
         </Button>
 
@@ -225,8 +236,9 @@ document.addEventListener("DOMContentLoaded", async function() {
           onClick={() => {
             setShowDeploy(!showDeploy);
           }}
+          className="px-2 sm:px-3"
         >
-          <Upload className="h-4 w-4 mr-2" />
+          <Upload className="h-4 w-4 sm:mr-2" />
           Deploy
         </Button>
       </div>
