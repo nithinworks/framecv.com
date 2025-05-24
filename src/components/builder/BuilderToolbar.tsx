@@ -1,14 +1,16 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
   PanelLeft, 
   Download, 
-  ChevronLeft
+  ChevronLeft,
+  Globe
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
+import NetlifyDeploy from "@/components/NetlifyDeploy";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
@@ -22,6 +24,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   } = usePortfolio();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [showNetlifyDeploy, setShowNetlifyDeploy] = useState(false);
 
   const downloadSourceCode = () => {
     // HTML template
@@ -175,58 +178,75 @@ document.addEventListener("DOMContentLoaded", async function() {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-[60px] bg-white border-b shadow-sm z-40 flex justify-between items-center px-2 sm:px-4">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/')}
-          className="text-gray-600 px-2 sm:px-3"
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          {!isMobile && "Back"}
-        </Button>
-
-        <div className="h-6 border-r border-gray-300"></div>
-
-        <div className="relative">
+    <>
+      <div className="fixed top-0 left-0 right-0 h-[60px] bg-white border-b shadow-sm z-40 flex justify-between items-center px-2 sm:px-4">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Button
-            variant={showEditor ? "default" : "outline"}
+            variant="ghost"
             size="sm"
-            onClick={() => setShowEditor(!showEditor)}
-            className={`px-2 sm:px-3 ${
-              showEditorHint && !showEditor 
-                ? "animate-pulse border-2 border-blue-500 shadow-lg shadow-blue-500/25" 
-                : ""
-            }`}
+            onClick={() => navigate('/')}
+            className="text-gray-600 px-2 sm:px-3"
           >
-            <PanelLeft className="h-4 w-4 mr-1 sm:mr-2" />
-            Editor
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            {!isMobile && "Back"}
+          </Button>
+
+          <div className="h-6 border-r border-gray-300"></div>
+
+          <div className="relative">
+            <Button
+              variant={showEditor ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowEditor(!showEditor)}
+              className={`px-2 sm:px-3 ${
+                showEditorHint && !showEditor 
+                  ? "animate-pulse border-2 border-blue-500 shadow-lg shadow-blue-500/25" 
+                  : ""
+              }`}
+            >
+              <PanelLeft className="h-4 w-4 mr-1 sm:mr-2" />
+              Editor
+            </Button>
+            
+            {showEditorHint && !showEditor && !isMobile && (
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-1 z-50">
+                <div className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-medium relative whitespace-nowrap">
+                  <span>Click to edit</span>
+                  <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-gray-800"></div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowNetlifyDeploy(true)}
+            className="px-2 sm:px-3"
+          >
+            <Globe className="h-4 w-4 sm:mr-2" />
+            {!isMobile && "Deploy"}
           </Button>
           
-          {showEditorHint && !showEditor && !isMobile && (
-            <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-1 z-50">
-              <div className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-medium relative whitespace-nowrap">
-                <span>Click to edit</span>
-                <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-gray-800"></div>
-              </div>
-            </div>
-          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={downloadSourceCode}
+            className="px-2 sm:px-3"
+          >
+            <Download className="h-4 w-4 sm:mr-2" />
+            {!isMobile && "Download Code"}
+          </Button>
         </div>
       </div>
 
-      <div className="flex items-center gap-1 sm:gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={downloadSourceCode}
-          className="px-2 sm:px-3"
-        >
-          <Download className="h-4 w-4 sm:mr-2" />
-          {!isMobile && "Download Code"}
-        </Button>
-      </div>
-    </div>
+      <NetlifyDeploy 
+        open={showNetlifyDeploy} 
+        onOpenChange={setShowNetlifyDeploy} 
+      />
+    </>
   );
 };
 
