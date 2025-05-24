@@ -17,6 +17,10 @@ export class GitHubOAuthService {
     
     const authUrl = `https://github.com/login/oauth/authorize?client_id=${this.clientId}&redirect_uri=${encodeURIComponent(this.redirectUri)}&scope=${scope}&state=${state}`;
     
+    console.log('GitHub OAuth URL:', authUrl);
+    console.log('Client ID:', this.clientId);
+    console.log('Redirect URI:', this.redirectUri);
+    
     // Open in the same window to avoid popup issues
     window.location.href = authUrl;
   }
