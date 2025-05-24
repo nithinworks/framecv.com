@@ -1,22 +1,106 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { githubOAuthService } from '@/services/githubOAuthService';
+import { githubService } from '@/services/githubService';
+import { useToast } from '@/hooks/use-toast';
 
 const GitHubCallback: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
 
   useEffect(() => {
-    // This callback is no longer needed since we're using token-based auth
-    // Redirect back to the builder
-    navigate('/builder');
-  }, [navigate]);
+    const handleCallback = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+
+        if (error) {
+          throw new Error(`GitHub OAuth error: ${error}`);
+        }
+
+        if (!code || !state) {
+          throw new Error('Missing authorization code or state parameter');
+        }
+
+        // Validate state to prevent CSRF attacks
+        if (!githubOAuthService.validateState(state)) {
+          throw new Error('Invalid state parameter - possible CSRF attack');
+        }
+
+        // Exchange code for access token
+        const success = await githubService.exchangeCodeForToken(code);
+        
+        if (success) {
+          setStatus('success');
+          toast({
+            title: "GitHub Connected!",
+            description: "Your GitHub account has been successfully connected.",
+          });
+          
+          // Redirect to builder after a short delay
+          setTimeout(() => {
+            navigate('/builder');
+          }, 2000);
+        } else {
+          throw new Error('Failed to exchange code for token');
+        }
+      } catch (error) {
+        console.error('GitHub OAuth callback error:', error);
+        setStatus('error');
+        toast({
+          title: "Connection Failed",
+          description: error instanceof Error ? error.message : "Failed to connect GitHub account",
+          variant: "destructive",
+        });
+        
+        // Redirect to builder after a short delay
+        setTimeout(() => {
+          navigate('/builder');
+        }, 3000);
+      }
+    };
+
+    handleCallback();
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <h2 className="text-xl font-semibold mb-2">Redirecting...</h2>
-        <p className="text-gray-600">Taking you back to the portfolio builder...</p>
+      <div className="text-center max-w-md">
+        {status === 'processing' && (
+          <>
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <h2 className="text-xl font-semibold mb-2">Connecting GitHub...</h2>
+            <p className="text-gray-600">Please wait while we connect your GitHub account.</p>
+          </>
+        )}
+        
+        {status === 'success' && (
+          <>
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold mb-2 text-green-800">GitHub Connected!</h2>
+            <p className="text-gray-600">Redirecting you back to the portfolio builder...</p>
+          </>
+        )}
+        
+        {status === 'error' && (
+          <>
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold mb-2 text-red-800">Connection Failed</h2>
+            <p className="text-gray-600">There was an issue connecting your GitHub account. Please try again.</p>
+          </>
+        )}
       </div>
     </div>
   );

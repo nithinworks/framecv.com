@@ -14,47 +14,56 @@ export interface GitHubUser {
 }
 
 class GitHubService {
-  private userToken: string | null = null;
-  private currentUser: GitHubUser | null = null;
-
-  // GitHub OAuth App details (you'll need to set these up)
-  private clientId = 'Ov23liZQK9TuSVrxZuox'; // Replace with your GitHub OAuth App client ID
-  private redirectUri = `${window.location.origin}/auth/github/callback`;
-
-  // Check if GitHub token is configured in Supabase
+  // Check if user has connected their GitHub account
   async checkAuthentication(): Promise<boolean> {
     try {
-      const { data, error } = await supabase.functions.invoke('github-publish', {
+      const { data, error } = await supabase.functions.invoke('github-oauth', {
         body: { 
-          action: 'checkToken'
+          action: 'checkUserToken'
         }
       });
 
       if (error) return false;
-      return data?.isConfigured || false;
+      return data?.hasToken || false;
     } catch (error) {
       console.error('Error checking GitHub authentication:', error);
       return false;
     }
   }
 
-  // Get current user info
+  // Exchange OAuth code for access token
+  async exchangeCodeForToken(code: string): Promise<boolean> {
+    try {
+      const { data, error } = await supabase.functions.invoke('github-oauth', {
+        body: { 
+          action: 'exchangeCode',
+          code
+        }
+      });
+
+      if (error) throw new Error(error.message);
+      return data?.success || false;
+    } catch (error) {
+      console.error('Error exchanging code for token:', error);
+      return false;
+    }
+  }
+
+  // Get current user info using their stored token
   async getUser(): Promise<GitHubUser> {
-    const { data, error } = await supabase.functions.invoke('github-publish', {
+    const { data, error } = await supabase.functions.invoke('github-oauth', {
       body: { 
         action: 'getUser'
       }
     });
 
     if (error) throw new Error(error.message || 'Failed to fetch user info');
-    
-    this.currentUser = data;
     return data;
   }
 
-  // Create a new repository
+  // Create a new repository using user's token
   async createRepository(name: string, description: string): Promise<GitHubRepo> {
-    const { data, error } = await supabase.functions.invoke('github-publish', {
+    const { data, error } = await supabase.functions.invoke('github-oauth', {
       body: { 
         action: 'createRepository',
         name,
@@ -66,9 +75,9 @@ class GitHubService {
     return data;
   }
 
-  // Upload files to repository
+  // Upload files to repository using user's token
   async uploadFiles(owner: string, repo: string, files: { path: string; content: string }[]): Promise<void> {
-    const { error } = await supabase.functions.invoke('github-publish', {
+    const { error } = await supabase.functions.invoke('github-oauth', {
       body: { 
         action: 'uploadFiles',
         owner,
@@ -80,36 +89,15 @@ class GitHubService {
     if (error) throw new Error(error.message || 'Failed to upload files');
   }
 
-  // Enable GitHub Pages
-  async enablePages(owner: string, repo: string): Promise<void> {
-    const { error } = await supabase.functions.invoke('github-publish', {
+  // Disconnect GitHub account
+  async disconnectAccount(): Promise<void> {
+    const { error } = await supabase.functions.invoke('github-oauth', {
       body: { 
-        action: 'enablePages',
-        owner,
-        repo
+        action: 'disconnect'
       }
     });
 
-    // Don't throw error for pages setup failure
-    if (error) {
-      console.warn('GitHub Pages setup warning:', error.message);
-    }
-  }
-
-  // Check if user is authenticated
-  isAuthenticated(): boolean {
-    return !!this.userToken && !!this.currentUser;
-  }
-
-  // Get current user (if cached)
-  getCurrentUser(): GitHubUser | null {
-    return this.currentUser;
-  }
-
-  // Logout
-  logout(): void {
-    this.userToken = null;
-    this.currentUser = null;
+    if (error) throw new Error(error.message || 'Failed to disconnect account');
   }
 }
 

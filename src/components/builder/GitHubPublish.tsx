@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Github, ExternalLink, Loader2, CheckCircle, AlertCircle, Globe } from "lucide-react";
+import { Github, ExternalLink, Loader2, CheckCircle, AlertCircle, Globe, Unlink } from "lucide-react";
 import { githubService, GitHubUser, GitHubRepo } from "@/services/githubService";
+import { githubOAuthService } from "@/services/githubOAuthService";
 import { useToast } from "@/hooks/use-toast";
 
 const GitHubPublish: React.FC = () => {
@@ -16,7 +16,7 @@ const GitHubPublish: React.FC = () => {
   const [isCheckingAuth, setIsCheckingAuth] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [user, setUser] = useState<GitHubUser | null>(null);
-  const [isTokenConfigured, setIsTokenConfigured] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const [repoName, setRepoName] = useState(`${portfolioData.settings.name.toLowerCase().replace(/\s+/g, '-')}-portfolio`);
   const [repoDescription, setRepoDescription] = useState(`Personal portfolio website for ${portfolioData.settings.name}`);
   const [publishedRepo, setPublishedRepo] = useState<GitHubRepo | null>(null);
@@ -30,18 +30,41 @@ const GitHubPublish: React.FC = () => {
   const checkAuthentication = async () => {
     setIsCheckingAuth(true);
     try {
-      const isAuth = await githubService.checkAuthentication();
-      setIsTokenConfigured(isAuth);
+      const hasToken = await githubService.checkAuthentication();
+      setIsConnected(hasToken);
       
-      if (isAuth) {
+      if (hasToken) {
         const userInfo = await githubService.getUser();
         setUser(userInfo);
       }
     } catch (error) {
-      setIsTokenConfigured(false);
+      setIsConnected(false);
       setUser(null);
     } finally {
       setIsCheckingAuth(false);
+    }
+  };
+
+  const handleConnectGitHub = () => {
+    githubOAuthService.initiateOAuth();
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      await githubService.disconnectAccount();
+      setIsConnected(false);
+      setUser(null);
+      setPublishedRepo(null);
+      toast({
+        title: "GitHub Disconnected",
+        description: "Your GitHub account has been disconnected.",
+      });
+    } catch (error) {
+      toast({
+        title: "Disconnect Failed",
+        description: error instanceof Error ? error.message : "Failed to disconnect GitHub account",
+        variant: "destructive",
+      });
     }
   };
 
@@ -293,20 +316,20 @@ This project is open source and available under the [MIT License](LICENSE).
               <Loader2 className="h-8 w-8 animate-spin mx-auto" />
               <p className="text-sm text-gray-600">Checking GitHub connection...</p>
             </div>
-          ) : !isTokenConfigured ? (
+          ) : !isConnected ? (
             <div className="text-center space-y-4">
-              <div className="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mx-auto">
-                <AlertCircle className="h-8 w-8 text-red-600" />
+              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto">
+                <Github className="h-8 w-8 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">GitHub Token Required</h3>
+                <h3 className="font-semibold text-lg">Connect Your GitHub</h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  A GitHub Personal Access Token needs to be configured by the administrator to enable GitHub publishing.
+                  Connect your GitHub account to publish your portfolio to your own repositories.
                 </p>
               </div>
-              <Button onClick={checkAuthentication} variant="outline" className="w-full">
-                <Loader2 className="h-4 w-4 mr-2" />
-                Retry Connection
+              <Button onClick={handleConnectGitHub} className="w-full">
+                <Github className="h-4 w-4 mr-2" />
+                Connect GitHub Account
               </Button>
             </div>
           ) : publishedRepo ? (
@@ -317,7 +340,7 @@ This project is open source and available under the [MIT License](LICENSE).
               <div>
                 <h3 className="font-semibold text-lg">Portfolio Published!</h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  Your portfolio has been published to GitHub
+                  Your portfolio has been published to your GitHub account
                 </p>
               </div>
               <div className="space-y-2">
@@ -353,10 +376,18 @@ This project is open source and available under the [MIT License](LICENSE).
                   alt={user.name || user.login}
                   className="w-10 h-10 rounded-full"
                 />
-                <div>
+                <div className="flex-1">
                   <p className="font-medium">{user.name || user.login}</p>
                   <p className="text-sm text-gray-600">Connected to GitHub</p>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDisconnect}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Unlink className="h-4 w-4" />
+                </Button>
               </div>
 
               <div className="space-y-3">
