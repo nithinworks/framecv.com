@@ -13,7 +13,14 @@ serve(async (req) => {
   }
 
   try {
-    const { accessToken, portfolioData, siteName } = await req.json();
+    const requestBody = await req.json();
+    const { accessToken, portfolioData, siteName } = requestBody;
+
+    console.log('Deploy request received:', { 
+      hasAccessToken: !!accessToken, 
+      hasSiteName: !!siteName,
+      hasPortfolioData: !!portfolioData 
+    });
 
     if (!accessToken) {
       throw new Error('Access token is required');
@@ -29,6 +36,7 @@ serve(async (req) => {
     const htmlContent = generatePortfolioHTML(portfolioData);
     
     // Create a new site on Netlify
+    console.log('Creating site on Netlify...');
     const siteResponse = await fetch('https://api.netlify.com/api/v1/sites', {
       method: 'POST',
       headers: {
@@ -55,14 +63,19 @@ serve(async (req) => {
     const siteData = await siteResponse.json();
     console.log('Site created successfully:', siteData.id);
 
-    // Deploy the HTML content
+    // Deploy the HTML content using Files API
+    console.log('Deploying files to Netlify...');
     const deployResponse = await fetch(`https://api.netlify.com/api/v1/sites/${siteData.id}/deploys`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/zip',
+        'Content-Type': 'application/json',
       },
-      body: await createDeploymentZip(htmlContent)
+      body: JSON.stringify({
+        files: {
+          'index.html': htmlContent
+        }
+      })
     });
 
     if (!deployResponse.ok) {
@@ -274,31 +287,4 @@ function generatePortfolioHTML(portfolioData: any): string {
     </script>
 </body>
 </html>`;
-}
-
-async function createDeploymentZip(htmlContent: string): Promise<Uint8Array> {
-  // Create a simple zip file with the HTML content
-  const files = new Map();
-  files.set('index.html', new TextEncoder().encode(htmlContent));
-  
-  // Simple zip creation (for demonstration - in production you might want a more robust solution)
-  const zipData = await createZip(files);
-  return zipData;
-}
-
-async function createZip(files: Map<string, Uint8Array>): Promise<Uint8Array> {
-  // Simple zip implementation
-  // In a real implementation, you'd use a proper zip library
-  // For now, we'll use a simple approach that works with Netlify's deployment API
-  
-  const encoder = new TextEncoder();
-  const htmlContent = files.get('index.html');
-  
-  if (!htmlContent) {
-    throw new Error('No HTML content found');
-  }
-  
-  // For Netlify, we can actually just upload the raw HTML content
-  // The API will handle it correctly
-  return htmlContent;
 }

@@ -62,81 +62,135 @@ serve(async (req) => {
   <script>
     (function() {
       try {
+        console.log('Callback complete page loaded');
+        console.log('Current URL:', window.location.href);
+        
         // Get data from URL fragment
         const fragment = window.location.hash.substring(1);
-        const params = new URLSearchParams(fragment);
+        console.log('URL fragment:', fragment);
         
+        if (!fragment) {
+          throw new Error('No data in URL fragment');
+        }
+        
+        const params = new URLSearchParams(fragment);
         const accessToken = params.get('access_token');
         const state = params.get('state');
         const error = params.get('error');
         const errorDescription = params.get('error_description');
 
-        console.log('Callback complete page loaded with:', { 
+        console.log('Parsed params:', { 
           hasToken: !!accessToken, 
           state, 
-          error 
+          error,
+          errorDescription
         });
 
         // Function to send message to parent
         function sendMessageToParent(data) {
-          try {
-            if (window.opener && !window.opener.closed) {
-              window.opener.postMessage(data, '*');
-              console.log('Message sent to opener:', data);
-              return true;
+          console.log('Attempting to send message:', data);
+          
+          // Try multiple methods to reach the parent
+          const origins = ['*'];
+          let messageSent = false;
+          
+          // Method 1: Try window.opener
+          if (window.opener && !window.opener.closed) {
+            try {
+              origins.forEach(origin => {
+                window.opener.postMessage(data, origin);
+              });
+              console.log('Message sent to opener');
+              messageSent = true;
+            } catch (e) {
+              console.error('Failed to send to opener:', e);
             }
-            
-            // Fallback: try parent window
-            if (window.parent && window.parent !== window) {
-              window.parent.postMessage(data, '*');
-              console.log('Message sent to parent:', data);
-              return true;
-            }
-            
-            console.error('No parent window available');
-            return false;
-          } catch (e) {
-            console.error('Failed to send message:', e);
-            return false;
           }
+          
+          // Method 2: Try parent window
+          if (window.parent && window.parent !== window) {
+            try {
+              origins.forEach(origin => {
+                window.parent.postMessage(data, origin);
+              });
+              console.log('Message sent to parent');
+              messageSent = true;
+            } catch (e) {
+              console.error('Failed to send to parent:', e);
+            }
+          }
+          
+          // Method 3: Try top window
+          if (window.top && window.top !== window) {
+            try {
+              origins.forEach(origin => {
+                window.top.postMessage(data, origin);
+              });
+              console.log('Message sent to top');
+              messageSent = true;
+            } catch (e) {
+              console.error('Failed to send to top:', e);
+            }
+          }
+          
+          return messageSent;
         }
 
         // Send appropriate message
+        let messageData;
         if (error) {
-          sendMessageToParent({
+          messageData = {
             type: 'NETLIFY_AUTH_ERROR',
-            error: error + (errorDescription ? ': ' + errorDescription : '')
-          });
+            error: error + (errorDescription ? ': ' + errorDescription : ''),
+            timestamp: Date.now()
+          };
         } else if (accessToken) {
-          sendMessageToParent({
+          messageData = {
             type: 'NETLIFY_AUTH_SUCCESS',
             accessToken: accessToken,
-            state: state
-          });
+            state: state,
+            timestamp: Date.now()
+          };
         } else {
-          sendMessageToParent({
+          messageData = {
             type: 'NETLIFY_AUTH_ERROR',
-            error: 'No access token received'
-          });
+            error: 'No access token received',
+            timestamp: Date.now()
+          };
+        }
+
+        const messageSent = sendMessageToParent(messageData);
+        
+        if (!messageSent) {
+          console.error('Failed to send message to any parent window');
         }
 
         // Auto-close after a delay
         setTimeout(function() {
           try {
+            console.log('Attempting to close window');
             window.close();
           } catch (e) {
-            console.log('Could not auto-close window');
+            console.log('Could not auto-close window:', e);
           }
-        }, 1000);
+        }, 2000);
 
       } catch (e) {
         console.error('Error in callback complete page:', e);
+        
+        // Try to send error message
         try {
+          const errorData = {
+            type: 'NETLIFY_AUTH_ERROR',
+            error: 'Failed to process authorization: ' + e.message,
+            timestamp: Date.now()
+          };
+          
           if (window.opener) {
-            window.opener.postMessage({
-              type: 'NETLIFY_AUTH_ERROR',
-              error: 'Failed to process authorization: ' + e.message
-            }, '*');
+            window.opener.postMessage(errorData, '*');
+          }
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage(errorData, '*');
           }
         } catch (msgError) {
           console.error('Failed to send error message:', msgError);

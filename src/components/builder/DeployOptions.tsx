@@ -57,18 +57,18 @@ const DeployOptions: React.FC = () => {
         throw new Error('Popup blocked. Please allow popups and try again.');
       }
 
-      // Step 3: Wait for OAuth callback with better message handling
+      // Step 3: Wait for OAuth callback
       const accessToken = await new Promise<string>((resolve, reject) => {
         let messageReceived = false;
         let pollCount = 0;
         const maxPolls = 300; // 5 minutes
         
         const handleMessage = (event: MessageEvent) => {
-          console.log('Received message:', event.data, 'from:', event.origin);
+          console.log('Received message:', event.data);
           
-          // Accept messages from Supabase functions
-          if (!event.origin.includes('supabase.co')) {
-            console.log('Ignoring message from:', event.origin);
+          // Only process Netlify auth messages
+          if (!event.data || !event.data.type || !event.data.type.startsWith('NETLIFY_AUTH_')) {
+            console.log('Ignoring non-Netlify message');
             return;
           }
           
