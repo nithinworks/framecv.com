@@ -75,16 +75,16 @@ Deno.serve(async (req) => {
           throw new Error('Failed to exchange code for token');
         }
 
-        const tokenData: GitHubTokenResponse = await tokenResponse.json();
+        const githubTokenData: GitHubTokenResponse = await tokenResponse.json();
 
         // Store the token for this user
         const { error: insertError } = await supabase
           .from('user_github_tokens')
           .upsert({
             user_id: user.id,
-            access_token: tokenData.access_token,
-            token_type: tokenData.token_type,
-            scope: tokenData.scope,
+            access_token: githubTokenData.access_token,
+            token_type: githubTokenData.token_type,
+            scope: githubTokenData.scope,
           });
 
         if (insertError) {
@@ -101,14 +101,14 @@ Deno.serve(async (req) => {
         );
 
       case 'checkUserToken':
-        const { data: tokenData, error: tokenError } = await supabase
+        const { data: tokenCheck, error: tokenError } = await supabase
           .from('user_github_tokens')
           .select('access_token')
           .eq('user_id', user.id)
           .single();
 
         return new Response(
-          JSON.stringify({ hasToken: !tokenError && !!tokenData }),
+          JSON.stringify({ hasToken: !tokenError && !!tokenCheck }),
           { 
             status: 200, 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
