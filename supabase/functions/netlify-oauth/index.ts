@@ -10,21 +10,40 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const code = url.searchParams.get('code');
-
     console.log('Netlify OAuth request received');
     console.log('Request method:', req.method);
     console.log('Request URL:', req.url);
+
+    let code: string | null = null;
+
+    // Try to get code from URL parameters first
+    const url = new URL(req.url);
+    code = url.searchParams.get('code');
+
+    // If not in URL params, try to get from request body
+    if (!code && req.method === 'GET') {
+      try {
+        const body = await req.text();
+        console.log('Request body:', body);
+        if (body) {
+          const params = new URLSearchParams(body);
+          code = params.get('code');
+        }
+      } catch (bodyError) {
+        console.log('No body or body parsing failed:', bodyError);
+      }
+    }
+
     console.log('Authorization code present:', !!code);
     console.log('Code preview:', code ? code.substring(0, 10) + '...' : 'none');
 
     if (!code) {
-      console.error('No authorization code provided in URL params');
+      console.error('No authorization code provided');
       return new Response(
         JSON.stringify({ 
           error: 'No authorization code provided',
-          received_params: Object.fromEntries(url.searchParams.entries())
+          received_params: Object.fromEntries(url.searchParams.entries()),
+          method: req.method
         }),
         { 
           status: 400, 
