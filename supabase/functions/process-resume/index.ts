@@ -32,15 +32,26 @@ serve(async (req) => {
       throw new Error('GEMINI_API_KEY not found')
     }
 
-    // Prepare the prompt for Gemini
+    // Prepare the enhanced prompt for Gemini
     const prompt = `
-    Extract information from this resume PDF and return ONLY a valid JSON object with this exact structure:
+    You are an AI portfolio builder. Extract information from this resume PDF and create a professional, personalized portfolio. Use your creativity to enhance the content while staying true to the person's background.
+
+    IMPORTANT GUIDELINES:
+    - For location: Use only country name (e.g., "United States", "Canada", "India")
+    - For summary: Write 15-20 words describing their overall professional profile
+    - For about content: Write a detailed LinkedIn-style "About" section (3-4 sentences) that tells their professional story
+    - For project descriptions: Enhance descriptions to highlight impact and technologies, keep concise but compelling
+    - Choose a professional color scheme that complements their field
+    - Always include complete navigation menu and footer
+    - Add relevant CTA buttons based on their profession
+
+    Return ONLY a valid JSON object with this EXACT structure:
     {
       "settings": {
-        "name": "Full Name",
-        "title": "Professional Title/Position",
-        "location": "City, Country",
-        "summary": "Professional summary or objective",
+        "name": "Full Name from resume",
+        "title": "Professional Title/Current Position",
+        "location": "Country only",
+        "summary": "15-20 word professional summary",
         "profileImage": "https://via.placeholder.com/400x400.png?text=Profile",
         "primaryColor": "#0067c7"
       },
@@ -65,11 +76,11 @@ serve(async (req) => {
         "about": {
           "enabled": true,
           "title": "About Me",
-          "content": "About section content from resume",
+          "content": "Write a compelling 3-4 sentence LinkedIn-style about section that tells their professional story, highlighting key experiences and aspirations",
           "skills": {
             "enabled": true,
             "title": "Skills",
-            "items": ["Skill1", "Skill2", "Skill3"]
+            "items": ["Extract and list all relevant technical and soft skills"]
           }
         },
         "experience": {
@@ -79,8 +90,8 @@ serve(async (req) => {
             {
               "company": "Company Name",
               "position": "Position Title",
-              "period": "MM/YYYY - MM/YYYY",
-              "description": "Job description and responsibilities"
+              "period": "MM/YYYY - MM/YYYY or Present",
+              "description": "Enhanced description highlighting key achievements and responsibilities"
             }
           ]
         },
@@ -90,8 +101,8 @@ serve(async (req) => {
           "items": [
             {
               "title": "Project Name",
-              "description": "Project description",
-              "tags": ["Tech1", "Tech2"],
+              "description": "Enhanced project description focusing on impact, technologies used, and key outcomes",
+              "tags": ["List relevant technologies and skills"],
               "previewUrl": "#"
             }
           ]
@@ -103,31 +114,57 @@ serve(async (req) => {
             {
               "institution": "Institution Name",
               "degree": "Degree Title",
-              "period": "MM/YYYY - MM/YYYY"
+              "period": "MM/YYYY - MM/YYYY",
+              "description": "Add relevant coursework, achievements, or GPA if notable"
+            }
+          ]
+        },
+        "achievements": {
+          "enabled": true,
+          "title": "Achievements & Certifications",
+          "items": [
+            {
+              "title": "Achievement/Certification Title",
+              "period": "MM/YYYY",
+              "description": "Brief description of the achievement or certification"
             }
           ]
         },
         "contact": {
           "enabled": true,
           "title": "Contact",
-          "email": "email@example.com",
-          "phone": "+1234567890",
-          "location": "City, Country"
+          "email": "Extract email from resume",
+          "phone": "Extract phone if available",
+          "location": "Country only"
         },
         "social": {
           "enabled": true,
           "items": [
             {
               "platform": "LinkedIn",
-              "url": "https://linkedin.com/in/username",
+              "url": "Extract LinkedIn URL or use placeholder",
               "icon": "globe"
             }
           ]
         }
+      },
+      "navigation": {
+        "items": [
+          { "name": "Home", "url": "#hero" },
+          { "name": "About", "url": "#about" },
+          { "name": "Experience", "url": "#experience" },
+          { "name": "Projects", "url": "#projects" },
+          { "name": "Education", "url": "#education" },
+          { "name": "Contact", "url": "#contact" }
+        ]
+      },
+      "footer": {
+        "enabled": true,
+        "copyright": "© 2024 [Name]. All rights reserved."
       }
     }
 
-    Extract all relevant information from the resume. If any information is missing, use placeholder values. Make sure the JSON is valid and follows the exact structure above.
+    Extract all information from the resume and enhance it with your AI capabilities. Make it professional, engaging, and complete. Ensure ALL sections have meaningful content even if some information needs to be intelligently inferred or enhanced based on the available data.
     `
 
     // Call Gemini API
@@ -155,8 +192,8 @@ serve(async (req) => {
             }
           ],
           generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 2048,
+            temperature: 0.3,
+            maxOutputTokens: 3000,
           }
         })
       }
