@@ -8,14 +8,12 @@ import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
 import PortfolioPreview from "./builder/PortfolioPreview";
 import CodeView from "./builder/CodeView";
-import DeployOptions from "./builder/DeployOptions";
 
 const BuilderPage: React.FC = () => {
   const { 
     isProcessing, 
     showEditor, 
-    showCode, 
-    showDeploy,
+    showCode,
     setCurrentView
   } = usePortfolio();
   
@@ -68,9 +66,6 @@ const BuilderPage: React.FC = () => {
         
         {/* Code View */}
         <CodeView />
-        
-        {/* Deploy Options */}
-        <DeployOptions />
       </div>
     </div>
   );
