@@ -44,6 +44,7 @@ serve(async (req) => {
     - Choose a professional color scheme that complements their field
     - Always include complete navigation menu and footer
     - Add relevant CTA buttons based on their profession
+    - For profile image: Analyze the name/content to determine gender. If female, use "https://media.istockphoto.com/id/1398385392/photo/happy-young-millennial-indian-business-woman-head-shot-portrait.jpg?s=612x612&w=0&k=20&c=QSRWD4KI7JCRJGdMKAhfUBv3Fc2v-7Nvu04iRMAPhGU=", if male use "https://media.istockphoto.com/id/1360063450/photo-headshot-profile-picture-young-businessman-sit-in-kitchen-webcam-view.jpg?s=612x612&w=0&k=20&c=6DoR9bff-RQ5N31LV_tQPsj_hT1HPxGAIn07mLkLxgc="
 
     Return ONLY a valid JSON object with this EXACT structure:
     {
@@ -52,7 +53,7 @@ serve(async (req) => {
         "title": "Professional Title/Current Position",
         "location": "Country only",
         "summary": "15-20 word professional summary",
-        "profileImage": "https://via.placeholder.com/400x400.png?text=Profile",
+        "profileImage": "Use appropriate gender-based URL from above",
         "primaryColor": "#0067c7"
       },
       "sections": {
