@@ -1,9 +1,9 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
   PanelLeft, 
   Download, 
-  Upload, 
   ChevronLeft
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
@@ -18,8 +18,6 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   const { 
     showEditor, 
     setShowEditor,
-    showDeploy,
-    setShowDeploy,
     portfolioData
   } = usePortfolio();
   const navigate = useNavigate();
@@ -206,12 +204,10 @@ document.addEventListener("DOMContentLoaded", async function() {
             Editor
           </Button>
           
-          {/* Editor hint tooltip - positioned more accurately */}
           {showEditorHint && !showEditor && !isMobile && (
             <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-1 z-50">
               <div className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-medium relative whitespace-nowrap">
                 <span>Click to edit</span>
-                {/* Left pointing arrow - better positioned */}
                 <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-gray-800"></div>
               </div>
             </div>
@@ -227,19 +223,7 @@ document.addEventListener("DOMContentLoaded", async function() {
           className="px-2 sm:px-3"
         >
           <Download className="h-4 w-4 sm:mr-2" />
-          {!isMobile && "Download Source Code"}
-        </Button>
-
-        <Button
-          variant={showDeploy ? "default" : "outline"}
-          size="sm"
-          onClick={() => {
-            setShowDeploy(!showDeploy);
-          }}
-          className="px-2 sm:px-3"
-        >
-          <Upload className="h-4 w-4 sm:mr-2" />
-          Deploy
+          {!isMobile && "Download Code"}
         </Button>
       </div>
     </div>

@@ -19,12 +19,3 @@ security_update_password_require_reauthentication = false
 
 [functions.process-resume]
 verify_jwt = false
-
-[functions.netlify-auth]
-verify_jwt = false
-
-[functions.netlify-callback]
-verify_jwt = false
-
-[functions.netlify-deploy]
-verify_jwt = false
