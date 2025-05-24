@@ -1,4 +1,6 @@
 
+import { supabase } from "@/integrations/supabase/client";
+
 export interface GitHubRepo {
   name: string;
   html_url: string;
@@ -12,24 +14,26 @@ export interface GitHubUser {
 }
 
 class GitHubService {
-  private accessToken: string | null = null;
+  private userToken: string | null = null;
+  private currentUser: GitHubUser | null = null;
 
-  // Initialize GitHub OAuth flow
-  async authenticate(): Promise<void> {
-    const clientId = 'Ov23liZQK9TuSVrxZuox'; // GitHub OAuth App client ID
-    const redirectUri = `${window.location.origin}/auth/github/callback`;
+  // GitHub OAuth App details (you'll need to set these up)
+  private clientId = 'Ov23liZQK9TuSVrxZuox'; // Replace with your GitHub OAuth App client ID
+  private redirectUri = `${window.location.origin}/auth/github/callback`;
+
+  // Authenticate user with GitHub
+  async authenticate(): Promise<GitHubUser> {
     const scope = 'repo user';
-    
-    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${this.clientId}&redirect_uri=${this.redirectUri}&scope=${scope}&state=${Date.now()}`;
     
     // Open popup for GitHub OAuth
-    const popup = window.open(authUrl, 'github-auth', 'width=600,height=700');
+    const popup = window.open(authUrl, 'github-auth', 'width=600,height=700,scrollbars=yes,resizable=yes');
     
     return new Promise((resolve, reject) => {
       const checkClosed = setInterval(() => {
         if (popup?.closed) {
           clearInterval(checkClosed);
-          reject(new Error('Authentication cancelled'));
+          reject(new Error('Authentication cancelled by user'));
         }
       }, 1000);
 
@@ -40,14 +44,16 @@ class GitHubService {
         if (event.data.type === 'GITHUB_AUTH_SUCCESS') {
           clearInterval(checkClosed);
           popup?.close();
-          this.accessToken = event.data.token;
+          this.userToken = event.data.token;
           window.removeEventListener('message', handleMessage);
-          resolve();
+          
+          // Get user info and resolve
+          this.getUser().then(resolve).catch(reject);
         } else if (event.data.type === 'GITHUB_AUTH_ERROR') {
           clearInterval(checkClosed);
           popup?.close();
           window.removeEventListener('message', handleMessage);
-          reject(new Error(event.data.error));
+          reject(new Error(event.data.error || 'Authentication failed'));
         }
       };
 
@@ -57,95 +63,96 @@ class GitHubService {
 
   // Get current user info
   async getUser(): Promise<GitHubUser> {
-    if (!this.accessToken) {
+    if (!this.userToken) {
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch('https://api.github.com/user', {
-      headers: {
-        'Authorization': `token ${this.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json',
-      },
+    const { data, error } = await supabase.functions.invoke('github-publish', {
+      body: { 
+        action: 'getUser',
+        userToken: this.userToken
+      }
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch user info');
-    }
-
-    return response.json();
+    if (error) throw new Error(error.message || 'Failed to fetch user info');
+    
+    this.currentUser = data;
+    return data;
   }
 
   // Create a new repository
   async createRepository(name: string, description: string): Promise<GitHubRepo> {
-    if (!this.accessToken) {
+    if (!this.userToken) {
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch('https://api.github.com/user/repos', {
-      method: 'POST',
-      headers: {
-        'Authorization': `token ${this.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    const { data, error } = await supabase.functions.invoke('github-publish', {
+      body: { 
+        action: 'createRepository',
+        userToken: this.userToken,
         name,
-        description,
-        private: false,
-        auto_init: true,
-      }),
+        description
+      }
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create repository');
-    }
-
-    return response.json();
+    if (error) throw new Error(error.message || 'Failed to create repository');
+    return data;
   }
 
   // Upload files to repository
   async uploadFiles(owner: string, repo: string, files: { path: string; content: string }[]): Promise<void> {
-    if (!this.accessToken) {
+    if (!this.userToken) {
       throw new Error('Not authenticated');
     }
 
-    // Upload files sequentially to avoid rate limiting
-    for (const file of files) {
-      await this.uploadFile(owner, repo, file.path, file.content);
-      // Small delay to avoid hitting rate limits
-      await new Promise(resolve => setTimeout(resolve, 200));
-    }
-  }
-
-  private async uploadFile(owner: string, repo: string, path: string, content: string): Promise<void> {
-    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${this.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: `Add ${path}`,
-        content: btoa(unescape(encodeURIComponent(content))), // Base64 encode
-      }),
+    const { error } = await supabase.functions.invoke('github-publish', {
+      body: { 
+        action: 'uploadFiles',
+        userToken: this.userToken,
+        owner,
+        repo,
+        files
+      }
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`Failed to upload ${path}: ${error.message}`);
+    if (error) throw new Error(error.message || 'Failed to upload files');
+  }
+
+  // Enable GitHub Pages
+  async enablePages(owner: string, repo: string): Promise<void> {
+    if (!this.userToken) {
+      throw new Error('Not authenticated');
+    }
+
+    const { error } = await supabase.functions.invoke('github-publish', {
+      body: { 
+        action: 'enablePages',
+        userToken: this.userToken,
+        owner,
+        repo
+      }
+    });
+
+    // Don't throw error for pages setup failure
+    if (error) {
+      console.warn('GitHub Pages setup warning:', error.message);
     }
   }
 
   // Check if user is authenticated
   isAuthenticated(): boolean {
-    return !!this.accessToken;
+    return !!this.userToken && !!this.currentUser;
+  }
+
+  // Get current user (if cached)
+  getCurrentUser(): GitHubUser | null {
+    return this.currentUser;
   }
 
   // Logout
   logout(): void {
-    this.accessToken = null;
+    this.userToken = null;
+    this.currentUser = null;
   }
 }
 

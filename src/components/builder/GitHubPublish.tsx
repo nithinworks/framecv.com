@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Github, ExternalLink, Loader2, CheckCircle } from "lucide-react";
+import { Github, ExternalLink, Loader2, CheckCircle, Globe } from "lucide-react";
 import { githubService, GitHubUser, GitHubRepo } from "@/services/githubService";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,8 +23,7 @@ const GitHubPublish: React.FC = () => {
   const handleAuthenticate = async () => {
     setIsAuthenticating(true);
     try {
-      await githubService.authenticate();
-      const userInfo = await githubService.getUser();
+      const userInfo = await githubService.authenticate();
       setUser(userInfo);
       toast({
         title: "Authentication successful",
@@ -50,10 +49,21 @@ const GitHubPublish: React.FC = () => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${portfolioData.settings.name} - Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '${portfolioData.settings.primaryColor}'
+                    }
+                }
+            }
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, ${portfolioData.settings.primaryColor} 0%, #764ba2 100%); }
+        .gradient-bg { background: linear-gradient(135deg, ${portfolioData.settings.primaryColor} 0%, #667eea 100%); }
         .fade-in { animation: fadeIn 0.6s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -99,13 +109,13 @@ const GitHubPublish: React.FC = () => {
                     <p class="text-lg text-gray-600 leading-relaxed">${portfolioData.sections.about.content}</p>
                 </div>
                 ${portfolioData.sections.about.skills.enabled ? `
-                <div class="space-y-4">
+                <div>
                     <h3 class="text-xl font-semibold mb-4">${portfolioData.sections.about.skills.title}</h3>
-                    ${portfolioData.sections.about.skills.items.map(skill => `
-                        <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap gap-2">
+                        ${portfolioData.sections.about.skills.items.map(skill => `
                             <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">${skill}</span>
-                        </div>
-                    `).join('')}
+                        `).join('')}
+                    </div>
                 </div>
                 ` : ''}
             </div>
@@ -194,11 +204,17 @@ This is the personal portfolio website for ${portfolioData.settings.name}.
 
 ${portfolioData.sections.about.content}
 
+## Live Demo
+
+Visit the live portfolio: [https://${user?.login}.github.io/${repoName}](https://${user?.login}.github.io/${repoName})
+
 ## Technologies Used
 
 - HTML5
 - Tailwind CSS
+- JavaScript
 - Responsive Design
+- GitHub Pages
 
 ## Contact
 
@@ -210,9 +226,12 @@ ${portfolioData.sections.about.content}
 This project is open source and available under the [MIT License](LICENSE).
 `;
 
+    const portfolioDataContent = JSON.stringify(portfolioData, null, 2);
+
     return [
       { path: 'index.html', content: htmlContent },
       { path: 'README.md', content: readmeContent },
+      { path: 'portfolio-data.json', content: portfolioDataContent },
     ];
   };
 
@@ -229,6 +248,9 @@ This project is open source and available under the [MIT License](LICENSE).
       
       // Upload files to repository
       await githubService.uploadFiles(user.login, repo.name, files);
+      
+      // Enable GitHub Pages
+      await githubService.enablePages(user.login, repo.name);
       
       setPublishedRepo(repo);
       
@@ -267,7 +289,7 @@ This project is open source and available under the [MIT License](LICENSE).
           {!user ? (
             <div className="text-center space-y-4">
               <p className="text-sm text-gray-600">
-                Connect your GitHub account to publish your portfolio as a repository
+                Connect your GitHub account to publish your portfolio as a repository with GitHub Pages hosting
               </p>
               <Button 
                 onClick={handleAuthenticate} 
@@ -295,10 +317,16 @@ This project is open source and available under the [MIT License](LICENSE).
               <div>
                 <h3 className="font-semibold text-lg">Portfolio Published!</h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  Your portfolio has been published to GitHub
+                  Your portfolio has been published to GitHub with Pages enabled
                 </p>
               </div>
               <div className="space-y-2">
+                <Button asChild variant="default" className="w-full">
+                  <a href={`https://${user.login}.github.io/${publishedRepo.name}`} target="_blank" rel="noopener noreferrer">
+                    <Globe className="h-4 w-4 mr-2" />
+                    View Live Site
+                  </a>
+                </Button>
                 <Button asChild variant="outline" className="w-full">
                   <a href={publishedRepo.html_url} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />
