@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -5,13 +6,15 @@ import { useToast } from "@/hooks/use-toast";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Upload, ArrowRight } from "lucide-react";
 import { samplePortfolioData } from "@/data/samplePortfolio";
+import { supabase } from "@/integrations/supabase/client";
 
 const LandingPage: React.FC = () => {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { setIsProcessing, setPortfolioData } = usePortfolio();
+  const { setIsProcessing: setGlobalProcessing, setPortfolioData } = usePortfolio();
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -89,21 +92,53 @@ const LandingPage: React.FC = () => {
         return;
       }
       
-      // For now, we'll use mock data processing
       setIsProcessing(true);
+      setGlobalProcessing(true);
+      
       toast({
         title: "Processing your resume",
-        description: "This may take a moment...",
+        description: "Gemini AI is analyzing your PDF...",
       });
       
-      // Simulate API call to Gemini for processing
-      setTimeout(() => {
-        setPortfolioData(samplePortfolioData);
+      try {
+        // Create FormData for file upload
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Call the Supabase edge function
+        const { data, error } = await supabase.functions.invoke('process-resume', {
+          body: formData,
+        });
+        
+        if (error) {
+          console.error('Supabase function error:', error);
+          throw new Error(error.message || 'Failed to process resume');
+        }
+        
+        if (data?.portfolioData) {
+          setPortfolioData(data.portfolioData);
+          toast({
+            title: "Resume processed successfully!",
+            description: "Your portfolio has been generated. You can now review and edit it.",
+          });
+          navigate("/builder");
+        } else {
+          throw new Error('No portfolio data received');
+        }
+        
+      } catch (error) {
+        console.error('Error processing resume:', error);
+        toast({
+          title: "Processing failed",
+          description: error.message || "Failed to process your resume. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
         setIsProcessing(false);
-        navigate("/builder");
-      }, 2000);
+        setGlobalProcessing(false);
+      }
     },
-    [file, navigate, setIsProcessing, setPortfolioData, toast]
+    [file, navigate, setGlobalProcessing, setPortfolioData, toast]
   );
 
   const handleUseTemplate = () => {
@@ -166,14 +201,15 @@ const LandingPage: React.FC = () => {
                   <div className="text-center">
                     <p className="font-medium">Drop your resume here or click to upload</p>
                     <p className="text-sm text-gray-500 mt-2">
-                      Supports PDF (Max 2MB, 2 pages)
+                      Supports PDF (Max 2MB, 1 page)
                     </p>
                   </div>
                 )}
               </label>
             </div>
-            <Button type="submit" className="w-full" disabled={!file}>
-              Create My Portfolio <ArrowRight className="ml-2 h-4 w-4" />
+            <Button type="submit" className="w-full" disabled={!file || isProcessing}>
+              {isProcessing ? "Processing with AI..." : "Create My Portfolio"} 
+              {!isProcessing && <ArrowRight className="ml-2 h-4 w-4" />}
             </Button>
           </form>
         </div>
@@ -241,7 +277,7 @@ const LandingPage: React.FC = () => {
             <div className="flex flex-col items-center text-center max-w-xs">
               <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4 text-xl font-bold">1</div>
               <h3 className="text-lg font-semibold mb-2">Upload Your Resume</h3>
-              <p className="text-gray-600">Upload your existing resume as a PDF (max 2MB, 2 pages).</p>
+              <p className="text-gray-600">Upload your existing resume as a PDF (max 2MB, 1 page).</p>
             </div>
             <div className="hidden md:block">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-400">
@@ -251,7 +287,7 @@ const LandingPage: React.FC = () => {
             <div className="flex flex-col items-center text-center max-w-xs">
               <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4 text-xl font-bold">2</div>
               <h3 className="text-lg font-semibold mb-2">AI Processes Your Data</h3>
-              <p className="text-gray-600">Our AI extracts and organizes your information into a structured portfolio format.</p>
+              <p className="text-gray-600">Gemini AI extracts and organizes your information into a structured portfolio format.</p>
             </div>
             <div className="hidden md:block">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-400">
