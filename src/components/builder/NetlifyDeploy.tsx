@@ -17,24 +17,36 @@ const NetlifyDeploy: React.FC<NetlifyDeployProps> = ({ open, onOpenChange }) => 
   const [isDeploying, setIsDeploying] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [deployedUrl, setDeployedUrl] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
     // Check if user is already connected to Netlify
     const token = sessionStorage.getItem('netlify_access_token');
     setIsConnected(!!token);
+    console.log('Netlify connection status:', !!token);
   }, [open]);
 
   const connectToNetlify = () => {
+    console.log('Initiating Netlify OAuth flow...');
+    setIsConnecting(true);
+    
     const clientId = 'Opkk5yL1Gax2qMd5d5xXIuPoCCTRKsI3MZyp4vdW9LE';
     const redirectUri = 'https://framecv.com/auth/netlify/callback';
-    const scope = 'read write';
     
-    const authUrl = `https://app.netlify.com/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+    // Use correct Netlify OAuth URL with proper parameters
+    const authUrl = `https://app.netlify.com/authorize?` +
+      `response_type=code&` +
+      `client_id=${clientId}&` +
+      `redirect_uri=${encodeURIComponent(redirectUri)}`;
+    
+    console.log('Redirecting to:', authUrl);
     
     window.location.href = authUrl;
   };
 
   const generatePortfolioFiles = () => {
+    console.log('Generating portfolio files...');
+    
     // Generate HTML
     const htmlContent = `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -161,13 +173,17 @@ const NetlifyDeploy: React.FC<NetlifyDeployProps> = ({ open, onOpenChange }) => 
   const deployToNetlify = async () => {
     const accessToken = sessionStorage.getItem('netlify_access_token');
     if (!accessToken) {
+      console.error('No Netlify access token found');
       toast.error('Not connected to Netlify');
       return;
     }
 
     setIsDeploying(true);
+    console.log('Starting deployment to Netlify...');
+    
     try {
       const files = generatePortfolioFiles();
+      console.log('Generated files:', files.length);
       
       const { data, error } = await supabase.functions.invoke('netlify-deploy', {
         body: {
@@ -177,15 +193,19 @@ const NetlifyDeploy: React.FC<NetlifyDeployProps> = ({ open, onOpenChange }) => 
         }
       });
 
+      console.log('Deployment response:', { data, error });
+
       if (error || !data?.success) {
         console.error('Deployment failed:', error);
         toast.error('Deployment failed', {
-          description: 'Failed to deploy your portfolio to Netlify.'
+          description: error?.message || 'Failed to deploy your portfolio to Netlify.'
         });
         return;
       }
 
       setDeployedUrl(data.url);
+      console.log('Deployment successful, URL:', data.url);
+      
       toast.success('Portfolio deployed successfully!', {
         description: `Your portfolio is now live at ${data.url}`
       });
@@ -198,6 +218,14 @@ const NetlifyDeploy: React.FC<NetlifyDeployProps> = ({ open, onOpenChange }) => 
     } finally {
       setIsDeploying(false);
     }
+  };
+
+  const disconnect = () => {
+    console.log('Disconnecting from Netlify...');
+    sessionStorage.removeItem('netlify_access_token');
+    setIsConnected(false);
+    setDeployedUrl(null);
+    toast.success('Disconnected from Netlify');
   };
 
   return (
@@ -219,8 +247,19 @@ const NetlifyDeploy: React.FC<NetlifyDeployProps> = ({ open, onOpenChange }) => 
               <p className="text-sm text-gray-600">
                 Connect your Netlify account to deploy your portfolio.
               </p>
-              <Button onClick={connectToNetlify} className="w-full">
-                Connect to Netlify
+              <Button 
+                onClick={connectToNetlify} 
+                disabled={isConnecting}
+                className="w-full"
+              >
+                {isConnecting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect to Netlify'
+                )}
               </Button>
             </div>
           ) : deployedUrl ? (
@@ -237,16 +276,24 @@ const NetlifyDeploy: React.FC<NetlifyDeployProps> = ({ open, onOpenChange }) => 
                 <ExternalLink className="h-4 w-4 mr-2" />
                 View Live Site
               </Button>
-              <Button 
-                onClick={() => {
-                  setDeployedUrl(null);
-                  onOpenChange(false);
-                }} 
-                variant="ghost" 
-                className="w-full"
-              >
-                Close
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => {
+                    setDeployedUrl(null);
+                  }} 
+                  variant="ghost" 
+                  className="flex-1"
+                >
+                  Deploy Again
+                </Button>
+                <Button 
+                  onClick={() => onOpenChange(false)} 
+                  variant="outline" 
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -269,10 +316,7 @@ const NetlifyDeploy: React.FC<NetlifyDeployProps> = ({ open, onOpenChange }) => 
                 )}
               </Button>
               <Button 
-                onClick={() => {
-                  sessionStorage.removeItem('netlify_access_token');
-                  setIsConnected(false);
-                }} 
+                onClick={disconnect} 
                 variant="ghost" 
                 className="w-full text-red-600 hover:text-red-700"
               >

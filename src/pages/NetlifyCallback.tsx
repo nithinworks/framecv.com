@@ -11,13 +11,22 @@ const NetlifyCallback = () => {
 
   useEffect(() => {
     const handleCallback = async () => {
+      console.log('Netlify callback received');
+      
       const code = searchParams.get('code');
       const error = searchParams.get('error');
+      const errorDescription = searchParams.get('error_description');
+
+      console.log('Callback params:', { 
+        hasCode: !!code, 
+        error, 
+        errorDescription 
+      });
 
       if (error) {
-        console.error('Netlify OAuth error:', error);
+        console.error('Netlify OAuth error:', error, errorDescription);
         toast.error('Authorization failed', {
-          description: 'Failed to connect to Netlify. Please try again.'
+          description: `Failed to connect to Netlify: ${errorDescription || error}`
         });
         navigate('/builder');
         return;
@@ -33,15 +42,19 @@ const NetlifyCallback = () => {
       }
 
       try {
-        // Exchange code for access token
-        const { data, error } = await supabase.functions.invoke('netlify-oauth', {
+        console.log('Exchanging code for access token...');
+        
+        // Exchange code for access token using our edge function
+        const { data, error: functionError } = await supabase.functions.invoke('netlify-oauth', {
           body: { code }
         });
 
-        if (error || !data?.access_token) {
-          console.error('Token exchange failed:', error);
+        console.log('Token exchange result:', { data, error: functionError });
+
+        if (functionError || !data?.access_token) {
+          console.error('Token exchange failed:', functionError);
           toast.error('Authorization failed', {
-            description: 'Failed to exchange authorization code.'
+            description: functionError?.message || 'Failed to exchange authorization code.'
           });
           navigate('/builder');
           return;
@@ -49,6 +62,7 @@ const NetlifyCallback = () => {
 
         // Store access token in session storage
         sessionStorage.setItem('netlify_access_token', data.access_token);
+        console.log('Access token stored successfully');
         
         toast.success('Connected to Netlify!', {
           description: 'You can now deploy your portfolio to Netlify.'
@@ -60,7 +74,7 @@ const NetlifyCallback = () => {
       } catch (error) {
         console.error('Callback processing error:', error);
         toast.error('Authorization failed', {
-          description: 'An unexpected error occurred.'
+          description: 'An unexpected error occurred during authorization.'
         });
         navigate('/builder');
       } finally {

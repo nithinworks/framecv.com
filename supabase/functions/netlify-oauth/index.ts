@@ -13,6 +13,9 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const code = url.searchParams.get('code');
 
+    console.log('Netlify OAuth request received');
+    console.log('Authorization code present:', !!code);
+
     if (!code) {
       console.error('No authorization code provided');
       return new Response(
@@ -36,6 +39,8 @@ Deno.serve(async (req) => {
       );
     }
 
+    console.log('Attempting token exchange with Netlify...');
+
     // Exchange authorization code for access token
     const tokenResponse = await fetch('https://api.netlify.com/oauth/token', {
       method: 'POST',
@@ -51,10 +56,16 @@ Deno.serve(async (req) => {
       }),
     });
 
+    console.log('Token response status:', tokenResponse.status);
+
     if (!tokenResponse.ok) {
-      console.error('Token exchange failed:', await tokenResponse.text());
+      const errorText = await tokenResponse.text();
+      console.error('Token exchange failed:', errorText);
       return new Response(
-        JSON.stringify({ error: 'Failed to exchange authorization code' }),
+        JSON.stringify({ 
+          error: 'Failed to exchange authorization code',
+          details: errorText 
+        }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -63,7 +74,7 @@ Deno.serve(async (req) => {
     }
 
     const tokenData = await tokenResponse.json();
-    console.log('Token exchange successful');
+    console.log('Token exchange successful, token type:', tokenData.token_type);
 
     return new Response(
       JSON.stringify({ 
@@ -79,7 +90,10 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Netlify OAuth error:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ 
+        error: 'Internal server error',
+        details: error.message 
+      }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
