@@ -5,7 +5,7 @@ export class GitHubOAuthService {
 
   constructor() {
     // Use the production domain for your deployed app
-    this.clientId = 'Ov23liZQK9TuSVrxZuox'; // Your GitHub OAuth App Client ID
+    this.clientId = 'Ov23liz7TrF5Qt66XW20'; // Your GitHub OAuth App Client ID
     this.redirectUri = 'https://framecv.com/auth/github/callback';
   }
 
