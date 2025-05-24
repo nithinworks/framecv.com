@@ -23,37 +23,14 @@ serve(async (req) => {
 
     if (error) {
       console.error('OAuth error:', error, errorDescription);
-      return new Response(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Authorization Error</title>
-            <meta charset="UTF-8">
-          </head>
-          <body>
-            <script>
-              try {
-                if (window.opener) {
-                  window.opener.postMessage({ 
-                    type: 'NETLIFY_AUTH_ERROR', 
-                    error: '${error}: ${errorDescription || 'Unknown error'}' 
-                  }, '*');
-                }
-              } catch (e) {
-                console.error('Failed to send error message:', e);
-              }
-              window.close();
-            </script>
-            <div style="padding: 20px; font-family: Arial, sans-serif;">
-              <h2>Authorization Error</h2>
-              <p>Error: ${error}</p>
-              <p>${errorDescription || 'Unknown error'}</p>
-              <p>You can close this window.</p>
-            </div>
-          </body>
-        </html>
-      `, {
-        headers: { 'Content-Type': 'text/html' }
+      // Redirect back to the app with error in URL fragment
+      const redirectUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/netlify-callback-complete#error=${encodeURIComponent(error)}&error_description=${encodeURIComponent(errorDescription || 'Unknown error')}`;
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': redirectUrl,
+          ...corsHeaders
+        }
       });
     }
 
@@ -94,84 +71,27 @@ serve(async (req) => {
     const tokenData = await tokenResponse.json();
     console.log('Token exchange successful, access token received');
 
-    // Return success page that posts message to parent window
-    return new Response(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Authorization Success</title>
-          <meta charset="UTF-8">
-        </head>
-        <body>
-          <script>
-            try {
-              console.log('Attempting to send success message to parent window');
-              if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({ 
-                  type: 'NETLIFY_AUTH_SUCCESS', 
-                  accessToken: '${tokenData.access_token}',
-                  state: '${state}'
-                }, '*');
-                console.log('Success message sent to parent window');
-              } else {
-                console.error('Parent window not available');
-              }
-            } catch (e) {
-              console.error('Failed to send success message:', e);
-            }
-            
-            // Auto-close after a short delay
-            setTimeout(() => {
-              try {
-                window.close();
-              } catch (e) {
-                console.error('Failed to close window:', e);
-              }
-            }, 500);
-          </script>
-          <div style="padding: 20px; font-family: Arial, sans-serif; text-align: center;">
-            <h2>✅ Authorization Successful!</h2>
-            <p>Redirecting back to your application...</p>
-            <p><small>If this window doesn't close automatically, you can close it manually.</small></p>
-          </div>
-        </body>
-      </html>
-    `, {
-      headers: { 'Content-Type': 'text/html' }
+    // Redirect to a completion page with token in URL fragment
+    const redirectUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/netlify-callback-complete#access_token=${encodeURIComponent(tokenData.access_token)}&state=${encodeURIComponent(state || '')}`;
+    
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': redirectUrl,
+        ...corsHeaders
+      }
     });
 
   } catch (error) {
     console.error('Error in netlify-callback:', error);
-    return new Response(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Authorization Error</title>
-          <meta charset="UTF-8">
-        </head>
-        <body>
-          <script>
-            try {
-              if (window.opener) {
-                window.opener.postMessage({ 
-                  type: 'NETLIFY_AUTH_ERROR', 
-                  error: '${error.message}' 
-                }, '*');
-              }
-            } catch (e) {
-              console.error('Failed to send error message:', e);
-            }
-            window.close();
-          </script>
-          <div style="padding: 20px; font-family: Arial, sans-serif;">
-            <h2>Authorization Error</h2>
-            <p>Error: ${error.message}</p>
-            <p>You can close this window.</p>
-          </div>
-        </body>
-      </html>
-    `, {
-      headers: { 'Content-Type': 'text/html' }
+    // Redirect to completion page with error
+    const redirectUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/netlify-callback-complete#error=${encodeURIComponent(error.message)}`;
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': redirectUrl,
+        ...corsHeaders
+      }
     });
   }
 });
