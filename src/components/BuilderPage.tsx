@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
@@ -15,20 +16,31 @@ const BuilderPage: React.FC = () => {
     showEditor, 
     showCode, 
     showDeploy,
-    setCurrentView 
+    setCurrentView,
+    portfolioData 
   } = usePortfolio();
   
   const [showEditorHint, setShowEditorHint] = useState(true);
+  const navigate = useNavigate();
   
   // Always set view to desktop
   useEffect(() => {
     setCurrentView("desktop");
     
+    // Check if we have actual portfolio data, if not redirect to landing
+    if (!portfolioData || portfolioData.settings.name === "Your Name") {
+      toast.error("No portfolio data found", {
+        description: "Please upload a resume first"
+      });
+      navigate("/");
+      return;
+    }
+    
     // Show a welcome message to guide the user
     toast.success("Portfolio builder loaded", {
       description: "Click the Editor button to start customizing your portfolio"
     });
-  }, [setCurrentView]);
+  }, [setCurrentView, portfolioData, navigate]);
 
   // Hide editor hint when editor is opened
   useEffect(() => {
