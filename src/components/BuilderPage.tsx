@@ -53,9 +53,9 @@ const BuilderPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <BuilderToolbar />
       
-      {/* Editor Button Hint */}
+      {/* Editor Button Hint - positioned relative to the toolbar */}
       {showEditorHint && !showEditor && (
-        <div className="fixed top-16 left-4 z-40 animate-pulse">
+        <div className="fixed top-16 left-32 z-40 animate-pulse">
           <div className="bg-primary text-white px-3 py-2 rounded-lg shadow-lg text-sm relative">
             Click here to edit your portfolio
             <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary"></div>
