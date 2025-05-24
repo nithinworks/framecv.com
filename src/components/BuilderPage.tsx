@@ -53,12 +53,19 @@ const BuilderPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <BuilderToolbar />
       
-      {/* Editor Button Hint - positioned relative to the toolbar */}
+      {/* Editor Button Hint - positioned beside the editor button */}
       {showEditorHint && !showEditor && (
-        <div className="fixed top-16 left-32 z-40 animate-pulse">
-          <div className="bg-primary text-white px-3 py-2 rounded-lg shadow-lg text-sm relative">
-            Click here to edit your portfolio
-            <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary"></div>
+        <div className="fixed top-[14px] left-[180px] z-40 animate-pulse">
+          <div className="relative flex items-center">
+            {/* Side arrow pointing left */}
+            <div className="w-0 h-0 border-t-[8px] border-b-[8px] border-r-[12px] border-transparent border-r-white drop-shadow-sm"></div>
+            {/* Message bubble */}
+            <div className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow-lg text-sm font-medium relative ml-[-1px]">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <span>Click here to edit your portfolio</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
