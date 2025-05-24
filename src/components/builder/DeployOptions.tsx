@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Button } from "@/components/ui/button";
@@ -71,18 +70,24 @@ const DeployOptions: React.FC = () => {
         const handleMessage = (event: MessageEvent) => {
           console.log('Received message in DeployOptions:', event.data);
           
-          // Only process Netlify auth messages
-          if (!event.data || typeof event.data !== 'object' || !event.data.type) {
+          // Only process messages with proper structure
+          if (!event.data || typeof event.data !== 'object') {
             console.log('Ignoring invalid message format');
             return;
           }
           
-          if (!event.data.type.startsWith('NETLIFY_AUTH_')) {
+          // Only process Netlify auth messages
+          if (!event.data.type || !event.data.type.startsWith('NETLIFY_AUTH_')) {
             console.log('Ignoring non-Netlify message:', event.data.type);
             return;
           }
           
-          if (event.data.type === 'NETLIFY_AUTH_SUCCESS' && !messageReceived) {
+          if (messageReceived) {
+            console.log('Message already received, ignoring duplicate');
+            return;
+          }
+          
+          if (event.data.type === 'NETLIFY_AUTH_SUCCESS') {
             messageReceived = true;
             cleanup();
             
@@ -94,7 +99,7 @@ const DeployOptions: React.FC = () => {
             
             console.log('OAuth success, access token received, length:', token.length);
             resolve(token);
-          } else if (event.data.type === 'NETLIFY_AUTH_ERROR' && !messageReceived) {
+          } else if (event.data.type === 'NETLIFY_AUTH_ERROR') {
             messageReceived = true;
             cleanup();
             reject(new Error(event.data.error || 'Authorization failed'));

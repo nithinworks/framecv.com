@@ -7,14 +7,12 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   console.log('Callback complete page accessed');
   
-  // Return a simple HTML page that communicates with the parent window
   const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -81,14 +79,12 @@ serve(async (req) => {
         const accessToken = params.get('access_token');
         const state = params.get('state');
         const error = params.get('error');
-        const errorDescription = params.get('error_description');
 
         console.log('Parsed params:', { 
           hasToken: !!accessToken, 
           tokenLength: accessToken ? accessToken.length : 0,
           state, 
-          error,
-          errorDescription
+          error
         });
 
         // Function to send message to parent
@@ -130,7 +126,7 @@ serve(async (req) => {
         if (error) {
           messageData = {
             type: 'NETLIFY_AUTH_ERROR',
-            error: error + (errorDescription ? ': ' + errorDescription : ''),
+            error: error,
             timestamp: Date.now()
           };
         } else if (accessToken && accessToken.length > 0) {
