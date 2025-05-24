@@ -33,8 +33,8 @@ export const PortfolioProvider: React.FC<PortfolioProviderProps> = ({
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(initialData);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentView, setCurrentView] = useState<"mobile" | "desktop">("desktop");
-  const [activeSection, setActiveSection] = useState("settings");
-  const [showEditor, setShowEditor] = useState(true);
+  const [activeSection, setActiveSection] = useState("hero");
+  const [showEditor, setShowEditor] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [showDeploy, setShowDeploy] = useState(false);
 
