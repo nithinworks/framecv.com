@@ -9,7 +9,6 @@ import {
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import GitHubPublish from "./GitHubPublish";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
@@ -217,8 +216,6 @@ document.addEventListener("DOMContentLoaded", async function() {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">
-        <GitHubPublish />
-        
         <Button
           variant="outline"
           size="sm"
