@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ const LandingPage: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { setIsProcessing: setGlobalProcessing, setPortfolioData } = usePortfolio();
+  const { setIsProcessing: setGlobalProcessing } = usePortfolio();
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -116,12 +115,15 @@ const LandingPage: React.FC = () => {
         }
         
         if (data?.portfolioData) {
-          setPortfolioData(data.portfolioData);
           toast({
             title: "Resume processed successfully!",
             description: "Your portfolio has been generated. You can now review and edit it.",
           });
-          navigate("/builder");
+          
+          // Navigate to builder with the portfolio data in state
+          navigate("/builder", { 
+            state: { portfolioData: data.portfolioData }
+          });
         } else {
           throw new Error('No portfolio data received');
         }
@@ -138,12 +140,13 @@ const LandingPage: React.FC = () => {
         setGlobalProcessing(false);
       }
     },
-    [file, navigate, setGlobalProcessing, setPortfolioData, toast]
+    [file, navigate, setGlobalProcessing, toast]
   );
 
   const handleUseTemplate = () => {
-    setPortfolioData(samplePortfolioData);
-    navigate("/builder");
+    navigate("/builder", { 
+      state: { portfolioData: samplePortfolioData }
+    });
   };
 
   return (
