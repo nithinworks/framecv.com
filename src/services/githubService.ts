@@ -14,16 +14,34 @@ export interface GitHubUser {
 }
 
 class GitHubService {
+  // Get current session token
+  private async getAuthToken(): Promise<string | null> {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.access_token || null;
+  }
+
   // Check if user has connected their GitHub account
   async checkAuthentication(): Promise<boolean> {
     try {
+      const token = await this.getAuthToken();
+      if (!token) {
+        console.log('No auth token available');
+        return false;
+      }
+
       const { data, error } = await supabase.functions.invoke('github-oauth', {
         body: { 
           action: 'checkUserToken'
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
         }
       });
 
-      if (error) return false;
+      if (error) {
+        console.error('Error checking GitHub authentication:', error);
+        return false;
+      }
       return data?.hasToken || false;
     } catch (error) {
       console.error('Error checking GitHub authentication:', error);
@@ -34,14 +52,28 @@ class GitHubService {
   // Exchange OAuth code for access token
   async exchangeCodeForToken(code: string): Promise<boolean> {
     try {
+      const token = await this.getAuthToken();
+      if (!token) {
+        console.error('No auth token available for code exchange');
+        return false;
+      }
+
+      console.log('Exchanging code for token with auth token present:', !!token);
+
       const { data, error } = await supabase.functions.invoke('github-oauth', {
         body: { 
           action: 'exchangeCode',
           code
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
         }
       });
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error(error.message);
+      }
       return data?.success || false;
     } catch (error) {
       console.error('Error exchanging code for token:', error);
@@ -51,9 +83,17 @@ class GitHubService {
 
   // Get current user info using their stored token
   async getUser(): Promise<GitHubUser> {
+    const token = await this.getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+
     const { data, error } = await supabase.functions.invoke('github-oauth', {
       body: { 
         action: 'getUser'
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
       }
     });
 
@@ -63,11 +103,19 @@ class GitHubService {
 
   // Create a new repository using user's token
   async createRepository(name: string, description: string): Promise<GitHubRepo> {
+    const token = await this.getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+
     const { data, error } = await supabase.functions.invoke('github-oauth', {
       body: { 
         action: 'createRepository',
         name,
         description
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
       }
     });
 
@@ -77,12 +125,20 @@ class GitHubService {
 
   // Upload files to repository using user's token
   async uploadFiles(owner: string, repo: string, files: { path: string; content: string }[]): Promise<void> {
+    const token = await this.getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+
     const { error } = await supabase.functions.invoke('github-oauth', {
       body: { 
         action: 'uploadFiles',
         owner,
         repo,
         files
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
       }
     });
 
@@ -91,9 +147,17 @@ class GitHubService {
 
   // Disconnect GitHub account
   async disconnectAccount(): Promise<void> {
+    const token = await this.getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+
     const { error } = await supabase.functions.invoke('github-oauth', {
       body: { 
         action: 'disconnect'
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
       }
     });
 

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { githubOAuthService } from '@/services/githubOAuthService';
 import { githubService } from '@/services/githubService';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const GitHubCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -40,7 +41,15 @@ const GitHubCallback: React.FC = () => {
           throw new Error('Invalid state parameter - possible CSRF attack');
         }
 
-        console.log('State validated successfully, exchanging code for token...');
+        console.log('State validated successfully, checking user authentication...');
+        
+        // Check if user is authenticated
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          throw new Error('User not authenticated. Please log in first.');
+        }
+
+        console.log('User is authenticated, exchanging code for token...');
         
         // Exchange code for access token
         const success = await githubService.exchangeCodeForToken(code);
@@ -59,7 +68,7 @@ const GitHubCallback: React.FC = () => {
             navigate('/builder');
           }, 2000);
         } else {
-          throw new Error('Failed to exchange code for token - check Supabase secrets');
+          throw new Error('Failed to exchange code for token - check Supabase secrets and authentication');
         }
       } catch (error) {
         console.error('GitHub OAuth callback error:', error);
@@ -119,7 +128,7 @@ const GitHubCallback: React.FC = () => {
                 <p className="text-sm text-red-600 font-medium">Error Details:</p>
                 <p className="text-sm text-red-600">{errorDetails}</p>
                 <p className="text-xs text-red-500 mt-2">
-                  Check browser console and Supabase Edge Function logs for more details.
+                  Make sure you're logged in and check Supabase Edge Function logs for more details.
                 </p>
               </div>
             )}

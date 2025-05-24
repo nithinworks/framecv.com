@@ -1,4 +1,3 @@
-
 import { corsHeaders } from '../_shared/cors.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 
@@ -18,27 +17,65 @@ Deno.serve(async (req) => {
 
   try {
     console.log('GitHub OAuth request received');
+    console.log('Request method:', req.method);
+    console.log('Request URL:', req.url);
     
     // Get the authenticated user
-    const authHeader = req.headers.get('Authorization')!;
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
-    console.log('Supabase URL:', supabaseUrl);
+    const authHeader = req.headers.get('Authorization');
     console.log('Auth header present:', !!authHeader);
     
+    if (!authHeader) {
+      console.error('No authorization header provided');
+      return new Response(
+        JSON.stringify({ error: 'No authorization header provided' }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    console.log('Supabase URL:', supabaseUrl);
+    console.log('Service role key present:', !!supabaseKey);
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase configuration');
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
     const supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false }
     });
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
+    const token = authHeader.replace('Bearer ', '');
+    console.log('Token length:', token.length);
 
-    if (authError || !user) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError) {
       console.error('Auth error:', authError);
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
+        JSON.stringify({ error: 'Authentication failed', details: authError.message }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    if (!user) {
+      console.error('No user found');
+      return new Response(
+        JSON.stringify({ error: 'User not found' }),
         { 
           status: 401, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -59,10 +96,12 @@ Deno.serve(async (req) => {
 
     if (!githubClientId || !githubClientSecret) {
       console.error('GitHub OAuth credentials missing');
-      console.error('GITHUB_CLIENT_ID:', githubClientId);
-      console.error('GITHUB_CLIENT_SECRET present:', !!githubClientSecret);
+      console.error('Available env vars:', Object.keys(Deno.env.toObject()));
       return new Response(
-        JSON.stringify({ error: 'GitHub OAuth credentials not configured in Supabase secrets' }),
+        JSON.stringify({ 
+          error: 'GitHub OAuth credentials not configured in Supabase secrets',
+          details: `Missing: ${!githubClientId ? 'GITHUB_CLIENT_ID ' : ''}${!githubClientSecret ? 'GITHUB_CLIENT_SECRET' : ''}`
+        }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -73,6 +112,10 @@ Deno.serve(async (req) => {
     switch (action) {
       case 'exchangeCode':
         console.log('Exchanging code for token, code length:', code?.length);
+        
+        if (!code) {
+          throw new Error('No authorization code provided');
+        }
         
         // Exchange authorization code for access token
         const tokenRequestBody = {
@@ -94,6 +137,7 @@ Deno.serve(async (req) => {
         });
 
         console.log('GitHub token response status:', tokenResponse.status);
+        console.log('GitHub token response headers:', Object.fromEntries(tokenResponse.headers.entries()));
 
         if (!tokenResponse.ok) {
           const errorText = await tokenResponse.text();
@@ -101,7 +145,17 @@ Deno.serve(async (req) => {
           throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorText}`);
         }
 
-        const githubTokenData: GitHubTokenResponse = await tokenResponse.json();
+        const responseText = await tokenResponse.text();
+        console.log('GitHub raw response:', responseText);
+
+        let githubTokenData: GitHubTokenResponse;
+        try {
+          githubTokenData = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('Failed to parse GitHub response:', parseError);
+          throw new Error('Invalid response from GitHub');
+        }
+
         console.log('GitHub token response:', { ...githubTokenData, access_token: '[REDACTED]' });
 
         if (githubTokenData.error) {
