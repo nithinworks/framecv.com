@@ -1,16 +1,17 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
   PanelLeft, 
   Download, 
   ChevronLeft,
-  Globe
+  Github
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
-import NetlifyDeploy from "@/components/builder/NetlifyDeploy";
+import GitHubDeploy from "@/components/builder/GitHubDeploy";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
@@ -24,7 +25,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   } = usePortfolio();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [showNetlifyDeploy, setShowNetlifyDeploy] = useState(false);
+  const [showGitHubDeploy, setShowGitHubDeploy] = useState(false);
 
   const downloadSourceCode = () => {
     // HTML template
@@ -223,10 +224,10 @@ document.addEventListener("DOMContentLoaded", async function() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setShowNetlifyDeploy(true)}
+            onClick={() => setShowGitHubDeploy(true)}
             className="px-2 sm:px-3"
           >
-            <Globe className="h-4 w-4 sm:mr-2" />
+            <Github className="h-4 w-4 sm:mr-2" />
             {!isMobile && "Deploy"}
           </Button>
           
@@ -242,9 +243,9 @@ document.addEventListener("DOMContentLoaded", async function() {
         </div>
       </div>
 
-      <NetlifyDeploy 
-        open={showNetlifyDeploy} 
-        onOpenChange={setShowNetlifyDeploy} 
+      <GitHubDeploy 
+        open={showGitHubDeploy} 
+        onOpenChange={setShowGitHubDeploy} 
       />
     </>
   );
