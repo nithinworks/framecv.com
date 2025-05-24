@@ -10,7 +10,7 @@ import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
-import NetlifyDeploy from "@/components/NetlifyDeploy";
+import NetlifyDeploy from "@/components/builder/NetlifyDeploy";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
