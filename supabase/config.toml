@@ -1,1 +1,30 @@
+
 project_id = "rlnlbdrlruuoffnyaltc"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+port = 54324
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["https://lovable.dev"]
+jwt_expiry = 3600
+refresh_token_rotation_enabled = true
+security_update_password_require_reauthentication = false
+
+[functions.process-resume]
+verify_jwt = false
+
+[functions.netlify-auth]
+verify_jwt = false
+
+[functions.netlify-callback]
+verify_jwt = false
+
+[functions.netlify-deploy]
+verify_jwt = false
