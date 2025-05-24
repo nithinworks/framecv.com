@@ -8,6 +8,7 @@ import { Github, ExternalLink, Loader2, CheckCircle, AlertCircle, Globe, Unlink 
 import { githubService, GitHubUser, GitHubRepo } from "@/services/githubService";
 import { githubOAuthService } from "@/services/githubOAuthService";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const GitHubPublish: React.FC = () => {
   const { portfolioData } = usePortfolio();
@@ -17,6 +18,7 @@ const GitHubPublish: React.FC = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [user, setUser] = useState<GitHubUser | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [repoName, setRepoName] = useState(`${portfolioData.settings.name.toLowerCase().replace(/\s+/g, '-')}-portfolio`);
   const [repoDescription, setRepoDescription] = useState(`Personal portfolio website for ${portfolioData.settings.name}`);
   const [publishedRepo, setPublishedRepo] = useState<GitHubRepo | null>(null);
@@ -30,6 +32,18 @@ const GitHubPublish: React.FC = () => {
   const checkAuthentication = async () => {
     setIsCheckingAuth(true);
     try {
+      // First check if user is logged in to Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      const loggedIn = !!session?.user;
+      setIsLoggedIn(loggedIn);
+      
+      if (!loggedIn) {
+        setIsConnected(false);
+        setUser(null);
+        return;
+      }
+
+      // Then check GitHub connection
       const hasToken = await githubService.checkAuthentication();
       setIsConnected(hasToken);
       
@@ -38,6 +52,7 @@ const GitHubPublish: React.FC = () => {
         setUser(userInfo);
       }
     } catch (error) {
+      console.error('Auth check error:', error);
       setIsConnected(false);
       setUser(null);
     } finally {
@@ -46,6 +61,14 @@ const GitHubPublish: React.FC = () => {
   };
 
   const handleConnectGitHub = () => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to your account first before connecting GitHub.",
+        variant: "destructive",
+      });
+      return;
+    }
     githubOAuthService.initiateOAuth();
   };
 
@@ -314,7 +337,22 @@ This project is open source and available under the [MIT License](LICENSE).
           {isCheckingAuth ? (
             <div className="text-center space-y-4">
               <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-              <p className="text-sm text-gray-600">Checking GitHub connection...</p>
+              <p className="text-sm text-gray-600">Checking authentication...</p>
+            </div>
+          ) : !isLoggedIn ? (
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mx-auto">
+                <AlertCircle className="h-8 w-8 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Login Required</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  You need to be logged in to your account before connecting GitHub.
+                </p>
+              </div>
+              <Button onClick={() => window.location.href = '/auth'} className="w-full">
+                Go to Login
+              </Button>
             </div>
           ) : !isConnected ? (
             <div className="text-center space-y-4">
