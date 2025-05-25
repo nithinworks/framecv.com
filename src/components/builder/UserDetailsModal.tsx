@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,12 @@ interface UserDetailsModalProps {
   onSuccess: () => void;
 }
 
+interface StoredUserData {
+  name: string;
+  email: string;
+  timestamp: number;
+}
+
 const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   open,
   onOpenChange,
@@ -26,6 +32,76 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Local storage key and expiry (30 days in milliseconds)
+  const STORAGE_KEY = "portfolio_user_details";
+  const STORAGE_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+  // Load user data from localStorage on component mount
+  useEffect(() => {
+    const loadStoredUserData = () => {
+      try {
+        const storedData = localStorage.getItem(STORAGE_KEY);
+        if (storedData) {
+          const userData: StoredUserData = JSON.parse(storedData);
+          const now = Date.now();
+          
+          // Check if data hasn't expired
+          if (now - userData.timestamp < STORAGE_EXPIRY) {
+            setName(userData.name);
+            setEmail(userData.email);
+            // Auto-submit if data is still valid
+            handleAutoSubmit(userData);
+            return;
+          } else {
+            // Clear expired data
+            localStorage.removeItem(STORAGE_KEY);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading stored user data:', error);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    };
+
+    if (open) {
+      loadStoredUserData();
+    }
+  }, [open]);
+
+  // Auto-submit with stored data
+  const handleAutoSubmit = async (userData: StoredUserData) => {
+    setIsLoading(true);
+    
+    try {
+      // Use upsert to update existing record or create new one based on email
+      const { error } = await supabase
+        .from('user_submissions')
+        .upsert({
+          name: userData.name.trim(),
+          email: userData.email.trim(),
+          action_type: actionType,
+          portfolio_name: portfolioName
+        }, {
+          onConflict: 'email',
+          ignoreDuplicates: false
+        });
+
+      if (error) {
+        console.error('Error saving user details:', error);
+        // If auto-submit fails, show the modal for manual entry
+        setIsLoading(false);
+        return;
+      }
+
+      toast.success("Welcome back! Using your saved details.");
+      onOpenChange(false);
+      onSuccess();
+    } catch (error) {
+      console.error('Auto-submit error:', error);
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,13 +121,17 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
     setIsLoading(true);
 
     try {
+      // Use upsert to update existing record or create new one based on email
       const { error } = await supabase
         .from('user_submissions')
-        .insert({
+        .upsert({
           name: name.trim(),
           email: email.trim(),
           action_type: actionType,
           portfolio_name: portfolioName
+        }, {
+          onConflict: 'email',
+          ignoreDuplicates: false
         });
 
       if (error) {
@@ -59,6 +139,14 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
         toast.error("Failed to save details. Please try again.");
         return;
       }
+
+      // Save to localStorage for future use
+      const userDataToStore: StoredUserData = {
+        name: name.trim(),
+        email: email.trim(),
+        timestamp: Date.now()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userDataToStore));
 
       toast.success("Details saved successfully!");
       onOpenChange(false);
