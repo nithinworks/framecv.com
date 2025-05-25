@@ -10,13 +10,13 @@ const PortfolioPreview: React.FC = () => {
   const getContainerClass = () => {
     if (currentView === "mobile") {
       // Mobile preview with subtle border and rounded corners
-      return "max-w-[412px] h-[732px] mx-auto border border-gray-800/30 rounded-xl overflow-hidden shadow-2xl";
+      return "max-w-[412px] h-[732px] mx-auto border border-gray-700/30 rounded-2xl overflow-hidden shadow-2xl bg-white";
     }
-    return "w-full h-full max-w-[1280px] mx-auto border border-gray-800/20 rounded-xl overflow-hidden shadow-lg";
+    return "w-full h-full max-w-[1280px] mx-auto border border-gray-700/20 rounded-2xl overflow-hidden shadow-xl bg-white";
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-full p-4">      
+    <div className="flex flex-col justify-center items-center h-full p-6">      
       <div className={getContainerClass()}>
         <PortfolioPreviewFrame />
       </div>

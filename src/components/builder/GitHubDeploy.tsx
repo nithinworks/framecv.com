@@ -96,8 +96,8 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         setTimeout(resetForm, 300);
       }
     }}>
-      <DialogContent className="sm:max-w-[640px] max-h-[90vh] overflow-y-auto bg-[#0f0f0f] border-gray-800">
-        <DialogHeader className="space-y-6 pb-6">
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] bg-[#0f0f0f] border-gray-800 flex flex-col">
+        <DialogHeader className="space-y-4 pb-4 flex-shrink-0">
           <DialogTitle className="flex items-center gap-3 text-xl font-medium text-white">
             <Github className="h-6 w-6" />
             Deploy to GitHub Pages
@@ -107,17 +107,17 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-8">
+        <div className="flex-1 overflow-y-auto space-y-6 pr-1">
           {!deployResult && (
             <>
               {/* Instructions */}
-              <Alert className="bg-gray-900/50 border-gray-800 p-6">
+              <Alert className="bg-gray-900/50 border-gray-800 p-4">
                 <AlertDescription className="text-gray-300">
-                  <div className="space-y-5">
+                  <div className="space-y-4">
                     <div className="text-base font-medium text-white">
                       Step 1: Create a GitHub Personal Access Token
                     </div>
-                    <div className="text-sm text-gray-400 space-y-3 pl-0">
+                    <div className="text-sm text-gray-400 space-y-2 pl-0">
                       <div className="flex items-start gap-3">
                         <span className="text-white font-mono text-xs bg-gray-800 px-2 py-1 rounded min-w-[20px] text-center">1</span>
                         <span>Go to{" "}
@@ -142,7 +142,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                       </div>
                       <div className="flex items-start gap-3">
                         <span className="text-white font-mono text-xs bg-gray-800 px-2 py-1 rounded min-w-[20px] text-center">4</span>
-                        <span>Check this permission: <code className="bg-gray-800 px-2 py-1 rounded text-xs text-white font-mono">repo</code> (Full control of private repositories)</span>
+                        <span>Check: <code className="bg-gray-800 px-2 py-1 rounded text-xs text-white font-mono">repo</code> permission</span>
                       </div>
                       <div className="flex items-start gap-3">
                         <span className="text-white font-mono text-xs bg-gray-800 px-2 py-1 rounded min-w-[20px] text-center">5</span>
@@ -154,8 +154,8 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               </Alert>
 
               {/* Form */}
-              <div className="space-y-6">
-                <div className="space-y-3">
+              <div className="space-y-5">
+                <div className="space-y-2">
                   <Label htmlFor="accessToken" className="text-white text-sm font-medium">
                     GitHub Personal Access Token *
                   </Label>
@@ -172,7 +172,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                   </p>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <Label htmlFor="repoName" className="text-white text-sm font-medium">
                     Repository Name *
                   </Label>
@@ -188,45 +188,25 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                   </p>
                 </div>
               </div>
-
-              {/* Deploy Button */}
-              <Button
-                onClick={handleDeploy}
-                disabled={isDeploying || !accessToken.trim() || !repoName.trim()}
-                className="w-full h-12 text-base font-medium bg-white text-black hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                size="lg"
-              >
-                {isDeploying ? (
-                  <>
-                    <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                    Deploying...
-                  </>
-                ) : (
-                  <>
-                    <Github className="mr-3 h-5 w-5" />
-                    Deploy to GitHub
-                  </>
-                )}
-              </Button>
             </>
           )}
 
           {/* Results */}
           {deployResult && (
-            <div className="space-y-6">
+            <div className="space-y-5">
               {deployResult.success ? (
-                <Alert className="border-green-700/50 bg-green-900/20 p-6">
+                <Alert className="border-green-700/50 bg-green-900/20 p-5">
                   <CheckCircle className="h-5 w-5 text-green-400" />
                   <AlertDescription className="text-green-300">
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                       <div className="text-lg font-medium text-green-200">
                         ✅ Deployment Successful!
                       </div>
                       
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <div className="space-y-2">
                           <div className="text-sm font-medium text-green-200">GitHub Repository:</div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
                             <code className="bg-gray-900 px-3 py-2 rounded-lg text-sm flex-1 text-white font-mono border border-gray-700">
                               {deployResult.repoUrl}
                             </code>
@@ -234,24 +214,24 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                               variant="outline"
                               size="sm"
                               onClick={() => copyToClipboard(deployResult.repoUrl!)}
-                              className="h-10 w-10 p-0 border-gray-700 hover:bg-gray-800"
+                              className="h-9 w-9 p-0 border-gray-700 hover:bg-gray-800"
                             >
-                              <Copy className="h-4 w-4" />
+                              <Copy className="h-3 w-3" />
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => window.open(deployResult.repoUrl, "_blank")}
-                              className="h-10 w-10 p-0 border-gray-700 hover:bg-gray-800"
+                              className="h-9 w-9 p-0 border-gray-700 hover:bg-gray-800"
                             >
-                              <ExternalLink className="h-4 w-4" />
+                              <ExternalLink className="h-3 w-3" />
                             </Button>
                           </div>
                         </div>
 
                         <div className="space-y-2">
                           <div className="text-sm font-medium text-green-200">Live Website:</div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
                             <code className="bg-gray-900 px-3 py-2 rounded-lg text-sm flex-1 text-white font-mono border border-gray-700">
                               {deployResult.pagesUrl}
                             </code>
@@ -259,17 +239,17 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                               variant="outline"
                               size="sm"
                               onClick={() => copyToClipboard(deployResult.pagesUrl!)}
-                              className="h-10 w-10 p-0 border-gray-700 hover:bg-gray-800"
+                              className="h-9 w-9 p-0 border-gray-700 hover:bg-gray-800"
                             >
-                              <Copy className="h-4 w-4" />
+                              <Copy className="h-3 w-3" />
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => window.open(deployResult.pagesUrl, "_blank")}
-                              className="h-10 w-10 p-0 border-gray-700 hover:bg-gray-800"
+                              className="h-9 w-9 p-0 border-gray-700 hover:bg-gray-800"
                             >
-                              <ExternalLink className="h-4 w-4" />
+                              <ExternalLink className="h-3 w-3" />
                             </Button>
                           </div>
                         </div>
@@ -282,7 +262,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                   </AlertDescription>
                 </Alert>
               ) : (
-                <Alert className="border-red-700/50 bg-red-900/20 p-6">
+                <Alert className="border-red-700/50 bg-red-900/20 p-5">
                   <AlertDescription className="text-red-300">
                     <div className="space-y-3">
                       <div className="text-lg font-medium text-red-200">❌ Deployment Failed</div>
@@ -300,13 +280,37 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               <Button
                 onClick={resetForm}
                 variant="outline"
-                className="w-full h-12 text-base border-gray-700 hover:bg-gray-800 text-white"
+                className="w-full h-11 text-base border-gray-700 hover:bg-gray-800 text-white"
               >
                 Deploy Another Portfolio
               </Button>
             </div>
           )}
         </div>
+
+        {/* Fixed Footer with Deploy Button */}
+        {!deployResult && (
+          <div className="flex-shrink-0 pt-4 border-t border-gray-800 mt-4">
+            <Button
+              onClick={handleDeploy}
+              disabled={isDeploying || !accessToken.trim() || !repoName.trim()}
+              className="w-full h-12 text-base font-medium bg-white text-black hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              size="lg"
+            >
+              {isDeploying ? (
+                <>
+                  <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                  Deploying...
+                </>
+              ) : (
+                <>
+                  <Github className="mr-3 h-5 w-5" />
+                  Deploy to GitHub
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
