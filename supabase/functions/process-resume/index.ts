@@ -1,10 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { corsHeaders } from "../_shared/cors.ts"
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -168,6 +164,8 @@ serve(async (req) => {
     Extract all information from the resume and enhance it with your AI capabilities. Make it professional, engaging, and complete. Ensure ALL sections have meaningful content even if some information needs to be intelligently inferred or enhanced based on the available data.
     `
 
+    console.log('Calling Gemini API...')
+
     // Call Gemini API
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`,
@@ -207,7 +205,7 @@ serve(async (req) => {
     }
 
     const geminiData = await geminiResponse.json()
-    console.log('Gemini response:', geminiData)
+    console.log('Gemini response received successfully')
 
     // Extract the generated text
     const generatedText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
@@ -229,6 +227,8 @@ serve(async (req) => {
       console.error('Generated text:', generatedText)
       throw new Error('Failed to parse JSON from Gemini response')
     }
+
+    console.log('Portfolio data generated successfully')
 
     return new Response(
       JSON.stringify({ portfolioData }),
