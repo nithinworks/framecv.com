@@ -39,21 +39,21 @@ const BuilderPage: React.FC = () => {
   
   if (isProcessing) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-xl md:text-2xl font-display font-bold mb-2">Processing Your Resume</h2>
-          <p className="text-gray-600 text-sm md:text-base">Please wait while our AI analyzes your resume...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#171717] px-4">
+        <div className="text-center animate-blur-in">
+          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <h2 className="text-xl font-medium mb-3 text-white">Processing Your Resume</h2>
+          <p className="text-gray-400 text-sm">Please wait while our AI analyzes your resume...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#171717]">
       <BuilderToolbar showEditorHint={showEditorHint} />
       
-      <div className="pt-[60px] flex min-h-screen">
+      <div className="pt-14 flex min-h-screen">
         {/* Editor Sidebar */}
         <EditorSidebar />
         

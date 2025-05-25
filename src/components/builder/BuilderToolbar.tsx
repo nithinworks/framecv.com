@@ -467,65 +467,69 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 h-[60px] bg-white border-b shadow-sm z-40 flex justify-between items-center px-2 sm:px-4">
-        <div className="flex items-center gap-2 sm:gap-3">
+      <div className="fixed top-0 left-0 right-0 h-14 bg-[#171717] border-b border-gray-800 z-40 flex justify-between items-center px-4 animate-blur-in">
+        <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate('/')}
-            className="text-gray-600 px-2 sm:px-3"
+            className="text-gray-400 hover:text-white hover:bg-gray-800 px-3 py-2 h-8 text-sm transition-all duration-300"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
             {!isMobile && "Back"}
           </Button>
 
-          <div className="h-6 border-r border-gray-300"></div>
+          <div className="h-4 w-px bg-gray-800"></div>
 
           <div className="relative">
             <Button
-              variant={showEditor ? "default" : "outline"}
+              variant={showEditor ? "default" : "ghost"}
               size="sm"
               onClick={() => setShowEditor(!showEditor)}
-              className={`px-2 sm:px-3 ${
+              className={`px-3 py-2 h-8 text-sm transition-all duration-300 ${
+                showEditor 
+                  ? "bg-white text-black hover:bg-gray-200" 
+                  : "text-gray-400 hover:text-white hover:bg-gray-800"
+              } ${
                 showEditorHint && !showEditor 
-                  ? "animate-pulse border-2 border-blue-500 shadow-lg shadow-blue-500/25" 
+                  ? "animate-pulse border border-gray-600" 
                   : ""
               }`}
             >
-              <PanelLeft className="h-4 w-4 mr-1 sm:mr-2" />
+              <PanelLeft className="h-4 w-4 mr-2" />
               Editor
             </Button>
             
             {showEditorHint && !showEditor && !isMobile && (
-              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-1 z-50">
-                <div className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-medium relative whitespace-nowrap">
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 z-50 animate-fade-in">
+                <div className="bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-xs font-medium relative whitespace-nowrap">
                   <span>Click to edit</span>
-                  <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-gray-800"></div>
+                  <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-r-[4px] border-transparent border-r-gray-800"></div>
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-2">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => setShowGitHubDeploy(true)}
-            className="px-2 sm:px-3"
+            className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
           >
-            <Github className="h-4 w-4 sm:mr-2" />
+            <Github className="h-4 w-4 mr-2" />
             {!isMobile && "Deploy"}
           </Button>
           
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={downloadSourceCode}
-            className="px-2 sm:px-3"
+            className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
           >
-            <Download className="h-4 w-4 sm:mr-2" />
-            {!isMobile && "Download Code"}
+            <Download className="h-4 w-4 mr-2" />
+            {!isMobile && "Download"}
           </Button>
         </div>
       </div>
