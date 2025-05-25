@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useUserDetailsStorage } from "@/hooks/useUserDetailsStorage";
+import { useUserSubmission } from "@/hooks/useUserSubmission";
 
 interface UserDetailsModalProps {
   open: boolean;
@@ -14,12 +14,6 @@ interface UserDetailsModalProps {
   actionType: "download" | "deploy";
   portfolioName: string;
   onSuccess: () => void;
-}
-
-interface StoredUserData {
-  name: string;
-  email: string;
-  timestamp: number;
 }
 
 const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
@@ -31,75 +25,34 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
 }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Local storage key and expiry (30 days in milliseconds)
-  const STORAGE_KEY = "portfolio_user_details";
-  const STORAGE_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 days
+  const { loadStoredUserData, saveUserData } = useUserDetailsStorage();
+  const { isLoading, submitUserDetails } = useUserSubmission({
+    actionType,
+    portfolioName,
+    onSuccess,
+    onClose: () => onOpenChange(false)
+  });
 
   // Load user data from localStorage on component mount
   useEffect(() => {
-    const loadStoredUserData = () => {
-      try {
-        const storedData = localStorage.getItem(STORAGE_KEY);
-        if (storedData) {
-          const userData: StoredUserData = JSON.parse(storedData);
-          const now = Date.now();
-          
-          // Check if data hasn't expired
-          if (now - userData.timestamp < STORAGE_EXPIRY) {
-            setName(userData.name);
-            setEmail(userData.email);
-            // Auto-submit if data is still valid
-            handleAutoSubmit(userData);
-            return;
-          } else {
-            // Clear expired data
-            localStorage.removeItem(STORAGE_KEY);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading stored user data:', error);
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    };
-
     if (open) {
-      loadStoredUserData();
+      const storedData = loadStoredUserData();
+      if (storedData) {
+        setName(storedData.name);
+        setEmail(storedData.email);
+        // Auto-submit if data is still valid
+        handleAutoSubmit(storedData.name, storedData.email);
+      }
     }
   }, [open]);
 
   // Auto-submit with stored data
-  const handleAutoSubmit = async (userData: StoredUserData) => {
-    setIsLoading(true);
-    
-    try {
-      // Use upsert to update existing record or create new one based on email
-      const { error } = await supabase
-        .from('user_submissions')
-        .upsert({
-          name: userData.name.trim(),
-          email: userData.email.trim(),
-          action_type: actionType,
-          portfolio_name: portfolioName
-        }, {
-          onConflict: 'email',
-          ignoreDuplicates: false
-        });
-
-      if (error) {
-        console.error('Error saving user details:', error);
-        // If auto-submit fails, show the modal for manual entry
-        setIsLoading(false);
-        return;
-      }
-
-      toast.success("Welcome back! Using your saved details.");
-      onOpenChange(false);
-      onSuccess();
-    } catch (error) {
-      console.error('Auto-submit error:', error);
-      setIsLoading(false);
+  const handleAutoSubmit = async (storedName: string, storedEmail: string) => {
+    const success = await submitUserDetails(storedName, storedEmail, true);
+    if (!success) {
+      // If auto-submit failed, keep the modal open for manual entry
+      console.log('Auto-submit failed, showing modal for manual entry');
     }
   };
 
@@ -118,48 +71,14 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      // Use upsert to update existing record or create new one based on email
-      const { error } = await supabase
-        .from('user_submissions')
-        .upsert({
-          name: name.trim(),
-          email: email.trim(),
-          action_type: actionType,
-          portfolio_name: portfolioName
-        }, {
-          onConflict: 'email',
-          ignoreDuplicates: false
-        });
-
-      if (error) {
-        console.error('Error saving user details:', error);
-        toast.error("Failed to save details. Please try again.");
-        return;
-      }
-
+    const success = await submitUserDetails(name, email, false);
+    if (success) {
       // Save to localStorage for future use
-      const userDataToStore: StoredUserData = {
-        name: name.trim(),
-        email: email.trim(),
-        timestamp: Date.now()
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userDataToStore));
-
-      toast.success("Details saved successfully!");
-      onOpenChange(false);
-      onSuccess();
+      saveUserData(name, email);
       
       // Reset form
       setName("");
       setEmail("");
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error("An error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
