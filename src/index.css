@@ -1,69 +1,31 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400,300&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --background: 210 9% 9%;
+    --foreground: 0 0% 98%;
+    --card: 210 9% 9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 210 9% 9%;
+    --popover-foreground: 0 0% 98%;
     --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 97%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 97%;
-    --muted-foreground: 0 0% 42%;
-    --accent: 0 0% 95%;
-    --accent-foreground: 0 0% 9%;
+    --primary-foreground: 210 9% 9%;
+    --secondary: 210 9% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 210 9% 15%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 210 9% 25%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 9%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 9%;
-    --sidebar-primary: 0 0% 9%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 97%;
-    --sidebar-accent-foreground: 0 0% 9%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 0 0% 90%;
-  }
-
-  .dark {
-    --background: 0 0% 6%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 6%;
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
+    --border: 210 9% 15%;
+    --input: 210 9% 15%;
     --ring: 0 0% 83%;
-    --sidebar-background: 0 0% 6%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 0 0% 6%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 0 0% 83%;
+    --radius: 0.75rem;
   }
 }
 
@@ -74,6 +36,7 @@
   
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    background-color: #171717;
     font-feature-settings: "cv11", "ss01";
     font-variation-settings: "opsz" 32;
   }
@@ -83,59 +46,71 @@
   }
   
   h1 {
-    @apply text-5xl md:text-6xl lg:text-7xl font-light;
+    @apply text-4xl md:text-5xl lg:text-6xl font-normal;
   }
   
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl font-light;
+    @apply text-2xl md:text-3xl lg:text-4xl font-normal;
   }
   
   h3 {
-    @apply text-2xl md:text-3xl font-normal;
-  }
-  
-  h4 {
     @apply text-xl md:text-2xl font-normal;
   }
   
-  p {
-    @apply text-base leading-relaxed text-muted-foreground;
+  h4 {
+    @apply text-lg md:text-xl font-normal;
   }
   
-  .text-gradient {
-    @apply bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent;
+  p {
+    @apply text-sm leading-relaxed text-muted-foreground;
   }
 }
 
 /* Minimal button styles */
 .btn-minimal {
-  @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium 
-         bg-transparent border border-border rounded-md 
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-normal
+         bg-transparent border border-border rounded-lg 
          hover:bg-accent hover:text-accent-foreground 
          focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
-         transition-all duration-200 ease-out;
+         transition-all duration-300 ease-out;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium 
-         bg-foreground text-background border border-foreground rounded-md 
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-normal
+         bg-foreground text-background border border-foreground rounded-lg 
          hover:bg-muted-foreground hover:border-muted-foreground
          focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
-         transition-all duration-200 ease-out;
+         transition-all duration-300 ease-out;
+}
+
+/* Drop zone styling */
+.drop-zone {
+  @apply border-2 border-dashed border-border bg-card/30 hover:bg-card/50 
+         rounded-lg p-12 text-center transition-all duration-300 ease-out
+         hover:border-accent;
+}
+
+.drop-zone.active {
+  @apply border-primary bg-primary/5;
+}
+
+/* Navigation link */
+.nav-link {
+  @apply text-sm text-muted-foreground hover:text-foreground transition-colors duration-200;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent;
 }
 
 /* Smooth animations */
 .animate-entrance {
-  animation: fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: blur-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-scale {
-  @apply transition-transform duration-200 ease-out hover:scale-[1.02];
-}
-
-/* Focus states */
-.focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1;
+.animate-stagger {
+  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Custom scrollbar */
@@ -145,7 +120,7 @@
 }
 
 .scrollbar-minimal::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 .scrollbar-minimal::-webkit-scrollbar-track {
