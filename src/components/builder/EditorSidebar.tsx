@@ -35,7 +35,7 @@ const EditorSidebar: React.FC = () => {
 
   return (
     <div className={sidebarClasses}>
-      <div className="flex justify-between items-center px-4 py-3 border-b border-gray-800">
+      <div className="flex justify-between items-center px-4 py-3 border-b border-gray-800 flex-shrink-0">
         <h3 className="font-medium text-sm text-white">Portfolio Editor</h3>
         <Button 
           variant="ghost" 
@@ -47,9 +47,9 @@ const EditorSidebar: React.FC = () => {
         </Button>
       </div>
 
-      <div className="flex h-[calc(100vh-56px)]">
+      <div className="flex h-[calc(100vh-110px)] min-h-0">
         {/* Side Navigation */}
-        <div className={`${isMobile ? 'w-12' : 'w-16'} border-r border-gray-800 bg-[#0f0f0f] flex flex-col items-center py-4 space-y-2`}>
+        <div className={`${isMobile ? 'w-12' : 'w-16'} border-r border-gray-800 bg-[#0f0f0f] flex flex-col items-center py-4 space-y-2 flex-shrink-0`}>
           {sections.map((section) => {
             const IconComponent = section.icon;
             return (
@@ -70,15 +70,15 @@ const EditorSidebar: React.FC = () => {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           <div className="px-4 py-3 border-b border-gray-800 flex-shrink-0">
             <h4 className="font-medium text-sm text-white">{currentSection.label}</h4>
           </div>
-          <ScrollArea className="flex-1 scrollbar-minimal">
+          <div className="flex-1 overflow-y-auto min-h-0">
             <div className={`${isMobile ? 'p-3' : 'p-4'} space-y-4`}>
               {currentSection.component}
             </div>
-          </ScrollArea>
+          </div>
         </div>
       </div>
     </div>

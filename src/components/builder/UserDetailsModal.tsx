@@ -83,15 +83,15 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-md h-auto max-h-[85vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-lg font-semibold">
             {actionType === "download" ? "Download Portfolio" : "Deploy to GitHub"}
           </DialogTitle>
         </DialogHeader>
         
-        <div className="flex-1 overflow-y-auto">
-          <form onSubmit={handleSubmit} className="space-y-4 p-1">
+        <div className="flex-1 min-h-0 overflow-y-auto pr-2">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -124,7 +124,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
           </form>
         </div>
         
-        <div className="flex-shrink-0 flex justify-end gap-3 pt-4 border-t">
+        <div className="flex-shrink-0 flex justify-end gap-3 pt-4 border-t mt-4">
           <Button
             type="button"
             variant="outline"

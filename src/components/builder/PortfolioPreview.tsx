@@ -11,17 +11,17 @@ const PortfolioPreview: React.FC = () => {
   // Function to get container class based on view mode
   const getContainerClass = () => {
     if (isMobile) {
-      // Mobile: full screen preview with minimal padding
+      // Mobile: full screen preview without any padding or rounded corners
       return "w-full h-full bg-white";
     }
     
     if (currentView === "mobile") {
-      // Mobile preview with device frame
-      return "max-w-[412px] h-[732px] mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl";
+      // Mobile preview with device frame and elegant rounded corners
+      return "max-w-[412px] h-[732px] mx-auto bg-white rounded-xl overflow-hidden shadow-lg";
     }
     
-    // Desktop preview - clean and full
-    return "w-full h-full max-w-[1280px] mx-auto bg-white overflow-hidden";
+    // Desktop preview - clean with subtle rounded corners
+    return "w-full h-full max-w-[1280px] mx-auto bg-white overflow-hidden rounded-lg shadow-sm";
   };
 
   const containerPadding = isMobile ? "p-0" : "p-6";
