@@ -40,7 +40,7 @@ const handler = async (req: Request): Promise<Response> => {
     - Choose a professional color scheme that complements their field
     - Always include complete navigation menu and footer
     - Add relevant CTA buttons based on their profession
-    - For profile image: Analyze the name/content to determine gender. If female, use "https://media.istockphoto.com/id/1398385392/photo/happy-young-millennial-indian-business-woman-head-shot-portrait.jpg?s=612x612&w=0&k=20&c=QSRWD4KI7JCRJGdMKAhfUBv3Fc2v-7Nvu04iRMAPhGU=", if male use "https://media.istockphoto.com/id/1360063450/photo-headshot-profile-picture-young-businessman-sit-in-kitchen-webcam-view.jpg?s=612x612&w=0&k=20&c=6DoR9bff-RQ5N31LV_tQPsj_hT1HPxGAIn07mLkLxgc="
+    - For profile image: Analyze the name/content to determine gender. If female, use "https://media.istockphoto.com/id/1398385392/photo/happy-young-millennial-indian-business-woman-head-shot-portrait.jpg?s=612x612&w=0&k=20&c=QSRWD4KI7JCRJGdMKAhfUBv3Fc2v-7Nvu04iRMAPhGU=", if male use "https://t4.ftcdn.net/jpg/04/31/64/75/360_F_431647519_usrbQ8Z983hTYe8zgA7t1XVc5fEtqcpa.jpg"
 
     Return ONLY a valid JSON object with this EXACT structure:
     {
@@ -111,19 +111,7 @@ const handler = async (req: Request): Promise<Response> => {
             {
               "institution": "Institution Name",
               "degree": "Degree Title",
-              "period": "MM/YYYY - MM/YYYY",
-              "description": "Add relevant coursework, achievements, or GPA if notable"
-            }
-          ]
-        },
-        "achievements": {
-          "enabled": true,
-          "title": "Achievements & Certifications",
-          "items": [
-            {
-              "title": "Achievement/Certification Title",
-              "period": "MM/YYYY",
-              "description": "Brief description of the achievement or certification"
+              "period": "MM/YYYY - MM/YYYY"
             }
           ]
         },
