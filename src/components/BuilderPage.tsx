@@ -50,17 +50,17 @@ const BuilderPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#171717]">
+    <div className="h-screen bg-[#171717] overflow-hidden">
       <BuilderToolbar showEditorHint={showEditorHint} />
       
-      <div className="pt-14 flex min-h-screen">
+      <div className="h-full pt-14 flex overflow-hidden">
         {/* Editor Sidebar */}
         <EditorSidebar />
         
         {/* Main Preview Area */}
         <div className={`flex-1 transition-all duration-300 ${
           showEditor && !isMobile ? "ml-96" : ""
-        } ${isMobile ? "px-2" : ""}`}>
+        } h-full overflow-hidden`}>
           <PortfolioPreview />
         </div>
         
