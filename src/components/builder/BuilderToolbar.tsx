@@ -486,15 +486,20 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
               variant={showEditor ? "default" : "ghost"}
               size="sm"
               onClick={() => setShowEditor(!showEditor)}
-              className={`px-3 py-2 h-8 text-sm transition-all duration-300 ${
+              className={`px-3 py-2 h-8 text-sm transition-all duration-300 relative overflow-hidden ${
                 showEditor 
                   ? "bg-white text-black hover:bg-gray-200" 
                   : "text-gray-400 hover:text-white hover:bg-gray-800"
               } ${
                 showEditorHint && !showEditor 
-                  ? "animate-pulse border border-gray-600" 
+                  ? "before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:from-transparent before:via-gray-600 before:to-transparent before:animate-[shimmer_2s_ease-in-out_infinite] before:-translate-x-full" 
                   : ""
               }`}
+              style={{
+                background: showEditorHint && !showEditor 
+                  ? 'linear-gradient(90deg, transparent, rgba(156, 163, 175, 0.1), transparent)'
+                  : undefined
+              }}
             >
               <PanelLeft className="h-4 w-4 mr-2" />
               Editor

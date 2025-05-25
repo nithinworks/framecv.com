@@ -102,12 +102,17 @@ export default {
 				'scale-blur': {
 					'0%': { opacity: '0', transform: 'scale(0.95)', filter: 'blur(5px)' },
 					'100%': { opacity: '1', transform: 'scale(1)', filter: 'blur(0px)' }
+				},
+				'shimmer': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
 				}
 			},
 			animation: {
 				'blur-in': 'blur-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
 				'fade-up': 'fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-				'scale-blur': 'scale-blur 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+				'scale-blur': 'scale-blur 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+				'shimmer': 'shimmer 2s ease-in-out infinite'
 			}
 		}
 	},
