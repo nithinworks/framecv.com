@@ -93,81 +93,97 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={(newOpen) => {
       onOpenChange(newOpen);
       if (!newOpen) {
-        setTimeout(resetForm, 300); // Reset after dialog closes
+        setTimeout(resetForm, 300);
       }
     }}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Github className="h-5 w-5" />
+      <DialogContent className="sm:max-w-[640px] max-h-[90vh] overflow-y-auto bg-[#0f0f0f] border-gray-800">
+        <DialogHeader className="space-y-6 pb-6">
+          <DialogTitle className="flex items-center gap-3 text-xl font-medium text-white">
+            <Github className="h-6 w-6" />
             Deploy to GitHub Pages
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-gray-400 text-base leading-relaxed">
             Deploy your portfolio as a GitHub repository with automatic GitHub Pages hosting.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {!deployResult && (
             <>
               {/* Instructions */}
-              <Alert>
-                <AlertDescription>
-                  <div className="space-y-3">
-                    <div>
-                      <strong>Step 1:</strong> Create a GitHub Personal Access Token
+              <Alert className="bg-gray-900/50 border-gray-800 p-6">
+                <AlertDescription className="text-gray-300">
+                  <div className="space-y-5">
+                    <div className="text-base font-medium text-white">
+                      Step 1: Create a GitHub Personal Access Token
                     </div>
-                    <div className="text-sm text-muted-foreground pl-4">
-                      1. Go to{" "}
-                      <a
-                        href="https://github.com/settings/tokens/new"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline inline-flex items-center gap-1"
-                      >
-                        GitHub Token Settings
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                      <br />
-                      2. Give it a name like "Portfolio Deploy"
-                      <br />
-                      3. Select expiration (30 days recommended)
-                      <br />
-                      4. Check these permissions: <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">repo</code> (Full control of private repositories)
-                      <br />
-                      5. Click "Generate token" and copy it
+                    <div className="text-sm text-gray-400 space-y-3 pl-0">
+                      <div className="flex items-start gap-3">
+                        <span className="text-white font-mono text-xs bg-gray-800 px-2 py-1 rounded min-w-[20px] text-center">1</span>
+                        <span>Go to{" "}
+                          <a
+                            href="https://github.com/settings/tokens/new"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 hover:text-blue-300 underline inline-flex items-center gap-1 transition-colors"
+                          >
+                            GitHub Token Settings
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </span>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-white font-mono text-xs bg-gray-800 px-2 py-1 rounded min-w-[20px] text-center">2</span>
+                        <span>Give it a name like "Portfolio Deploy"</span>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-white font-mono text-xs bg-gray-800 px-2 py-1 rounded min-w-[20px] text-center">3</span>
+                        <span>Select expiration (30 days recommended)</span>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-white font-mono text-xs bg-gray-800 px-2 py-1 rounded min-w-[20px] text-center">4</span>
+                        <span>Check this permission: <code className="bg-gray-800 px-2 py-1 rounded text-xs text-white font-mono">repo</code> (Full control of private repositories)</span>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-white font-mono text-xs bg-gray-800 px-2 py-1 rounded min-w-[20px] text-center">5</span>
+                        <span>Click "Generate token" and copy it</span>
+                      </div>
                     </div>
                   </div>
                 </AlertDescription>
               </Alert>
 
               {/* Form */}
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="accessToken">GitHub Personal Access Token *</Label>
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <Label htmlFor="accessToken" className="text-white text-sm font-medium">
+                    GitHub Personal Access Token *
+                  </Label>
                   <Input
                     id="accessToken"
                     type="password"
                     value={accessToken}
                     onChange={(e) => setAccessToken(e.target.value)}
                     placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                    className="mt-1"
+                    className="h-11 bg-gray-900 border-gray-700 text-white placeholder-gray-500 focus:border-gray-600 focus:ring-gray-600"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     This token is only used for this deployment and is not stored.
                   </p>
                 </div>
 
-                <div>
-                  <Label htmlFor="repoName">Repository Name *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="repoName" className="text-white text-sm font-medium">
+                    Repository Name *
+                  </Label>
                   <Input
                     id="repoName"
                     value={repoName}
                     onChange={(e) => setRepoName(e.target.value)}
                     placeholder="my-portfolio"
-                    className="mt-1"
+                    className="h-11 bg-gray-900 border-gray-700 text-white placeholder-gray-500 focus:border-gray-600 focus:ring-gray-600"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     This will be your GitHub repository name (must be unique in your account).
                   </p>
                 </div>
@@ -177,17 +193,17 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               <Button
                 onClick={handleDeploy}
                 disabled={isDeploying || !accessToken.trim() || !repoName.trim()}
-                className="w-full"
+                className="w-full h-12 text-base font-medium bg-white text-black hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 size="lg"
               >
                 {isDeploying ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-3 h-5 w-5 animate-spin" />
                     Deploying...
                   </>
                 ) : (
                   <>
-                    <Github className="mr-2 h-4 w-4" />
+                    <Github className="mr-3 h-5 w-5" />
                     Deploy to GitHub
                   </>
                 )}
@@ -197,77 +213,83 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
           {/* Results */}
           {deployResult && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {deployResult.success ? (
-                <Alert className="border-green-200 bg-green-50">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-green-800">
-                    <div className="space-y-3">
-                      <div className="font-medium">✅ Deployment Successful!</div>
+                <Alert className="border-green-700/50 bg-green-900/20 p-6">
+                  <CheckCircle className="h-5 w-5 text-green-400" />
+                  <AlertDescription className="text-green-300">
+                    <div className="space-y-5">
+                      <div className="text-lg font-medium text-green-200">
+                        ✅ Deployment Successful!
+                      </div>
                       
-                      <div className="space-y-2">
-                        <div>
-                          <strong>GitHub Repository:</strong>
-                          <div className="flex items-center gap-2 mt-1">
-                            <code className="bg-white px-2 py-1 rounded text-sm flex-1">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-green-200">GitHub Repository:</div>
+                          <div className="flex items-center gap-3">
+                            <code className="bg-gray-900 px-3 py-2 rounded-lg text-sm flex-1 text-white font-mono border border-gray-700">
                               {deployResult.repoUrl}
                             </code>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => copyToClipboard(deployResult.repoUrl!)}
+                              className="h-10 w-10 p-0 border-gray-700 hover:bg-gray-800"
                             >
-                              <Copy className="h-3 w-3" />
+                              <Copy className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => window.open(deployResult.repoUrl, "_blank")}
+                              className="h-10 w-10 p-0 border-gray-700 hover:bg-gray-800"
                             >
-                              <ExternalLink className="h-3 w-3" />
+                              <ExternalLink className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
 
-                        <div>
-                          <strong>Live Website:</strong>
-                          <div className="flex items-center gap-2 mt-1">
-                            <code className="bg-white px-2 py-1 rounded text-sm flex-1">
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-green-200">Live Website:</div>
+                          <div className="flex items-center gap-3">
+                            <code className="bg-gray-900 px-3 py-2 rounded-lg text-sm flex-1 text-white font-mono border border-gray-700">
                               {deployResult.pagesUrl}
                             </code>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => copyToClipboard(deployResult.pagesUrl!)}
+                              className="h-10 w-10 p-0 border-gray-700 hover:bg-gray-800"
                             >
-                              <Copy className="h-3 w-3" />
+                              <Copy className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => window.open(deployResult.pagesUrl, "_blank")}
+                              className="h-10 w-10 p-0 border-gray-700 hover:bg-gray-800"
                             >
-                              <ExternalLink className="h-3 w-3" />
+                              <ExternalLink className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
                       </div>
 
-                      <div className="text-sm">
+                      <div className="text-sm text-green-400 bg-green-900/30 p-3 rounded-lg border border-green-700/30">
                         <strong>Note:</strong> GitHub Pages may take a few minutes to be available after first deployment.
                       </div>
                     </div>
                   </AlertDescription>
                 </Alert>
               ) : (
-                <Alert variant="destructive">
-                  <AlertDescription>
-                    <div className="space-y-2">
-                      <div className="font-medium">❌ Deployment Failed</div>
-                      <div className="text-sm">
+                <Alert className="border-red-700/50 bg-red-900/20 p-6">
+                  <AlertDescription className="text-red-300">
+                    <div className="space-y-3">
+                      <div className="text-lg font-medium text-red-200">❌ Deployment Failed</div>
+                      <div className="text-sm bg-red-900/30 p-3 rounded-lg border border-red-700/30">
                         {deployResult.error || "An unknown error occurred"}
                       </div>
-                      <div className="text-xs">
+                      <div className="text-xs text-red-400">
                         Please check that your access token has the correct permissions and try again.
                       </div>
                     </div>
@@ -278,7 +300,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               <Button
                 onClick={resetForm}
                 variant="outline"
-                className="w-full"
+                className="w-full h-12 text-base border-gray-700 hover:bg-gray-800 text-white"
               >
                 Deploy Another Portfolio
               </Button>
