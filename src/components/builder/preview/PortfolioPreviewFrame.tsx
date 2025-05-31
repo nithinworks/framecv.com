@@ -4,8 +4,10 @@ import { usePortfolio } from "@/context/PortfolioContext";
 import { useIframeRenderer } from "@/hooks/useIframeRenderer";
 
 const PortfolioPreviewFrame: React.FC = () => {
-  const { portfolioData, currentView } = usePortfolio();
-  const { iframeRef, handleIframeLoad } = useIframeRenderer(portfolioData, currentView);
+  const { portfolioData, currentView, getCurrentTheme } = usePortfolio();
+  const currentTheme = getCurrentTheme();
+  
+  const { iframeRef, handleIframeLoad } = useIframeRenderer(portfolioData, currentView, currentTheme);
 
   return (
     <iframe

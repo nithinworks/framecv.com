@@ -2,32 +2,22 @@
 import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useDevicePreview } from "@/hooks/useDevicePreview";
 import PortfolioPreviewFrame from "./preview/PortfolioPreviewFrame";
-import DevicePreviewControls from "./preview/DevicePreviewControls";
 
 const PortfolioPreview: React.FC = () => {
   const { currentView } = usePortfolio();
   const isMobile = useIsMobile();
-  const { getCurrentDevice } = useDevicePreview();
   
-  const currentDevice = getCurrentDevice();
-  
-  // Function to get container class based on device type
+  // Function to get container class based on view mode
   const getContainerClass = () => {
     if (isMobile) {
       // Mobile: full screen preview without any padding or rounded corners
       return "w-full h-full bg-white";
     }
     
-    if (currentDevice.type === "mobile") {
+    if (currentView === "mobile") {
       // Mobile preview with device frame and elegant rounded corners
-      return `w-full max-w-[375px] h-[732px] mx-auto bg-white rounded-xl overflow-hidden shadow-lg`;
-    }
-
-    if (currentDevice.type === "tablet") {
-      // Tablet preview with device frame
-      return `w-full max-w-[768px] h-[800px] mx-auto bg-white rounded-xl overflow-hidden shadow-lg`;
+      return "max-w-[412px] h-[732px] mx-auto bg-white rounded-xl overflow-hidden shadow-lg";
     }
     
     // Desktop preview - clean with subtle rounded corners
@@ -37,8 +27,7 @@ const PortfolioPreview: React.FC = () => {
   const containerPadding = isMobile ? "p-0" : "p-6";
 
   return (
-    <div className={`flex flex-col justify-center items-center h-full ${containerPadding} overflow-hidden`}>
-      {!isMobile && <DevicePreviewControls />}
+    <div className={`flex flex-col justify-center items-center h-full ${containerPadding} overflow-hidden`}>      
       <div className={getContainerClass()}>
         <PortfolioPreviewFrame />
       </div>
