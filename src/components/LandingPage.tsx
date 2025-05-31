@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,8 +18,7 @@ const LandingPage: React.FC = () => {
   const { setIsProcessing: setGlobalProcessing } = usePortfolio();
 
   useEffect(() => {
-    // Reduced timeout for faster initial load
-    const timer = setTimeout(() => setIsLoaded(true), 50);
+    const timer = setTimeout(() => setIsLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
@@ -154,7 +154,7 @@ const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className={`border-b border-border transition-all duration-700 ${isLoaded ? 'animate-blur-in' : 'opacity-0'}`}>
+      <header className={`border-b border-border transition-all duration-1000 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md'}`}>
         <div className="container mx-auto py-4 md:py-6 px-4 md:px-8 flex justify-between items-center">
           <div className="flex items-center gap-2 md:gap-3">
             <div className="w-6 h-6 md:w-7 md:h-7 bg-foreground rounded-md flex items-center justify-center text-background font-medium text-xs md:text-sm">P</div>
@@ -175,24 +175,24 @@ const LandingPage: React.FC = () => {
         <div className="container mx-auto text-center max-w-4xl">
           
           {/* Announcement Bar */}
-          <div className={`transition-all duration-700 delay-75 ${isLoaded ? 'animate-blur-in' : 'opacity-0'}`}>
+          <div className={`transition-all duration-1000 delay-100 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-4'}`}>
             <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 mb-6 md:mb-8 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
               <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
               <span className="text-xs md:text-sm text-muted-foreground font-medium">AI-powered portfolio generation</span>
             </div>
           </div>
 
-          <div className={`transition-all duration-800 delay-150 ${isLoaded ? 'animate-blur-in' : 'opacity-0'}`}>
+          <div className={`transition-all duration-1200 delay-200 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-8'}`}>
             <h1 className="text-2xl md:text-4xl lg:text-5xl font-medium mb-3 md:mb-4 tracking-tight leading-[1.2] md:leading-[1.2] lg:leading-[1.2] max-w-3xl mx-auto px-2">
               Your Journey Deserves More Than a Resume
             </h1>
-            <h2 className="text-base md:text-xl lg:text-2xl font-normal mb-8 md:mb-12 text-muted-foreground leading-[1.8] md:leading-[1.7] lg:leading-[1.6] max-w-2xl mx-auto px-2">
+            <h2 className="text-sm md:text-lg lg:text-xl font-normal mb-8 md:mb-12 text-muted-foreground leading-[1.6] md:leading-[1.6] lg:leading-[1.6] max-w-2xl mx-auto px-2">
               Let our AI turn your resume into a stunning personal portfolio — in seconds, for free.
             </h2>
           </div>
 
           {/* Upload Section */}
-          <div className={`transition-all duration-700 delay-225 ${isLoaded ? 'animate-blur-in' : 'opacity-0'}`}>
+          <div className={`transition-all duration-1000 delay-300 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-8'}`}>
             <div className="max-w-md mx-auto">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div 
@@ -248,25 +248,18 @@ const LandingPage: React.FC = () => {
                 </Button>
               </form>
 
-              {/* Three Points - Responsive Layout */}
-              <div className="mt-8">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 text-sm text-muted-foreground">
-                  {/* Desktop: Two items on first line */}
-                  <div className="flex items-center justify-center gap-6 md:gap-8">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"></div>
-                      <span>Free forever</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full"></div>
-                      <span>No credit card</span>
-                    </div>
-                  </div>
-                  {/* Desktop: One item on second line, centered */}
-                  <div className="flex items-center gap-2 md:w-full md:justify-center">
-                    <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full"></div>
-                    <span>Ready in minutes</span>
-                  </div>
+              <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-foreground rounded-full"></div>
+                  <span>Free forever</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-foreground rounded-full"></div>
+                  <span>No credit card</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-foreground rounded-full"></div>
+                  <span>Ready in minutes</span>
                 </div>
               </div>
             </div>
@@ -277,7 +270,7 @@ const LandingPage: React.FC = () => {
       {/* How It Works Section */}
       <section id="how-it-works" className="py-20 md:py-32">
         <div className="container mx-auto px-4 md:px-8">
-          <div className={`transition-all duration-700 ${isLoaded ? 'animate-fade-up' : 'opacity-0'}`}>
+          <div className={`transition-all duration-1000 ${isLoaded ? 'animate-fade-up' : 'opacity-0 translate-y-8'}`}>
             <div className="text-center mb-16 md:mb-20">
               <div className="inline-flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -291,7 +284,7 @@ const LandingPage: React.FC = () => {
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto">
-              <div className={`text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-700 ${isLoaded ? 'animate-fade-up' : 'opacity-0'}`} style={{ animationDelay: '400ms' }}>
+              <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="w-12 h-12 rounded-xl bg-blue-500/20 backdrop-blur-sm flex items-center justify-center mb-6 mx-auto">
                   <Upload className="w-5 h-5 text-blue-400" />
                 </div>
@@ -302,7 +295,7 @@ const LandingPage: React.FC = () => {
                 </p>
               </div>
               
-              <div className={`text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-700 ${isLoaded ? 'animate-fade-up' : 'opacity-0'}`} style={{ animationDelay: '500ms' }}>
+              <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="w-12 h-12 rounded-xl bg-purple-500/20 backdrop-blur-sm flex items-center justify-center mb-6 mx-auto">
                   <Sparkles className="w-5 h-5 text-purple-400" />
                 </div>
@@ -313,7 +306,7 @@ const LandingPage: React.FC = () => {
                 </p>
               </div>
               
-              <div className={`text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-700 ${isLoaded ? 'animate-fade-up' : 'opacity-0'}`} style={{ animationDelay: '600ms' }}>
+              <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="w-12 h-12 rounded-xl bg-green-500/20 backdrop-blur-sm flex items-center justify-center mb-6 mx-auto">
                   <Globe className="w-5 h-5 text-green-400" />
                 </div>
@@ -331,7 +324,7 @@ const LandingPage: React.FC = () => {
       {/* Features Section */}
       <section id="features" className="py-20 md:py-32">
         <div className="container mx-auto px-4 md:px-8">
-          <div className={`transition-all duration-700 ${isLoaded ? 'animate-fade-up' : 'opacity-0'}`} style={{ animationDelay: '200ms' }}>
+          <div className={`transition-all duration-1000 ${isLoaded ? 'animate-fade-up' : 'opacity-0 translate-y-8'}`}>
             <div className="text-center mb-16 md:mb-20">
               <h2 className="text-2xl md:text-3xl font-medium text-foreground mb-6">What You Get</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
@@ -340,26 +333,53 @@ const LandingPage: React.FC = () => {
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {[
-                { icon: CheckCircle2, color: "text-green-400", title: "Responsive Design", description: "Looks perfect on all devices - desktop, tablet, and mobile.", delay: "300ms" },
-                { icon: Sparkles, color: "text-purple-400", title: "SEO Optimized", description: "Built with SEO best practices to help you get discovered online.", delay: "400ms" },
-                { icon: Github, color: "text-orange-400", title: "GitHub Publishing", description: "One-click deployment to GitHub Pages with your custom domain.", delay: "500ms" },
-                { icon: Download, color: "text-blue-400", title: "Source Code Access", description: "Download the complete source code and customize it further.", delay: "600ms" },
-                { icon: Settings, color: "text-indigo-400", title: "Easy Customization", description: "Modify colors, fonts, layout, and content with our visual editor.", delay: "700ms" },
-                { icon: CheckCircle2, color: "text-green-400", title: "Lightning Fast", description: "Optimized for speed and performance with modern web technologies.", delay: "800ms" }
-              ].map((feature, index) => (
-                <div 
-                  key={index}
-                  className={`p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-700 ${isLoaded ? 'animate-fade-up' : 'opacity-0'}`}
-                  style={{ animationDelay: feature.delay }}
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <feature.icon className={`w-5 h-5 ${feature.color} flex-shrink-0`} />
-                    <h3 className="text-foreground font-medium text-base">{feature.title}</h3>
-                  </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">Responsive Design</h3>
                 </div>
-              ))}
+                <p className="text-muted-foreground text-sm leading-relaxed">Looks perfect on all devices - desktop, tablet, and mobile.</p>
+              </div>
+              
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <Sparkles className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">SEO Optimized</h3>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">Built with SEO best practices to help you get discovered online.</p>
+              </div>
+              
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <Github className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">GitHub Publishing</h3>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">One-click deployment to GitHub Pages with your custom domain.</p>
+              </div>
+              
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <Download className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">Source Code Access</h3>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">Download the complete source code and customize it further.</p>
+              </div>
+              
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <Settings className="w-5 h-5 text-indigo-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">Easy Customization</h3>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">Modify colors, fonts, layout, and content with our visual editor.</p>
+              </div>
+              
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">Lightning Fast</h3>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">Optimized for speed and performance with modern web technologies.</p>
+              </div>
             </div>
           </div>
         </div>

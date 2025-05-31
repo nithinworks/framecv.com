@@ -104,13 +104,13 @@
   @apply bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent;
 }
 
-/* Smooth animations - optimized for performance */
+/* Smooth animations */
 .animate-entrance {
-  animation: blur-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: blur-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-stagger {
-  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Custom scrollbar */
