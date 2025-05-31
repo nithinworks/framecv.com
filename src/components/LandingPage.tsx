@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -175,19 +174,13 @@ const LandingPage: React.FC = () => {
         <div className="container mx-auto px-8 text-center max-w-4xl">
           <div className={`transition-all duration-1200 delay-200 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-8'}`}>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-normal mb-6 tracking-tight leading-[0.9]">
-              Beyond Resumes.
+              Your Journey Deserves More Than a Resume
             </h1>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light mb-8 text-muted-foreground leading-[1.1]">
-              A portfolio that understands your craft.
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-light mb-8 text-muted-foreground leading-[1.2] max-w-3xl mx-auto">
+              Let our AI turn your resume into a stunning personal portfolio — in seconds, for free.
             </h2>
           </div>
           
-          <div className={`transition-all duration-1000 delay-500 ${isLoaded ? 'animate-fade-up' : 'opacity-0 translate-y-8'}`}>
-            <p className="text-base text-muted-foreground mb-12 max-w-lg mx-auto">
-              Upload your resume, and our AI will instantly convert it into a beautiful, customizable portfolio website.
-            </p>
-          </div>
-
           <div className={`max-w-md mx-auto transition-all duration-1000 delay-700 ${isLoaded ? 'animate-scale-blur' : 'opacity-0 scale-95 blur-sm'}`}>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div 
