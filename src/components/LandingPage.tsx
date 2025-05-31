@@ -176,17 +176,17 @@ const LandingPage: React.FC = () => {
           
           {/* Announcement Bar */}
           <div className={`transition-all duration-1000 delay-100 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-4'}`}>
-            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 mb-6 md:mb-8 rounded-full bg-muted border border-border">
+            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 mb-6 md:mb-8 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
               <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
               <span className="text-xs md:text-sm text-muted-foreground font-medium">AI-powered portfolio generation</span>
             </div>
           </div>
 
           <div className={`transition-all duration-1200 delay-200 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-8'}`}>
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-medium mb-3 md:mb-4 tracking-tight leading-[1.1] max-w-3xl mx-auto px-2">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-medium mb-3 md:mb-4 tracking-tight leading-[1.2] md:leading-[1.2] lg:leading-[1.2] max-w-3xl mx-auto px-2">
               Your Journey Deserves More Than a Resume
             </h1>
-            <h2 className="text-sm md:text-lg lg:text-xl font-normal mb-8 md:mb-12 text-muted-foreground leading-[1.4] max-w-2xl mx-auto px-2">
+            <h2 className="text-sm md:text-lg lg:text-xl font-normal mb-8 md:mb-12 text-muted-foreground leading-[1.6] md:leading-[1.6] lg:leading-[1.6] max-w-2xl mx-auto px-2">
               Let our AI turn your resume into a stunning personal portfolio — in seconds, for free.
             </h2>
           </div>
@@ -196,7 +196,7 @@ const LandingPage: React.FC = () => {
             <div className="max-w-md mx-auto">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div 
-                  className={`${dragActive ? 'border-foreground bg-accent' : 'border-border bg-card'} ${file ? 'border-muted-foreground bg-muted' : ''} border-2 border-dashed p-8 rounded-xl transition-all duration-300`}
+                  className={`${dragActive ? 'border-white/30 bg-white/10' : 'border-white/20 bg-white/5'} ${file ? 'border-white/40 bg-white/10' : ''} border-2 border-dashed p-8 rounded-xl transition-all duration-300 backdrop-blur-sm hover:bg-white/10 hover:border-white/30 cursor-pointer group`}
                   onDragEnter={handleDrag}
                   onDragOver={handleDrag}
                   onDragLeave={handleDrag}
@@ -210,8 +210,8 @@ const LandingPage: React.FC = () => {
                     accept=".pdf"
                   />
                   <label htmlFor="resume-upload" className="flex flex-col items-center cursor-pointer">
-                    <div className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center mb-4">
-                      <Upload className="w-6 h-6 text-background" />
+                    <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center mb-4 group-hover:bg-white/20 transition-all duration-300">
+                      <Upload className="w-5 h-5 text-white" />
                     </div>
                     {file ? (
                       <div className="text-center">
@@ -248,7 +248,7 @@ const LandingPage: React.FC = () => {
                 </Button>
               </form>
 
-              <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted-foreground">
+              <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-foreground rounded-full"></div>
                   <span>Free forever</span>
@@ -268,51 +268,51 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 md:py-32 bg-muted">
+      <section id="how-it-works" className="py-20 md:py-32">
         <div className="container mx-auto px-4 md:px-8">
           <div className={`transition-all duration-1000 ${isLoaded ? 'animate-fade-up' : 'opacity-0 translate-y-8'}`}>
             <div className="text-center mb-16 md:mb-20">
               <div className="inline-flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center">
-                  <Settings className="w-5 h-5 text-background" />
+                <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                  <Settings className="w-4 h-4 text-white" />
                 </div>
                 <h2 className="text-2xl md:text-3xl font-medium text-foreground">How it Works</h2>
               </div>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
                 Transform your resume into a professional portfolio in three simple steps
               </p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto">
-              <div className="text-center p-8 rounded-2xl bg-card border border-border">
-                <div className="w-16 h-16 rounded-2xl bg-foreground flex items-center justify-center mb-6 mx-auto">
-                  <Upload className="w-8 h-8 text-background" />
+              <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 backdrop-blur-sm flex items-center justify-center mb-6 mx-auto">
+                  <Upload className="w-5 h-5 text-blue-400" />
                 </div>
                 <div className="w-8 h-1 bg-foreground rounded-full mx-auto mb-6"></div>
-                <h3 className="text-xl font-medium mb-4 text-foreground">Upload Your Resume</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-lg font-medium mb-4 text-foreground">Upload Your Resume</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
                   Simply drag and drop your PDF resume. Our AI will extract all relevant information instantly.
                 </p>
               </div>
               
-              <div className="text-center p-8 rounded-2xl bg-card border border-border">
-                <div className="w-16 h-16 rounded-2xl bg-foreground flex items-center justify-center mb-6 mx-auto">
-                  <Sparkles className="w-8 h-8 text-background" />
+              <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/20 backdrop-blur-sm flex items-center justify-center mb-6 mx-auto">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
                 </div>
                 <div className="w-8 h-1 bg-foreground rounded-full mx-auto mb-6"></div>
-                <h3 className="text-xl font-medium mb-4 text-foreground">AI Magic Happens</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-lg font-medium mb-4 text-foreground">AI Magic Happens</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
                   Our advanced AI analyzes your content and creates a beautiful, responsive portfolio website.
                 </p>
               </div>
               
-              <div className="text-center p-8 rounded-2xl bg-card border border-border">
-                <div className="w-16 h-16 rounded-2xl bg-foreground flex items-center justify-center mb-6 mx-auto">
-                  <Globe className="w-8 h-8 text-background" />
+              <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl bg-green-500/20 backdrop-blur-sm flex items-center justify-center mb-6 mx-auto">
+                  <Globe className="w-5 h-5 text-green-400" />
                 </div>
                 <div className="w-8 h-1 bg-foreground rounded-full mx-auto mb-6"></div>
-                <h3 className="text-xl font-medium mb-4 text-foreground">Launch & Customize</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-lg font-medium mb-4 text-foreground">Launch & Customize</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
                   Edit, download the code, or publish directly to GitHub. Your portfolio, your way.
                 </p>
               </div>
@@ -327,58 +327,58 @@ const LandingPage: React.FC = () => {
           <div className={`transition-all duration-1000 ${isLoaded ? 'animate-fade-up' : 'opacity-0 translate-y-8'}`}>
             <div className="text-center mb-16 md:mb-20">
               <h2 className="text-2xl md:text-3xl font-medium text-foreground mb-6">What You Get</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
                 Everything you need to create a professional portfolio that gets you noticed
               </p>
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <CheckCircle2 className="w-6 h-6 text-foreground flex-shrink-0" />
-                  <h3 className="text-foreground font-medium">Responsive Design</h3>
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">Responsive Design</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">Looks perfect on all devices - desktop, tablet, and mobile.</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">Looks perfect on all devices - desktop, tablet, and mobile.</p>
               </div>
               
-              <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <Sparkles className="w-6 h-6 text-foreground flex-shrink-0" />
-                  <h3 className="text-foreground font-medium">SEO Optimized</h3>
+                  <Sparkles className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">SEO Optimized</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">Built with SEO best practices to help you get discovered online.</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">Built with SEO best practices to help you get discovered online.</p>
               </div>
               
-              <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <Github className="w-6 h-6 text-foreground flex-shrink-0" />
-                  <h3 className="text-foreground font-medium">GitHub Publishing</h3>
+                  <Github className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">GitHub Publishing</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">One-click deployment to GitHub Pages with your custom domain.</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">One-click deployment to GitHub Pages with your custom domain.</p>
               </div>
               
-              <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <Download className="w-6 h-6 text-foreground flex-shrink-0" />
-                  <h3 className="text-foreground font-medium">Source Code Access</h3>
+                  <Download className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">Source Code Access</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">Download the complete source code and customize it further.</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">Download the complete source code and customize it further.</p>
               </div>
               
-              <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <Settings className="w-6 h-6 text-foreground flex-shrink-0" />
-                  <h3 className="text-foreground font-medium">Easy Customization</h3>
+                  <Settings className="w-5 h-5 text-indigo-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">Easy Customization</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">Modify colors, fonts, layout, and content with our visual editor.</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">Modify colors, fonts, layout, and content with our visual editor.</p>
               </div>
               
-              <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <CheckCircle2 className="w-6 h-6 text-foreground flex-shrink-0" />
-                  <h3 className="text-foreground font-medium">Lightning Fast</h3>
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <h3 className="text-foreground font-medium text-base">Lightning Fast</h3>
                 </div>
-                <p className="text-muted-foreground text-sm">Optimized for speed and performance with modern web technologies.</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">Optimized for speed and performance with modern web technologies.</p>
               </div>
             </div>
           </div>
@@ -386,7 +386,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-12 md:py-16 bg-muted">
+      <footer className="border-t border-border py-12 md:py-16">
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0 text-center md:text-left">
@@ -394,7 +394,7 @@ const LandingPage: React.FC = () => {
                 <div className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center text-background font-bold text-sm">P</div>
                 <span className="text-lg font-medium">Portfolio Creator</span>
               </div>
-              <p className="text-sm text-muted-foreground max-w-sm">
+              <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
                 Transform your resume into a stunning portfolio website in minutes. AI-powered, developer-friendly, completely free.
               </p>
             </div>
