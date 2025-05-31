@@ -21,6 +21,10 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   const [description, setDescription] = useState(`Portfolio website for ${portfolioData.settings.name}`);
   const [githubToken, setGithubToken] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
+  const [deploymentResult, setDeploymentResult] = useState<{
+    repoUrl: string;
+    pagesUrl: string;
+  } | null>(null);
 
   const handleDeploy = async () => {
     if (!githubToken.trim()) {
@@ -51,15 +55,15 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         return;
       }
 
-      toast.success("Portfolio deployed successfully!", {
-        description: "Your portfolio is now live on GitHub Pages",
-        action: {
-          label: "View Repository",
-          onClick: () => window.open(data.repoUrl, '_blank')
-        }
+      setDeploymentResult({
+        repoUrl: data.repoUrl,
+        pagesUrl: data.pagesUrl
       });
 
-      onOpenChange(false);
+      toast.success("Portfolio deployed successfully!", {
+        description: "Your portfolio is now live on GitHub Pages"
+      });
+
     } catch (error) {
       console.error('Deploy error:', error);
       toast.error("Deployment failed. Please try again.");
@@ -68,18 +72,74 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     }
   };
 
+  const handleClose = () => {
+    setDeploymentResult(null);
+    onOpenChange(false);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0">
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Github className="h-5 w-5" />
-            Deploy to GitHub
+            {deploymentResult ? "Deployment Successful!" : "Deploy to GitHub"}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="space-y-4 p-1">
+        {deploymentResult ? (
+          <div className="space-y-4">
+            <div className="text-center text-green-600 dark:text-green-400">
+              <div className="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                <Github className="h-8 w-8" />
+              </div>
+              <p className="text-lg font-medium">Your portfolio is live!</p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label>Live Website</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={deploymentResult.pagesUrl}
+                    readOnly
+                    className="text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(deploymentResult.pagesUrl, '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Repository</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={deploymentResult.repoUrl}
+                    readOnly
+                    className="text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(deploymentResult.repoUrl, '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <Button onClick={handleClose} className="w-full">
+              Close
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="repoName">Repository Name</Label>
               <Input
@@ -114,57 +174,45 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                 disabled={isDeploying}
               />
               <p className="text-xs text-gray-600 dark:text-gray-400">
-                Need a token? Create one at{" "}
+                Need a token?{" "}
                 <a
                   href="https://github.com/settings/tokens"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline inline-flex items-center gap-1"
+                  className="text-blue-600 hover:underline"
                 >
-                  GitHub Settings
-                  <ExternalLink className="h-3 w-3" />
+                  Create one here
                 </a>
               </p>
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded-lg">
-              <h4 className="font-medium text-sm mb-2">What happens next:</h4>
-              <ul className="text-xs space-y-1 text-gray-600 dark:text-gray-400">
-                <li>• Creates a new repository on your GitHub account</li>
-                <li>• Uploads your portfolio files</li>
-                <li>• Enables GitHub Pages for automatic deployment</li>
-                <li>• Your portfolio will be live at username.github.io/repo-name</li>
-              </ul>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                disabled={isDeploying}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDeploy}
+                disabled={isDeploying || !githubToken.trim() || !repoName.trim()}
+              >
+                {isDeploying ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Deploying...
+                  </>
+                ) : (
+                  <>
+                    <Github className="h-4 w-4 mr-2" />
+                    Deploy
+                  </>
+                )}
+              </Button>
             </div>
           </div>
-        </div>
-
-        <div className="flex-shrink-0 flex justify-end gap-3 pt-4 border-t">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isDeploying}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDeploy}
-            disabled={isDeploying || !githubToken.trim() || !repoName.trim()}
-            className="min-w-[120px]"
-          >
-            {isDeploying ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Deploying...
-              </>
-            ) : (
-              <>
-                <Github className="h-4 w-4 mr-2" />
-                Deploy
-              </>
-            )}
-          </Button>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -9,7 +9,7 @@ const CodeView: React.FC = () => {
   const { showCode, setShowCode, portfolioData } = usePortfolio();
   const [copied, setCopied] = useState<string | null>(null);
 
-  // Helper function to generate complete JavaScript code
+  // Helper function to generate complete JavaScript code (same as GitHub deploy)
   const generateCompleteJavaScript = (data: any): string => {
     return `// getIconSVG: Inline SVGs for all icons used in the portfolio
 function getIconSVG(name) {
@@ -334,7 +334,7 @@ html, body {
   darkMode: "selector",
 };`;
 
-  // Complete JavaScript code
+  // Complete JavaScript code (using the same function as GitHub deploy)
   const jsCode = generateCompleteJavaScript(portfolioData);
 
   // JSON data
