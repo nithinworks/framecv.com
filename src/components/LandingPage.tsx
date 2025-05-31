@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { Upload, ArrowRight, Sparkles, Settings, CheckCircle2, Github, Download, Globe } from "lucide-react";
+import { Upload, ArrowRight, Sparkles, Settings, CheckCircle2, Github, Download, Globe, Menu, X } from "lucide-react";
 import { samplePortfolioData } from "@/data/samplePortfolio";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,6 +13,7 @@ const LandingPage: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setIsProcessing: setGlobalProcessing } = usePortfolio();
@@ -160,15 +161,47 @@ const LandingPage: React.FC = () => {
             <div className="w-6 h-6 md:w-7 md:h-7 bg-foreground rounded-md flex items-center justify-center text-background font-medium text-xs md:text-sm">P</div>
             <h1 className="text-base md:text-lg font-normal">Portfolio Creator</h1>
           </div>
-          <nav className="flex space-x-8">
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-8">
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How it Works</a>
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
           </nav>
+          
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
+        
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-sm">
+            <nav className="container mx-auto px-4 py-4 space-y-4">
+              <a 
+                href="#how-it-works" 
+                className="block text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                How it Works
+              </a>
+              <a 
+                href="#features" 
+                className="block text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Features
+              </a>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Hero Section with Upload */}
-      <section className="flex-grow flex items-center justify-center min-h-[90vh] px-4 md:px-8">
+      <section className="flex-grow flex items-center justify-center min-h-[85vh] px-4 md:px-8 pt-12 md:pt-16">
         <div className="container mx-auto text-center max-w-4xl">
           
           {/* Announcement Bar */}
@@ -180,10 +213,10 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className={`transition-all duration-1200 delay-200 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-8'}`}>
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-medium mb-3 md:mb-4 tracking-tight leading-[1.2] md:leading-[1.2] lg:leading-[1.2] max-w-3xl mx-auto px-2">
+            <h1 className="text-xl md:text-3xl lg:text-4xl font-medium mb-3 md:mb-4 tracking-tight leading-[1.2] md:leading-[1.2] lg:leading-[1.2] max-w-3xl mx-auto px-2">
               Your Journey Deserves More Than a Resume
             </h1>
-            <h2 className="text-sm md:text-lg lg:text-xl font-normal mb-8 md:mb-12 text-muted-foreground leading-[1.6] md:leading-[1.6] lg:leading-[1.6] max-w-2xl mx-auto px-2">
+            <h2 className="text-xs md:text-base lg:text-lg font-normal mb-8 md:mb-10 text-muted-foreground leading-[1.6] md:leading-[1.6] lg:leading-[1.6] max-w-2xl mx-auto px-2">
               Let our AI turn your resume into a stunning personal portfolio — in seconds, for free.
             </h2>
           </div>
@@ -245,17 +278,16 @@ const LandingPage: React.FC = () => {
                 </Button>
               </form>
 
-              <div className="mt-4">
-                <Button 
-                  variant="outline" 
+              <div className="mt-3">
+                <button 
                   onClick={handleCreateManually}
-                  className="w-full bg-transparent border-white/20 text-foreground hover:bg-white/10 hover:border-white/30 font-medium py-4 px-8 rounded-xl transition-all duration-300"
+                  className="text-white text-sm hover:underline transition-all duration-300 underline-offset-4"
                 >
                   Create Portfolio Manually
-                </Button>
+                </button>
               </div>
 
-              <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 text-sm text-muted-foreground">
+              <div className="mt-6 flex flex-row items-center justify-center gap-6 text-xs md:text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-foreground rounded-full"></div>
                   <span>Free forever</span>
