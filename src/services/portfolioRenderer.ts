@@ -1,9 +1,10 @@
-
 import { PortfolioData } from "@/types/portfolio";
+import { Theme } from "@/hooks/useThemes";
 
 export const generatePortfolioHTML = (
   portfolioData: PortfolioData,
-  theme: "light" | "dark" = "light"
+  theme?: Theme,
+  viewMode: "light" | "dark" = "light"
 ): string => {
   // Get last name for logo
   const nameParts = (portfolioData.settings.name || "").trim().split(" ");
@@ -12,19 +13,19 @@ export const generatePortfolioHTML = (
   // Generate HTML structure
   return `
     <!DOCTYPE html>
-    <html lang="en" class="${theme === "dark" ? "dark" : ""} scroll-smooth">
+    <html lang="en" class="${viewMode === "dark" ? "dark" : ""} scroll-smooth">
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Portfolio - ${portfolioData.settings.name}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Ovo&family=Schibsted+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@100..900&family=Ovo&family=Schibsted+Grotesk:wght@400;500;700&family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet" />
         
         <style>
           ${getBaseStyles()}
           
-          ${getPortfolioStyles(portfolioData.settings.primaryColor || "#0067c7")}
+          ${getPortfolioStyles(portfolioData.settings.primaryColor || "#0067C7", theme)}
           
           /* Set body height to 100% to avoid scrolling issues in the iframe */
           body {
@@ -33,7 +34,7 @@ export const generatePortfolioHTML = (
           }
         </style>
       </head>
-      <body class="font-Schibsted leading-8 bg-white text-primary dark:bg-darkTheme dark:text-white">
+      <body class="font-themed leading-8 bg-themed-bg text-themed-primary">
         ${renderNavigation(portfolioData)}
         ${renderHeroSection(portfolioData)}
         ${renderAboutSection(portfolioData)}
@@ -99,14 +100,14 @@ const renderNavigation = (data: PortfolioData): string => {
     navLinks += `<li><a href="${link.url}" class="hover:dynamic-primary transition-colors duration-300">${link.name}</a></li>`;
   });
   
-  return `<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50">
-    <span class="font-Ovo text-xl font-bold tracking-tight">${logoName}<span class='dynamic-primary'>.</span></span>
-    <ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 font-Ovo text-lg border-none bg-transparent shadow-none">${navLinks}</ul>
+  return `<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-themed-card backdrop-blur-md fixed top-0 left-0 z-50 border-b border-themed-border">
+    <span class="font-themed font-bold text-xl tracking-tight">${logoName}<span class='dynamic-primary'>.</span></span>
+    <ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 font-themed text-lg border-none bg-transparent shadow-none">${navLinks}</ul>
     <div class="flex items-center gap-4">
       <button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none">
         <span id="theme-toggle-icon"></span>
       </button>
-      <a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white font-Ovo font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a>
+      <a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white font-themed font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a>
     </div>
   </nav>`;
 };
@@ -120,15 +121,15 @@ const renderHeroSection = (data: PortfolioData): string => {
     ctas += `<a href="${btn.url}" class="flex items-center gap-2 ${
       btn.isPrimary
         ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-transform duration-300"
-        : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors duration-300"
+        : "px-8 py-3 rounded-full border border-themed-border dynamic-primary bg-themed-card hover:bg-themed-accent transition-colors duration-300"
     }">${btn.icon ? getIconSVG(btn.icon) : ""}<span>${btn.text}</span></a>`;
   });
 
-  return `<div class="hero-bg w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+  return `<div class="hero-themed w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full">
     <img src="${data.settings.profileImage}" alt="Profile" class="rounded-full w-28 mb-8 border-4 border-white shadow-md animate-fade-in" />
-    <h2 class="font-Ovo text-xl mb-3 animate-slide-up">Hi! I'm ${data.settings.name} <span class="inline-block">👋</span></h2>
-    <h1 class="font-Ovo text-5xl sm:text-6xl font-bold mb-6 animate-slide-up">${data.settings.title}<br />based in ${data.settings.location}.</h1>
-    <p class="text-[16px] text-gray-600 dark:text-gray-400 mb-8 animate-fade-in">${data.settings.summary}</p>
+    <h2 class="font-themed text-xl mb-3 animate-slide-up">Hi! I'm ${data.settings.name} <span class="inline-block">👋</span></h2>
+    <h1 class="font-themed text-5xl sm:text-6xl font-bold mb-6 animate-slide-up">${data.settings.title}<br />based in ${data.settings.location}.</h1>
+    <p class="text-[16px] text-themed-secondary mb-8 animate-fade-in">${data.settings.summary}</p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">${ctas}</div>
   </header></div>`;
 };
@@ -139,20 +140,20 @@ const renderAboutSection = (data: PortfolioData): string => {
 
   let skills = "";
   if (data.sections.about.skills && data.sections.about.skills.enabled) {
-    skills = `<h2 class="font-Ovo text-2xl mb-4 mt-8">${
+    skills = `<h2 class="font-themed text-2xl mb-4 mt-8">${
       data.sections.about.skills.title
     }</h2><div class="flex flex-wrap justify-center gap-3">${data.sections.about.skills.items
       .map(
         (skill) =>
-          `<span class="px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300">${skill}</span>`
+          `<span class="px-4 py-1 rounded-full border border-themed-border text-sm bg-themed-accent transition-all duration-300">${skill}</span>`
       )
       .join("")}</div>`;
   }
 
-  return `<section id="about" class="py-16 sm:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+  return `<section id="about" class="py-16 sm:py-20 bg-themed-bg animate-fade-in px-4 sm:px-6 md:px-8 w-full">
     <div class="max-w-2xl mx-auto text-center">
-      <h2 class="font-Ovo text-3xl mb-4">${data.sections.about.title}</h2>
-      <p class="mb-8 text-gray-700 dark:text-gray-300">${data.sections.about.content}</p>
+      <h2 class="font-themed text-3xl mb-4">${data.sections.about.title}</h2>
+      <p class="mb-8 text-themed-secondary">${data.sections.about.content}</p>
       ${skills}
     </div>
   </section>`;
@@ -165,15 +166,15 @@ const renderProjectsSection = (data: PortfolioData): string => {
   const projectCards = data.sections.projects.items
     .map(
       (project) =>
-        `<div class="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-2xl p-7 flex flex-col gap-3 shadow-sm hover:shadow-md transition w-full max-w-md mx-auto">
-          <h3 class="font-Ovo text-lg mb-1">${project.title}</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${
+        `<div class="bg-themed-card border border-themed-border rounded-2xl p-7 flex flex-col gap-3 shadow-sm hover:shadow-md transition w-full max-w-md mx-auto backdrop-blur-sm">
+          <h3 class="font-themed text-lg mb-1">${project.title}</h3>
+          <p class="text-sm text-themed-secondary">${
             project.description
           }</p>
           <div class="flex flex-wrap gap-2 mb-2">${project.tags
             .map(
               (tag) =>
-                `<span class="text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">${tag}</span>`
+                `<span class="text-xs px-3 py-1 rounded-full bg-themed-accent border border-themed-border">${tag}</span>`
             )
             .join("")}</div>
           ${
@@ -185,9 +186,9 @@ const renderProjectsSection = (data: PortfolioData): string => {
     )
     .join("");
 
-  return `<section id="projects" class="py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full">
+  return `<section id="projects" class="py-16 bg-themed-bg animate-fade-in px-2 sm:px-4 md:px-8 w-full">
     <div class="max-w-4xl mx-auto text-center mb-10">
-      <h2 class="font-Ovo text-3xl mb-2">${data.sections.projects.title}</h2>
+      <h2 class="font-themed text-3xl mb-2">${data.sections.projects.title}</h2>
     </div>
     <div class="max-w-5xl mx-auto grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">${projectCards}</div>
   </section>`;
@@ -203,17 +204,17 @@ const renderExperienceSection = (data: PortfolioData): string => {
         `<div class="flex gap-4 items-start">
           <div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div>
           <div>
-            <h3 class="font-Ovo text-lg mb-1">${item.position}</h3>
-            <div class="text-sm text-gray-500 mb-1">${item.company} • ${item.period}</div>
-            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">${item.description}</p>
+            <h3 class="font-themed text-lg mb-1">${item.position}</h3>
+            <div class="text-sm text-themed-secondary mb-1">${item.company} • ${item.period}</div>
+            <p class="text-themed-secondary text-sm leading-relaxed mb-2">${item.description}</p>
           </div>
         </div>`
     )
     .join("");
 
-  return `<section id="experience" class="py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+  return `<section id="experience" class="py-16 bg-themed-bg animate-fade-in px-4 sm:px-6 md:px-8 w-full">
     <div class="max-w-4xl mx-auto text-center mb-10">
-      <h2 class="font-Ovo text-3xl mb-2">${data.sections.experience.title}</h2>
+      <h2 class="font-themed text-3xl mb-2">${data.sections.experience.title}</h2>
     </div>
     <div class="max-w-2xl mx-auto flex flex-col gap-8">${experiences}</div>
   </section>`;
@@ -226,16 +227,16 @@ const renderEducationSection = (data: PortfolioData): string => {
   const educationItems = data.sections.education.items
     .map(
       (item) =>
-        `<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col gap-1 shadow-sm w-full">
-          <h3 class="font-Ovo text-lg mb-1">${item.degree}</h3>
-          <div class="text-sm text-gray-500 mb-1">${item.institution} • ${item.period}</div>
+        `<div class="bg-themed-card border border-themed-border rounded-2xl p-5 flex flex-col gap-1 shadow-sm w-full backdrop-blur-sm">
+          <h3 class="font-themed text-lg mb-1">${item.degree}</h3>
+          <div class="text-sm text-themed-secondary mb-1">${item.institution} • ${item.period}</div>
         </div>`
     )
     .join("");
 
-  return `<section id="education" class="py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+  return `<section id="education" class="py-16 bg-themed-bg animate-fade-in px-4 sm:px-6 md:px-8 w-full">
     <div class="max-w-4xl mx-auto text-center mb-10">
-      <h2 class="font-Ovo text-3xl mb-2">${data.sections.education.title}</h2>
+      <h2 class="font-themed text-3xl mb-2">${data.sections.education.title}</h2>
     </div>
     <div class="max-w-2xl mx-auto flex flex-col gap-6">${educationItems}</div>
   </section>`;
@@ -261,15 +262,15 @@ const renderContactSection = (data: PortfolioData): string => {
   ]
     .map(
       (card) =>
-        `<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-Schibsted text-gray-700 dark:text-gray-200 justify-center shadow-sm" style="font-size:14px;font-weight:500;">
+        `<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl bg-themed-card border border-themed-border text-sm font-themed text-themed-primary justify-center shadow-sm backdrop-blur-sm" style="font-size:14px;font-weight:500;">
             ${card.icon}<span class="break-words">${card.value}</span>
         </div>`
     )
     .join("");
 
-  return `<section id="contact" class="py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+  return `<section id="contact" class="py-8 bg-themed-bg animate-fade-in px-4 sm:px-6 md:px-8 w-full">
     <div class="max-w-2xl mx-auto text-center mb-4">
-      <h2 class="font-Ovo text-4xl mb-4">${data.sections.contact.title}</h2>
+      <h2 class="font-themed text-4xl mb-4">${data.sections.contact.title}</h2>
       <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4 mb-4 px-4 sm:px-0">${contactInfo}</div>
     </div>
   </section>`;
@@ -282,15 +283,15 @@ const renderSocialSection = (data: PortfolioData): string => {
   const socialLinks = data.sections.social.items
     .map(
       (item) =>
-        `<a href="${item.url}" class="flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-Schibsted text-gray-700 dark:text-gray-200 hover:bg-primary-light dark:hover:bg-gray-800 transition w-full sm:w-auto justify-center" style="font-size:14px;font-weight:500;">
+        `<a href="${item.url}" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-themed-card border border-themed-border text-sm font-themed text-themed-primary hover:bg-themed-accent transition w-full sm:w-auto justify-center backdrop-blur-sm" style="font-size:14px;font-weight:500;">
           ${item.icon ? getIconSVG(item.icon) : ""}${item.platform}
         </a>`
     )
     .join("");
 
-  return `<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full">
+  return `<section id="social" class="py-4 bg-themed-bg animate-fade-in px-4 sm:px-0 w-full">
     <div class="max-w-2xl mx-auto text-center mb-4 w-full px-4 sm:px-0">
-      <h3 class="font-Ovo text-2xl mb-4 mt-4">Social Media</h3>
+      <h3 class="font-themed text-2xl mb-4 mt-4">Social Media</h3>
       <div class="flex flex-col sm:flex-row justify-center gap-4 mb-2 px-4 sm:px-0">${socialLinks}</div>
     </div>
   </section>`;
@@ -306,17 +307,17 @@ const renderFooter = (data: PortfolioData): string => {
   const navLinks = (data.navigation.items || [])
     .map(
       (link) =>
-        `<a href="${link.url}" class="text-gray-700 dark:text-gray-300 hover:dynamic-primary transition text-base">${link.name}</a>`
+        `<a href="${link.url}" class="text-themed-secondary hover:dynamic-primary transition text-base">${link.name}</a>`
     )
     .join("");
 
-  return `<footer class="py-8 bg-white dark:bg-black border-t border-gray-100 dark:border-gray-800 mt-0 px-4 sm:px-6 md:px-8 w-full">
+  return `<footer class="py-8 bg-themed-bg border-t border-themed-border mt-0 px-4 sm:px-6 md:px-8 w-full">
     <div class="max-w-2xl mx-auto text-center flex flex-col gap-6 items-center">
-      <span class="font-Ovo text-2xl font-bold tracking-tight mb-2">${logoName}<span class='dynamic-primary'>.</span></span>
+      <span class="font-themed text-2xl font-bold tracking-tight mb-2">${logoName}<span class='dynamic-primary'>.</span></span>
       <div class="flex flex-wrap justify-center gap-8 mb-2">${navLinks}</div>
-      <p class="text-gray-500 dark:text-gray-400 text-sm mt-2 mb-2">${data.footer.copyright}</p>
+      <p class="text-themed-secondary text-sm mt-2 mb-2">${data.footer.copyright}</p>
       <div class="flex justify-center">
-        <span class="px-5 py-2 rounded-full glass-bg text-sm text-gray-700 dark:text-gray-200 font-medium">Built with Nithin.io</span>
+        <span class="px-5 py-2 rounded-full bg-themed-accent border border-themed-border text-sm text-themed-primary font-medium">Built with Nithin.io</span>
       </div>
     </div>
   </footer>`;
@@ -371,52 +372,6 @@ const getBaseStyles = (): string => {
     body{margin:0;line-height:inherit}
     
     /* Tailwind Config */
-    .theme-light {
-      --background: 0 0% 100%;
-      --foreground: 222.2 84% 4.9%;
-      --card: 0 0% 100%;
-      --card-foreground: 222.2 84% 4.9%;
-      --popover: 0 0% 100%;
-      --popover-foreground: 222.2 84% 4.9%;
-      --primary: 222.2 47.4% 11.2%;
-      --primary-foreground: 210 40% 98%;
-      --secondary: 210 40% 96.1%;
-      --secondary-foreground: 222.2 47.4% 11.2%;
-      --muted: 210 40% 96.1%;
-      --muted-foreground: 215.4 16.3% 46.9%;
-      --accent: 210 40% 96.1%;
-      --accent-foreground: 222.2 47.4% 11.2%;
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 210 40% 98%;
-      --border: 214.3 31.8% 91.4%;
-      --input: 214.3 31.8% 91.4%;
-      --ring: 222.2 84% 4.9%;
-      --radius: 0.75rem;
-    }
-    
-    .dark {
-      --background: 222.2 84% 4.9%;
-      --foreground: 210 40% 98%;
-      --card: 222.2 84% 4.9%;
-      --card-foreground: 210 40% 98%;
-      --popover: 222.2 84% 4.9%;
-      --popover-foreground: 210 40% 98%;
-      --primary: 210 40% 98%;
-      --primary-foreground: 222.2 47.4% 11.2%;
-      --secondary: 217.2 32.6% 17.5%;
-      --secondary-foreground: 210 40% 98%;
-      --muted: 217.2 32.6% 17.5%;
-      --muted-foreground: 215 20.2% 65.1%;
-      --accent: 217.2 32.6% 17.5%;
-      --accent-foreground: 210 40% 98%;
-      --destructive: 0 62.8% 30.6%;
-      --destructive-foreground: 210 40% 98%;
-      --border: 217.2 32.6% 17.5%;
-      --input: 217.2 32.6% 17.5%;
-      --ring: 212.7 26.8% 83.9%;
-      --radius: 0.5rem;
-    }
-    
     .w-full { width: 100%; }
     .max-w-2xl { max-width: 42rem; }
     .max-w-4xl { max-width: 56rem; }
@@ -467,24 +422,12 @@ const getBaseStyles = (): string => {
     .border { border-width: 1px; }
     .border-4 { border-width: 4px; }
     .border-t { border-top-width: 1px; }
-    .border-gray-100 { border-color: rgb(243 244 246); }
-    .border-gray-200 { border-color: rgb(229 231 235); }
-    .border-gray-300 { border-color: rgb(209 213 219); }
-    .border-gray-400 { border-color: rgb(156 163 175); }
-    .border-gray-700 { border-color: rgb(55 65 81); }
-    .border-gray-800 { border-color: rgb(31 41 55); }
-    .border-white { border-color: rgb(255 255 255); }
+    .border-b { border-bottom-width: 1px; }
     .bg-white { background-color: rgb(255 255 255); }
     .bg-black { background-color: rgb(0 0 0); }
     .bg-gray-900 { background-color: rgb(17 24 39); }
     .bg-gray-100 { background-color: rgb(243 244 246); }
     .bg-transparent { background-color: transparent; }
-    .dark\\:bg-black { background-color: rgb(0 0 0); }
-    .dark\\:bg-gray-800 { background-color: rgb(31 41 55); }
-    .dark\\:bg-gray-900 { background-color: rgb(17 24 39); }
-    .dark\\:bg-darkTheme { background-color: #111111; }
-    .bg-white\\/80 { background-color: rgba(255, 255, 255, 0.8); }
-    .dark\\:bg-black\\/90 { background-color: rgba(0, 0, 0, 0.9); }
     .p-5 { padding: 1.25rem; }
     .p-7 { padding: 1.75rem; }
     .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
@@ -520,36 +463,20 @@ const getBaseStyles = (): string => {
     .leading-8 { line-height: 2rem; }
     .leading-relaxed { line-height: 1.625; }
     .tracking-tight { letter-spacing: -0.025em; }
-    .text-primary { color: #333; }
     .text-white { color: rgb(255 255 255); }
-    .text-gray-200 { color: rgb(229 231 235); }
-    .text-gray-300 { color: rgb(209 213 219); }
-    .text-gray-400 { color: rgb(156 163 175); }
-    .text-gray-500 { color: rgb(107 114 128); }
-    .text-gray-600 { color: rgb(75 85 99); }
-    .text-gray-700 { color: rgb(55 65 81); }
-    .dark\\:text-white { color: rgb(255 255 255); }
-    .dark\\:text-gray-200 { color: rgb(229 231 235); }
-    .dark\\:text-gray-300 { color: rgb(209 213 219); }
-    .dark\\:text-gray-400 { color: rgb(156 163 175); }
     .shadow { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
     .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
     .shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
     .backdrop-blur-md { backdrop-filter: blur(12px); }
+    .backdrop-blur-sm { backdrop-filter: blur(4px); }
     .transition { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
     .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
     .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
     .transition-transform { transition-property: transform; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
     .duration-300 { transition-duration: 300ms; }
     .hover\\:scale-105:hover { transform: scale(1.05); }
-    .hover\\:bg-gray-100:hover { background-color: rgb(243 244 246); }
-    .dark\\:hover\\:bg-gray-800:hover { background-color: rgb(31 41 55); }
-    .dark\\:hover\\:bg-gray-900:hover { background-color: rgb(17 24 39); }
     .hover\\:shadow-md:hover { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
     .hover\\:underline:hover { text-decoration: underline; }
-    .font-Ovo { font-family: 'Ovo', serif; }
-    .font-Outfit { font-family: 'Outfit', sans-serif; }
-    .font-Schibsted { font-family: 'Schibsted Grotesk', sans-serif; }
     .z-50 { z-index: 50; }
     .fixed { position: fixed; }
     .top-0 { top: 0; }
@@ -583,13 +510,25 @@ const getBaseStyles = (): string => {
   `;
 };
 
-// Portfolio Styles
-const getPortfolioStyles = (primaryColor: string): string => {
+// Portfolio Styles with Theme Support
+const getPortfolioStyles = (primaryColor: string, theme?: Theme): string => {
+  const defaultTheme = {
+    background: "linear-gradient(120deg, rgba(var(--primary-rgb), 0.03) 0%, #fff 100%)",
+    heroBackground: "linear-gradient(120deg, rgba(var(--primary-rgb), 0.08) 0%, #fff 100%)",
+    cardBackground: "rgba(255, 255, 255, 0.8)",
+    textPrimary: "#2d3748",
+    textSecondary: "#718096",
+    border: "rgba(0, 0, 0, 0.1)",
+    accent: "rgba(var(--primary-rgb), 0.1)",
+    fontFamily: "'Inter', system-ui, sans-serif"
+  };
+
+  const currentTheme = theme?.styles || defaultTheme;
+  
   return `
     :root {
       --primary-color: ${primaryColor};
-      --primary-color-light: rgba(${hexToRgb(primaryColor)}, 0.08);
-      --glass-bg: rgba(${hexToRgb(primaryColor)}, 0.1);
+      --primary-rgb: ${hexToRgb(primaryColor)};
     }
     
     .dynamic-primary {
@@ -604,21 +543,37 @@ const getPortfolioStyles = (primaryColor: string): string => {
       border-color: var(--primary-color) !important;
     }
     
-    .bg-primary-light {
-      background: var(--primary-color-light) !important;
+    /* Theme-specific styles */
+    .font-themed {
+      font-family: ${currentTheme.fontFamily};
     }
     
-    .glass-bg {
-      background: var(--glass-bg) !important;
-      backdrop-filter: blur(2px);
+    .bg-themed-bg {
+      background: ${currentTheme.background};
     }
     
-    .hero-bg {
-      background: linear-gradient(120deg, var(--primary-color-light) 0%, #fff 100%);
+    .hero-themed {
+      background: ${currentTheme.heroBackground};
     }
     
-    .dark .hero-bg {
-      background: #000 !important;
+    .bg-themed-card {
+      background: ${currentTheme.cardBackground};
+    }
+    
+    .text-themed-primary {
+      color: ${currentTheme.textPrimary};
+    }
+    
+    .text-themed-secondary {
+      color: ${currentTheme.textSecondary};
+    }
+    
+    .border-themed-border {
+      border-color: ${currentTheme.border};
+    }
+    
+    .bg-themed-accent {
+      background: ${currentTheme.accent};
     }
     
     .animate-fade-in {
@@ -639,10 +594,6 @@ const getPortfolioStyles = (primaryColor: string): string => {
       100% { transform: translateY(0); opacity: 1; }
     }
     
-    .dark .text-primary {
-      color: white;
-    }
-    
     .hover\\:dynamic-primary:hover {
       color: var(--primary-color) !important;
     }
@@ -656,4 +607,3 @@ function hexToRgb(hex: string): string {
     ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
     : '0, 0, 0';
 }
-

@@ -1,6 +1,7 @@
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { PortfolioData, DEFAULT_PORTFOLIO_DATA } from "@/types/portfolio";
+import { useThemes } from "@/hooks/useThemes";
 
 interface PortfolioContextType {
   portfolioData: PortfolioData;
@@ -17,6 +18,11 @@ interface PortfolioContextType {
   setShowCode: React.Dispatch<React.SetStateAction<boolean>>;
   showDeploy: boolean;
   setShowDeploy: React.Dispatch<React.SetStateAction<boolean>>;
+  // Theme management
+  themes: ReturnType<typeof useThemes>['themes'];
+  selectedTheme: string;
+  getCurrentTheme: ReturnType<typeof useThemes>['getCurrentTheme'];
+  selectTheme: ReturnType<typeof useThemes>['selectTheme'];
 }
 
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
@@ -38,6 +44,9 @@ export const PortfolioProvider: React.FC<PortfolioProviderProps> = ({
   const [showCode, setShowCode] = useState(false);
   const [showDeploy, setShowDeploy] = useState(false);
 
+  // Initialize theme management
+  const { themes, selectedTheme, getCurrentTheme, selectTheme } = useThemes();
+
   return (
     <PortfolioContext.Provider
       value={{
@@ -54,7 +63,11 @@ export const PortfolioProvider: React.FC<PortfolioProviderProps> = ({
         showCode,
         setShowCode,
         showDeploy,
-        setShowDeploy
+        setShowDeploy,
+        themes,
+        selectedTheme,
+        getCurrentTheme,
+        selectTheme
       }}
     >
       {children}
