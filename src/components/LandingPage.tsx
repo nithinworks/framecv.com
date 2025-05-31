@@ -67,7 +67,7 @@ const LandingPage: React.FC = () => {
         }
       }
     },
-    [toast]
+    [toast, validateFile]
   );
 
   const handleChange = useCallback(
@@ -80,7 +80,7 @@ const LandingPage: React.FC = () => {
         }
       }
     },
-    [toast]
+    [toast, validateFile]
   );
 
   const handleSubmit = useCallback(
@@ -145,7 +145,7 @@ const LandingPage: React.FC = () => {
     [file, navigate, setGlobalProcessing, toast]
   );
 
-  const handleUseTemplate = () => {
+  const handleCreateManually = () => {
     navigate("/builder", { 
       state: { portfolioData: samplePortfolioData }
     });
@@ -160,13 +160,10 @@ const LandingPage: React.FC = () => {
             <div className="w-6 h-6 md:w-7 md:h-7 bg-foreground rounded-md flex items-center justify-center text-background font-medium text-xs md:text-sm">P</div>
             <h1 className="text-base md:text-lg font-normal">Portfolio Creator</h1>
           </div>
-          <nav className="hidden md:flex space-x-8">
+          <nav className="flex space-x-8">
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How it Works</a>
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
           </nav>
-          <Button variant="outline" onClick={handleUseTemplate} className="text-xs md:text-sm px-3 md:px-6 py-2 md:py-3">
-            Try Sample
-          </Button>
         </div>
       </header>
 
@@ -247,6 +244,16 @@ const LandingPage: React.FC = () => {
                   )}
                 </Button>
               </form>
+
+              <div className="mt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={handleCreateManually}
+                  className="w-full bg-transparent border-white/20 text-foreground hover:bg-white/10 hover:border-white/30 font-medium py-4 px-8 rounded-xl transition-all duration-300"
+                >
+                  Create Portfolio Manually
+                </Button>
+              </div>
 
               <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
