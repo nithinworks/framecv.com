@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Github, ExternalLink } from "lucide-react";
+import { Loader2, Github, ExternalLink, AlertCircle, Key, CheckCircle } from "lucide-react";
 
 interface GitHubDeployProps {
   open: boolean;
@@ -96,6 +96,15 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               <p className="text-lg font-medium">Your portfolio is live!</p>
             </div>
 
+            {/* Deployment timing warning */}
+            <div className="bg-orange-100 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3 flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-orange-800 dark:text-orange-200">
+                <p className="font-medium">First-time deployment may take a few minutes</p>
+                <p className="text-xs opacity-90">GitHub Pages needs time to build and deploy your site. If the live URL doesn't work immediately, please wait 2-5 minutes and try again.</p>
+              </div>
+            </div>
+
             <div className="space-y-3">
               <div className="space-y-2">
                 <Label>Live Website</Label>
@@ -164,7 +173,10 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="githubToken">GitHub Personal Access Token</Label>
+              <Label htmlFor="githubToken" className="flex items-center gap-2">
+                <Key className="h-4 w-4" />
+                GitHub Personal Access Token
+              </Label>
               <Input
                 id="githubToken"
                 type="password"
@@ -173,17 +185,40 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                 placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
                 disabled={isDeploying}
               />
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                Need a token?{" "}
-                <a
-                  href="https://github.com/settings/tokens"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  Create one here
-                </a>
-              </p>
+              
+              {/* Token creation guide */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium text-blue-800 dark:text-blue-200">
+                  <Key className="h-4 w-4" />
+                  How to create a GitHub token:
+                </div>
+                <ol className="text-xs text-blue-700 dark:text-blue-300 space-y-1 ml-6 list-decimal">
+                  <li>Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</li>
+                  <li>Click "Generate new token (classic)"</li>
+                  <li>Add a note like "Portfolio Deployment"</li>
+                  <li>Select these permissions:</li>
+                </ol>
+                <div className="ml-10 space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
+                    <CheckCircle className="h-3 w-3" />
+                    <code>repo</code> - Full control of private repositories
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
+                    <CheckCircle className="h-3 w-3" />
+                    <code>workflow</code> - Update GitHub Action workflows
+                  </div>
+                </div>
+                <p className="text-xs text-blue-600 dark:text-blue-400">
+                  <a
+                    href="https://github.com/settings/tokens"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline font-medium"
+                  >
+                    Create token here →
+                  </a>
+                </p>
+              </div>
             </div>
 
             <div className="flex justify-end gap-3">
