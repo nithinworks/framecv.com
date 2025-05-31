@@ -1,4 +1,3 @@
-
 export interface PortfolioData {
   settings: {
     name: string;
@@ -100,12 +99,18 @@ export interface PortfolioData {
 export type PortfolioSection = keyof PortfolioData["sections"];
 
 export const FONT_OPTIONS = [
+  { value: "Ovo", label: "Ovo", description: "Elegant & Sophisticated" },
+  { value: "Playfair Display", label: "Playfair Display", description: "Luxury & Editorial" },
+  { value: "Crimson Text", label: "Crimson Text", description: "Classic & Refined" },
+  { value: "Cormorant Garamond", label: "Cormorant Garamond", description: "Artistic & Stylish" },
+  { value: "EB Garamond", label: "EB Garamond", description: "Traditional & Elegant" },
+  { value: "Merriweather", label: "Merriweather", description: "Readable & Professional" },
   { value: "Inter", label: "Inter", description: "Modern & Clean" },
   { value: "Outfit", label: "Outfit", description: "Rounded & Friendly" },
   { value: "Poppins", label: "Poppins", description: "Geometric & Versatile" },
-  { value: "Playfair Display", label: "Playfair Display", description: "Elegant & Serif" },
   { value: "Source Sans Pro", label: "Source Sans Pro", description: "Professional" },
-  { value: "Roboto", label: "Roboto", description: "Google's Default" }
+  { value: "Roboto", label: "Roboto", description: "Google's Default" },
+  { value: "Montserrat", label: "Montserrat", description: "Bold & Contemporary" }
 ];
 
 export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
@@ -116,7 +121,7 @@ export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
     summary: "A brief summary about yourself and your skills.",
     profileImage: "https://via.placeholder.com/400",
     primaryColor: "#0067c7",
-    fontFamily: "Inter"
+    fontFamily: "Ovo"
   },
   sections: {
     hero: {

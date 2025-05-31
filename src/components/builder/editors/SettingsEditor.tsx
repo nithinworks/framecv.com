@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Type } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -126,20 +126,34 @@ const SettingsEditor: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-4">
         <div>
-          <Label htmlFor="fontFamily" className="text-sm font-medium mb-3 block">Typography</Label>
+          <Label htmlFor="fontFamily" className="text-sm font-medium mb-3 block text-white flex items-center gap-2">
+            <Type className="h-4 w-4" />
+            Typography
+          </Label>
           <Select 
-            value={settings?.fontFamily || "Inter"} 
+            value={settings?.fontFamily || "Ovo"} 
             onValueChange={(value) => handleChange("fontFamily", value)}
           >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a font" />
+            <SelectTrigger className="w-full h-12 border-gray-700 bg-gray-900/50 hover:bg-gray-800/50 transition-all duration-200">
+              <SelectValue placeholder="Select a font">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium text-white">
+                      {FONT_OPTIONS.find(f => f.value === (settings?.fontFamily || "Ovo"))?.label}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {FONT_OPTIONS.find(f => f.value === (settings?.fontFamily || "Ovo"))?.description}
+                    </span>
+                  </div>
+                </div>
+              </SelectValue>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-gray-900 border-gray-700">
               {FONT_OPTIONS.map((font) => (
-                <SelectItem key={font.value} value={font.value}>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{font.label}</span>
-                    <span className="text-xs text-gray-500">{font.description}</span>
+                <SelectItem key={font.value} value={font.value} className="focus:bg-gray-800">
+                  <div className="flex flex-col py-1">
+                    <span className="font-medium text-white" style={{ fontFamily: font.value }}>{font.label}</span>
+                    <span className="text-xs text-gray-400">{font.description}</span>
                   </div>
                 </SelectItem>
               ))}
@@ -148,7 +162,7 @@ const SettingsEditor: React.FC = () => {
         </div>
 
         <div>
-          <Label htmlFor="primaryColor" className="text-sm font-medium mb-3 block">Theme Color</Label>
+          <Label htmlFor="primaryColor" className="text-sm font-medium mb-3 block text-white">Theme Color</Label>
           <div className="grid grid-cols-5 gap-2 mb-3">
             {predefinedColors.map((color) => (
               <button
