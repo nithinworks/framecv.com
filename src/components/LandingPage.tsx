@@ -1,9 +1,10 @@
+
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { Upload, ArrowRight } from "lucide-react";
+import { Upload, ArrowRight, Sparkles } from "lucide-react";
 import { samplePortfolioData } from "@/data/samplePortfolio";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -154,7 +155,7 @@ const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-[#171717] text-white">
       {/* Header */}
       <header className={`border-b border-border/20 transition-all duration-1000 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md'}`}>
-        <div className="container mx-auto py-6 px-8 flex justify-between items-center">
+        <div className="container mx-auto py-6 px-6 md:px-8 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 bg-white rounded-md flex items-center justify-center text-black font-medium text-sm">P</div>
             <h1 className="text-lg font-normal">Portfolio Creator</h1>
@@ -170,13 +171,23 @@ const LandingPage: React.FC = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="flex-grow flex items-center justify-center min-h-[80vh]">
-        <div className="container mx-auto px-8 text-center max-w-4xl">
+      <section className="flex-grow flex items-center justify-center min-h-[80vh] px-6 md:px-8">
+        <div className="container mx-auto text-center max-w-4xl">
+          
+          {/* Announcement Bar */}
+          <div className={`transition-all duration-1000 delay-100 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-4'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+              <Sparkles className="w-4 h-4 text-white/70" />
+              <span className="text-sm text-white/80 font-medium">AI-powered portfolio generation</span>
+              <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+
           <div className={`transition-all duration-1200 delay-200 ${isLoaded ? 'animate-blur-in' : 'opacity-0 blur-md translate-y-8'}`}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-normal mb-6 tracking-tight leading-[0.9]">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-4 tracking-tight leading-[1.1] max-w-3xl mx-auto">
               Your Journey Deserves More Than a Resume
             </h1>
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-light mb-8 text-muted-foreground leading-[1.2] max-w-3xl mx-auto">
+            <h2 className="text-base md:text-lg lg:text-xl font-normal mb-8 text-white/70 leading-[1.4] max-w-2xl mx-auto">
               Let our AI turn your resume into a stunning personal portfolio — in seconds, for free.
             </h2>
           </div>
