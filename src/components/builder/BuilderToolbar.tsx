@@ -1,11 +1,22 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
   PanelLeft, 
   Download, 
   ChevronLeft,
-  Github
+  Github,
+  Smartphone,
+  Tablet,
+  Laptop,
+  ChevronDown
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -13,6 +24,7 @@ import { useState } from "react";
 import GitHubDeploy from "@/components/builder/GitHubDeploy";
 import UserDetailsModal from "@/components/builder/UserDetailsModal";
 import { useDownloadCode } from "@/hooks/useDownloadCode";
+import { useDevicePreview, type DeviceType } from "@/hooks/useDevicePreview";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
@@ -29,6 +41,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   const [showGitHubDeploy, setShowGitHubDeploy] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [pendingAction, setPendingAction] = useState<"download" | "deploy" | null>(null);
+  const { currentDevice, setCurrentDevice, getCurrentDevice, devices } = useDevicePreview();
 
   // Use the download code hook
   const { downloadSourceCode } = useDownloadCode();
@@ -51,6 +64,19 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
     }
     setPendingAction(null);
   };
+
+  const getDeviceIcon = (deviceType: DeviceType) => {
+    switch (deviceType) {
+      case "mobile":
+        return <Smartphone className="h-4 w-4" />;
+      case "tablet":
+        return <Tablet className="h-4 w-4" />;
+      case "desktop":
+        return <Laptop className="h-4 w-4" />;
+    }
+  };
+
+  const currentDeviceInfo = getCurrentDevice();
 
   return (
     <>
@@ -96,6 +122,38 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
         </div>
 
         <div className="flex items-center gap-2">
+          {!isMobile && (
+            <>
+              <div className="h-4 w-px bg-gray-800"></div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300 flex items-center gap-2"
+                  >
+                    {getDeviceIcon(currentDevice)}
+                    <span>{currentDeviceInfo.label}</span>
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  {devices.map((device) => (
+                    <DropdownMenuItem
+                      key={device.type}
+                      onClick={() => setCurrentDevice(device.type)}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      {getDeviceIcon(device.type)}
+                      <span>{device.label}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <div className="h-4 w-px bg-gray-800"></div>
+            </>
+          )}
+          
           <Button
             variant="ghost"
             size="sm"

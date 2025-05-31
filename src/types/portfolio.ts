@@ -7,6 +7,7 @@ export interface PortfolioData {
     summary: string;
     profileImage: string;
     primaryColor: string;
+    fontFamily: string;
   };
   sections: {
     hero: {
@@ -98,6 +99,15 @@ export interface PortfolioData {
 
 export type PortfolioSection = keyof PortfolioData["sections"];
 
+export const FONT_OPTIONS = [
+  { value: "Inter", label: "Inter", description: "Modern & Clean" },
+  { value: "Outfit", label: "Outfit", description: "Rounded & Friendly" },
+  { value: "Poppins", label: "Poppins", description: "Geometric & Versatile" },
+  { value: "Playfair Display", label: "Playfair Display", description: "Elegant & Serif" },
+  { value: "Source Sans Pro", label: "Source Sans Pro", description: "Professional" },
+  { value: "Roboto", label: "Roboto", description: "Google's Default" }
+];
+
 export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
   settings: {
     name: "Your Name",
@@ -105,7 +115,8 @@ export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
     location: "Your Location",
     summary: "A brief summary about yourself and your skills.",
     profileImage: "https://via.placeholder.com/400",
-    primaryColor: "#0067c7"
+    primaryColor: "#0067c7",
+    fontFamily: "Inter"
   },
   sections: {
     hero: {

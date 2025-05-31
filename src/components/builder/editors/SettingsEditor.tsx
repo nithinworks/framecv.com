@@ -1,4 +1,3 @@
-
 import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,14 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { FONT_OPTIONS } from "@/types/portfolio";
 
 const SettingsEditor: React.FC = () => {
   const { portfolioData, setPortfolioData } = usePortfolio();
@@ -118,6 +125,28 @@ const SettingsEditor: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
+        <div>
+          <Label htmlFor="fontFamily" className="text-sm font-medium mb-3 block">Typography</Label>
+          <Select 
+            value={settings?.fontFamily || "Inter"} 
+            onValueChange={(value) => handleChange("fontFamily", value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a font" />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_OPTIONS.map((font) => (
+                <SelectItem key={font.value} value={font.value}>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{font.label}</span>
+                    <span className="text-xs text-gray-500">{font.description}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div>
           <Label htmlFor="primaryColor" className="text-sm font-medium mb-3 block">Theme Color</Label>
           <div className="grid grid-cols-5 gap-2 mb-3">
