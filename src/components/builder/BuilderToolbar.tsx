@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -13,7 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import GitHubDeploy from "@/components/builder/GitHubDeploy";
 import UserDetailsModal from "@/components/builder/UserDetailsModal";
-import DownloadCode from "@/components/builder/DownloadCode";
+import { useDownloadCode } from "@/hooks/useDownloadCode";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
@@ -31,8 +30,8 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [pendingAction, setPendingAction] = useState<"download" | "deploy" | null>(null);
 
-  // Initialize the download functionality
-  const { downloadSourceCode } = DownloadCode();
+  // Use the download code hook
+  const { downloadSourceCode } = useDownloadCode();
 
   const handleDownloadClick = () => {
     setPendingAction("download");

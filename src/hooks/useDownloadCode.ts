@@ -1,8 +1,7 @@
 
-import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 
-const DownloadCode: React.FC = () => {
+export const useDownloadCode = () => {
   const { portfolioData } = usePortfolio();
 
   // Helper function to generate complete JavaScript code (same as GitHub deploy and CodeView)
@@ -363,5 +362,3 @@ html, body {
 
   return { downloadSourceCode };
 };
-
-export default DownloadCode;
