@@ -7,7 +7,8 @@ import {
   ChevronLeft,
   Github,
   Monitor,
-  Smartphone
+  Smartphone,
+  Globe
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +16,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import GitHubDeploy from "@/components/builder/GitHubDeploy";
 import UserDetailsModal from "@/components/builder/UserDetailsModal";
+import PublishModal from "@/components/builder/PublishModal";
 import { useDownloadCode } from "@/hooks/useDownloadCode";
 
 interface BuilderToolbarProps {
@@ -33,6 +35,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   const isMobile = useIsMobile();
   const [showGitHubDeploy, setShowGitHubDeploy] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<"download" | "deploy" | null>(null);
 
   // Use the download code hook
@@ -132,6 +135,16 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
           <Button
             variant="ghost"
             size="sm"
+            onClick={() => setShowPublishModal(true)}
+            className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
+          >
+            <Globe className="h-4 w-4 mr-2" />
+            {!isMobile && "Publish"}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleDeployClick}
             className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
           >
@@ -162,6 +175,12 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
       <GitHubDeploy 
         open={showGitHubDeploy} 
         onOpenChange={setShowGitHubDeploy} 
+      />
+
+      <PublishModal
+        open={showPublishModal}
+        onOpenChange={setShowPublishModal}
+        portfolioData={portfolioData}
       />
     </>
   );

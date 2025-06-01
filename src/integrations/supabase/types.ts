@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      published_portfolios: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          full_name: string
+          id: string
+          portfolio_data: Json
+          slug_name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at?: string
+          full_name: string
+          id?: string
+          portfolio_data: Json
+          slug_name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          full_name?: string
+          id?: string
+          portfolio_data?: Json
+          slug_name?: string
+        }
+        Relationships: []
+      }
       user_submissions: {
         Row: {
           action_type: string
