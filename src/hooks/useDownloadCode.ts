@@ -4,7 +4,7 @@ import { usePortfolio } from "@/context/PortfolioContext";
 export const useDownloadCode = () => {
   const { portfolioData } = usePortfolio();
 
-  // Helper function to generate complete JavaScript code (same as GitHub deploy and CodeView)
+  // Helper function to generate complete JavaScript code with font support
   const generateCompleteJavaScript = (data: any): string => {
     return `// getIconSVG: Inline SVGs for all icons used in the portfolio
 function getIconSVG(name) {
@@ -31,6 +31,21 @@ function getIconSVG(name) {
       return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25m-9-3H9M12 10.5H9m6.75 4.5H9m5.25 4.5H9"/></svg>';
     default:
       return "";
+  }
+}
+
+// Font mapping for CSS classes
+function getFontClass(fontName) {
+  switch (fontName) {
+    case "ovo": return "font-Ovo";
+    case "playfair": return "font-Playfair";
+    case "poppins": return "font-Poppins";
+    case "inter": return "font-Inter";
+    case "montserrat": return "font-Montserrat";
+    case "raleway": return "font-Raleway";
+    case "schibsted": return "font-Schibsted";
+    case "outfit": return "font-Outfit";
+    default: return "font-Ovo";
   }
 }
 
@@ -82,6 +97,10 @@ async function renderPortfolio() {
     document.documentElement.style.setProperty("--primary-color-light", hexToRgba(data.settings.primaryColor || "#d65822", 0.08));
     document.documentElement.style.setProperty("--glass-bg", hexToRgba(data.settings.primaryColor || "#d65822", 0.1));
     
+    // Apply custom fonts based on settings
+    const primaryFontClass = getFontClass(data.settings.fonts?.primary || "ovo");
+    const secondaryFontClass = getFontClass(data.settings.fonts?.secondary || "schibsted");
+    
     // Get logo name
     const nameParts = (data.settings.name || "").trim().split(" ");
     const logoName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
@@ -92,20 +111,20 @@ async function renderPortfolio() {
       navLinks += '<li><a href="' + link.url + '" class="hover:dynamic-primary transition-colors duration-300">' + link.name + '</a></li>';
     });
     
-    // Navigation bar
-    let nav = '<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50"><span class="font-Ovo text-xl font-bold tracking-tight">' + logoName + '<span class="dynamic-primary">.</span></span><ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 font-Ovo text-lg border-none bg-transparent shadow-none">' + navLinks + '</ul><div class="flex items-center gap-4"><button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none"><span id="theme-toggle-icon"></span></button><a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white font-Ovo font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a></div></nav>';
+    // Navigation bar with primary font
+    let nav = '<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50"><span class="' + primaryFontClass + ' text-xl font-bold tracking-tight">' + logoName + '<span class="dynamic-primary">.</span></span><ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 ' + primaryFontClass + ' text-lg border-none bg-transparent shadow-none">' + navLinks + '</ul><div class="flex items-center gap-4"><button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none"><span id="theme-toggle-icon"></span></button><a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white ' + primaryFontClass + ' font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a></div></nav>';
     
-    // Hero section
+    // Hero section with font support
     let hero = "";
     if (data.sections.hero && data.sections.hero.enabled) {
       let ctas = "";
       (data.sections.hero.ctaButtons || []).forEach((btn) => {
         ctas += '<a href="' + btn.url + '" class="flex items-center gap-2 ' + (btn.isPrimary ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-transform duration-300" : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors duration-300") + '">' + (btn.icon ? getIconSVG(btn.icon) : "") + '<span>' + btn.text + '</span></a>';
       });
-      hero = '<div class="hero-bg w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full"><img src="' + data.settings.profileImage + '" alt="Profile" class="rounded-full w-28 h-28 object-cover mb-8 border-4 border-white shadow-md animate-fade-in" /><h2 class="font-Ovo text-xl mb-3 animate-slide-up">Hi! I\\'m ' + data.settings.name + ' <span class="inline-block">👋</span></h2><h1 class="font-Ovo text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 animate-slide-up">' + data.settings.title + '<br />based in ' + data.settings.location + '.</h1><p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">' + data.settings.summary + '</p><div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">' + ctas + '</div></header></div>';
+      hero = '<div class="hero-bg w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full"><img src="' + data.settings.profileImage + '" alt="Profile" class="rounded-full w-28 h-28 object-cover mb-8 border-4 border-white shadow-md animate-fade-in" /><h2 class="' + primaryFontClass + ' text-xl mb-3 animate-slide-up">Hi! I\\'m ' + data.settings.name + ' <span class="inline-block">👋</span></h2><h1 class="' + primaryFontClass + ' text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 animate-slide-up">' + data.settings.title + '<br />based in ' + data.settings.location + '.</h1><p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">' + data.settings.summary + '</p><div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">' + ctas + '</div></header></div>';
     }
     
-    // About section
+    // About section with font support
     let about = "";
     if (data.sections.about && data.sections.about.enabled) {
       let skills = "";
@@ -114,12 +133,12 @@ async function renderPortfolio() {
         data.sections.about.skills.items.forEach((skill) => {
           skillTags += '<span class="px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300">' + skill + '</span>';
         });
-        skills = '<h2 class="font-Ovo text-2xl mb-4 mt-8">' + data.sections.about.skills.title + '</h2><div class="flex flex-wrap justify-center gap-3">' + skillTags + '</div>';
+        skills = '<h2 class="' + primaryFontClass + ' text-2xl mb-4 mt-8">' + data.sections.about.skills.title + '</h2><div class="flex flex-wrap justify-center gap-3">' + skillTags + '</div>';
       }
-      about = '<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center"><h2 class="font-Ovo text-2xl sm:text-3xl mb-3 sm:mb-4">' + data.sections.about.title + '</h2><p class="mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">' + data.sections.about.content + '</p>' + skills + '</div></section>';
+      about = '<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-3 sm:mb-4">' + data.sections.about.title + '</h2><p class="mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">' + data.sections.about.content + '</p>' + skills + '</div></section>';
     }
     
-    // Projects section
+    // Projects section with font support
     let projects = "";
     if (data.sections.projects && data.sections.projects.enabled) {
       let projectCards = "";
@@ -132,32 +151,32 @@ async function renderPortfolio() {
         if (project.previewUrl && project.previewUrl !== "#") {
           projectLink = '<a href="' + project.previewUrl + '" class="dynamic-primary font-normal hover:underline text-base flex items-center gap-1">View project <span aria-hidden="true">→</span></a>';
         }
-        projectCards += '<div class="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-2xl p-7 flex flex-col gap-3 shadow-sm hover:shadow-md transition w-full max-w-md mx-auto"><h3 class="font-Ovo text-lg mb-1">' + project.title + '</h3><p class="text-sm text-gray-600 dark:text-gray-400">' + project.description + '</p><div class="flex flex-wrap gap-2 mb-2">' + projectTags + '</div>' + projectLink + '</div>';
+        projectCards += '<div class="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-2xl p-7 flex flex-col gap-3 shadow-sm hover:shadow-md transition w-full max-w-md mx-auto"><h3 class="' + primaryFontClass + ' text-lg mb-1">' + project.title + '</h3><p class="text-sm text-gray-600 dark:text-gray-400">' + project.description + '</p><div class="flex flex-wrap gap-2 mb-2">' + projectTags + '</div>' + projectLink + '</div>';
       });
-      projects = '<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-Ovo text-2xl sm:text-3xl mb-2">' + data.sections.projects.title + '</h2></div><div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">' + projectCards + '</div></section>';
+      projects = '<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2">' + data.sections.projects.title + '</h2></div><div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">' + projectCards + '</div></section>';
     }
     
-    // Experience section
+    // Experience section with font support
     let experience = "";
     if (data.sections.experience && data.sections.experience.enabled) {
       let experienceItems = "";
       data.sections.experience.items.forEach((item) => {
-        experienceItems += '<div class="flex gap-4 items-start"><div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div><div><h3 class="font-Ovo text-lg mb-1">' + item.position + '</h3><div class="text-sm text-gray-500 mb-1">' + item.company + ' • ' + item.period + '</div><p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">' + item.description + '</p></div></div>';
+        experienceItems += '<div class="flex gap-4 items-start"><div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div><div><h3 class="' + primaryFontClass + ' text-lg mb-1">' + item.position + '</h3><div class="text-sm text-gray-500 mb-1">' + item.company + ' • ' + item.period + '</div><p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">' + item.description + '</p></div></div>';
       });
-      experience = '<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-Ovo text-2xl sm:text-3xl mb-2">' + data.sections.experience.title + '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6 sm:gap-8">' + experienceItems + '</div></section>';
+      experience = '<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2">' + data.sections.experience.title + '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6 sm:gap-8">' + experienceItems + '</div></section>';
     }
     
-    // Education section
+    // Education section with font support
     let education = "";
     if (data.sections.education && data.sections.education.enabled) {
       let educationItems = "";
       data.sections.education.items.forEach((item) => {
-        educationItems += '<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col gap-1 shadow-sm w-full"><h3 class="font-Ovo text-lg mb-1">' + item.degree + '</h3><div class="text-sm text-gray-500 mb-1">' + item.institution + ' • ' + item.period + '</div></div>';
+        educationItems += '<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col gap-1 shadow-sm w-full"><h3 class="' + primaryFontClass + ' text-lg mb-1">' + item.degree + '</h3><div class="text-sm text-gray-500 mb-1">' + item.institution + ' • ' + item.period + '</div></div>';
       });
-      education = '<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-Ovo text-2xl sm:text-3xl mb-2">' + data.sections.education.title + '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6">' + educationItems + '</div></section>';
+      education = '<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2">' + data.sections.education.title + '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6">' + educationItems + '</div></section>';
     }
     
-    // Contact section
+    // Contact section with font support
     let contact = "";
     if (data.sections.contact && data.sections.contact.enabled) {
       let contactCards = "";
@@ -167,19 +186,19 @@ async function renderPortfolio() {
         { icon: getIconSVG("map"), value: data.sections.contact.location }
       ];
       contactInfo.forEach((card) => {
-        contactCards += '<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-Schibsted text-gray-700 dark:text-gray-200 justify-center shadow-sm" style="font-size:14px;font-weight:500;">' + card.icon + '<span class="break-words">' + card.value + '</span></div>';
+        contactCards += '<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center shadow-sm" style="font-size:14px;font-weight:500;">' + card.icon + '<span class="break-words">' + card.value + '</span></div>';
       });
-      contact = '<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4"><h2 class="font-Ovo text-3xl sm:text-4xl mb-3 sm:mb-4">' + data.sections.contact.title + '</h2><div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">' + contactCards + '</div></div></section>';
+      contact = '<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4"><h2 class="' + primaryFontClass + ' text-3xl sm:text-4xl mb-3 sm:mb-4">' + data.sections.contact.title + '</h2><div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">' + contactCards + '</div></div></section>';
     }
     
-    // Social section
+    // Social section with font support
     let social = "";
     if (data.sections.social && data.sections.social.enabled) {
       let socialLinks = "";
       data.sections.social.items.forEach((item) => {
-        socialLinks += '<a href="' + item.url + '" class="flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-Schibsted text-gray-700 dark:text-gray-200 justify-center shadow-sm hover:scale-105 transition-transform duration-300">' + getIconSVG(item.icon) + '<span>' + item.platform + '</span></a>';
+        socialLinks += '<a href="' + item.url + '" class="flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center shadow-sm hover:scale-105 transition-transform duration-300">' + getIconSVG(item.icon) + '<span>' + item.platform + '</span></a>';
       });
-      social = '<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0"><h3 class="font-Ovo text-xl sm:text-2xl mb-3 sm:mb-4 mt-4">Social Media</h3><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">' + socialLinks + '</div></div></section>';
+      social = '<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0"><h3 class="' + primaryFontClass + ' text-xl sm:text-2xl mb-3 sm:mb-4 mt-4">Social Media</h3><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">' + socialLinks + '</div></div></section>';
     }
     
     // Footer
@@ -205,7 +224,7 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
   };
 
   const downloadSourceCode = () => {
-    // HTML template
+    // HTML template with all font support
     const htmlCode = `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
@@ -216,8 +235,9 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
     <script src="./tailwind.config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Include all available fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Ovo&family=Schibsted+Grotesk:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Ovo&family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
@@ -289,9 +309,14 @@ html, body {
         auto: "repeat(auto-fit, minmax(200px, 1fr))",
       },
       fontFamily: {
-        Outfit: ["Outfit", "sans-serif"],
         Ovo: ["Ovo", "serif"],
+        Playfair: ["Playfair Display", "serif"],
+        Poppins: ["Poppins", "sans-serif"],
+        Inter: ["Inter", "sans-serif"],
+        Montserrat: ["Montserrat", "sans-serif"],
+        Raleway: ["Raleway", "sans-serif"],
         Schibsted: ["Schibsted Grotesk", "sans-serif"],
+        Outfit: ["Outfit", "sans-serif"],
       },
       animation: {
         "fade-in": "fadeIn 0.7s ease-out both",
@@ -328,7 +353,7 @@ html, body {
   darkMode: "selector",
 };`;
 
-    // Use the complete JavaScript code
+    // Use the complete JavaScript code with font support
     const jsCode = generateCompleteJavaScript(portfolioData);
     const jsonCode = JSON.stringify(portfolioData, null, 2);
 
