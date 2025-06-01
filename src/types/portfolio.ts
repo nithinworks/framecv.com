@@ -7,6 +7,10 @@ export interface PortfolioData {
     summary: string;
     profileImage: string;
     primaryColor: string;
+    fonts: {
+      primary: string; // Options: ovo, playfair, poppins, inter, montserrat, raleway
+      secondary: string; // Options: schibsted, outfit
+    };
   };
   sections: {
     hero: {
@@ -105,7 +109,11 @@ export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
     location: "Your Location",
     summary: "A brief summary about yourself and your skills.",
     profileImage: "https://via.placeholder.com/400",
-    primaryColor: "#0067c7"
+    primaryColor: "#0067c7",
+    fonts: {
+      primary: "ovo",
+      secondary: "schibsted"
+    }
   },
   sections: {
     hero: {

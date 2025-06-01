@@ -1,4 +1,3 @@
-
 import { PortfolioData } from "@/types/portfolio";
 
 export const generatePortfolioHTML = (
@@ -19,12 +18,12 @@ export const generatePortfolioHTML = (
         <title>Portfolio - ${portfolioData.settings.name}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Ovo&family=Schibsted+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Ovo&family=Schibsted+Grotesk:wght@400;500;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         
         <style>
           ${getBaseStyles()}
           
-          ${getPortfolioStyles(portfolioData.settings.primaryColor || "#0067c7")}
+          ${getPortfolioStyles(portfolioData.settings.primaryColor || "#0067c7", portfolioData.settings.fonts)}
           
           /* Set body height to 100% to avoid scrolling issues in the iframe */
           body {
@@ -33,7 +32,7 @@ export const generatePortfolioHTML = (
           }
         </style>
       </head>
-      <body class="font-Schibsted leading-8 bg-white text-primary dark:bg-darkTheme dark:text-white">
+      <body class="font-secondary leading-8 bg-white text-primary dark:bg-darkTheme dark:text-white">
         ${renderNavigation(portfolioData)}
         ${renderHeroSection(portfolioData)}
         ${renderAboutSection(portfolioData)}
@@ -100,13 +99,13 @@ const renderNavigation = (data: PortfolioData): string => {
   });
   
   return `<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50">
-    <span class="font-Ovo text-xl font-bold tracking-tight">${logoName}<span class='dynamic-primary'>.</span></span>
-    <ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 font-Ovo text-lg border-none bg-transparent shadow-none">${navLinks}</ul>
+    <span class="font-primary text-xl font-bold tracking-tight">${logoName}<span class='dynamic-primary'>.</span></span>
+    <ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 font-primary text-lg border-none bg-transparent shadow-none">${navLinks}</ul>
     <div class="flex items-center gap-4">
       <button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none">
         <span id="theme-toggle-icon"></span>
       </button>
-      <a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white font-Ovo font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a>
+      <a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white font-primary font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a>
     </div>
   </nav>`;
 };
@@ -125,10 +124,10 @@ const renderHeroSection = (data: PortfolioData): string => {
   });
 
   return `<div class="hero-bg w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full">
-    <img src="${data.settings.profileImage}" alt="Profile" class="rounded-full w-28 mb-8 border-4 border-white shadow-md animate-fade-in" />
-    <h2 class="font-Ovo text-xl mb-3 animate-slide-up">Hi! I'm ${data.settings.name} <span class="inline-block">👋</span></h2>
-    <h1 class="font-Ovo text-5xl sm:text-6xl font-bold mb-6 animate-slide-up">${data.settings.title}<br />based in ${data.settings.location}.</h1>
-    <p class="text-[16px] text-gray-600 dark:text-gray-400 mb-8 animate-fade-in">${data.settings.summary}</p>
+    <img src="${data.settings.profileImage}" alt="Profile" class="rounded-full w-28 h-28 object-cover mb-8 border-4 border-white shadow-md animate-fade-in" />
+    <h2 class="font-primary text-xl mb-3 animate-slide-up">Hi! I'm ${data.settings.name} <span class="inline-block">👋</span></h2>
+    <h1 class="font-primary text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 animate-slide-up">${data.settings.title}<br />based in ${data.settings.location}.</h1>
+    <p class="font-secondary text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">${data.settings.summary}</p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">${ctas}</div>
   </header></div>`;
 };
@@ -139,20 +138,20 @@ const renderAboutSection = (data: PortfolioData): string => {
 
   let skills = "";
   if (data.sections.about.skills && data.sections.about.skills.enabled) {
-    skills = `<h2 class="font-Ovo text-2xl mb-4 mt-8">${
+    skills = `<h2 class="font-primary text-2xl mb-4 mt-8">${
       data.sections.about.skills.title
     }</h2><div class="flex flex-wrap justify-center gap-3">${data.sections.about.skills.items
       .map(
         (skill) =>
-          `<span class="px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300">${skill}</span>`
+          `<span class="font-secondary px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300">${skill}</span>`
       )
       .join("")}</div>`;
   }
 
-  return `<section id="about" class="py-16 sm:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+  return `<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
     <div class="max-w-2xl mx-auto text-center">
-      <h2 class="font-Ovo text-3xl mb-4">${data.sections.about.title}</h2>
-      <p class="mb-8 text-gray-700 dark:text-gray-300">${data.sections.about.content}</p>
+      <h2 class="font-primary text-2xl sm:text-3xl mb-3 sm:mb-4">${data.sections.about.title}</h2>
+      <p class="font-secondary mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">${data.sections.about.content}</p>
       ${skills}
     </div>
   </section>`;
@@ -166,30 +165,30 @@ const renderProjectsSection = (data: PortfolioData): string => {
     .map(
       (project) =>
         `<div class="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-2xl p-7 flex flex-col gap-3 shadow-sm hover:shadow-md transition w-full max-w-md mx-auto">
-          <h3 class="font-Ovo text-lg mb-1">${project.title}</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${
+          <h3 class="font-primary text-lg mb-1">${project.title}</h3>
+          <p class="font-secondary text-sm text-gray-600 dark:text-gray-400">${
             project.description
           }</p>
           <div class="flex flex-wrap gap-2 mb-2">${project.tags
             .map(
               (tag) =>
-                `<span class="text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">${tag}</span>`
+                `<span class="font-secondary text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">${tag}</span>`
             )
             .join("")}</div>
           ${
             project.previewUrl && project.previewUrl !== "#"
-              ? `<a href="${project.previewUrl}" class="dynamic-primary font-normal hover:underline text-base flex items-center gap-1">View project <span aria-hidden="true">→</span></a>`
+              ? `<a href="${project.previewUrl}" class="font-secondary dynamic-primary font-normal hover:underline text-base flex items-center gap-1">View project <span aria-hidden="true">→</span></a>`
               : ""
           }
         </div>`
     )
     .join("");
 
-  return `<section id="projects" class="py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full">
-    <div class="max-w-4xl mx-auto text-center mb-10">
-      <h2 class="font-Ovo text-3xl mb-2">${data.sections.projects.title}</h2>
+  return `<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full">
+    <div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10">
+      <h2 class="font-primary text-2xl sm:text-3xl mb-2">${data.sections.projects.title}</h2>
     </div>
-    <div class="max-w-5xl mx-auto grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">${projectCards}</div>
+    <div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">${projectCards}</div>
   </section>`;
 };
 
@@ -203,19 +202,19 @@ const renderExperienceSection = (data: PortfolioData): string => {
         `<div class="flex gap-4 items-start">
           <div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div>
           <div>
-            <h3 class="font-Ovo text-lg mb-1">${item.position}</h3>
-            <div class="text-sm text-gray-500 mb-1">${item.company} • ${item.period}</div>
-            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">${item.description}</p>
+            <h3 class="font-primary text-lg mb-1">${item.position}</h3>
+            <div class="font-secondary text-sm text-gray-500 mb-1">${item.company} • ${item.period}</div>
+            <p class="font-secondary text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">${item.description}</p>
           </div>
         </div>`
     )
     .join("");
 
-  return `<section id="experience" class="py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
-    <div class="max-w-4xl mx-auto text-center mb-10">
-      <h2 class="font-Ovo text-3xl mb-2">${data.sections.experience.title}</h2>
+  return `<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+    <div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10">
+      <h2 class="font-primary text-2xl sm:text-3xl mb-2">${data.sections.experience.title}</h2>
     </div>
-    <div class="max-w-2xl mx-auto flex flex-col gap-8">${experiences}</div>
+    <div class="max-w-2xl mx-auto flex flex-col gap-6 sm:gap-8">${experiences}</div>
   </section>`;
 };
 
@@ -227,15 +226,15 @@ const renderEducationSection = (data: PortfolioData): string => {
     .map(
       (item) =>
         `<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col gap-1 shadow-sm w-full">
-          <h3 class="font-Ovo text-lg mb-1">${item.degree}</h3>
-          <div class="text-sm text-gray-500 mb-1">${item.institution} • ${item.period}</div>
+          <h3 class="font-primary text-lg mb-1">${item.degree}</h3>
+          <div class="font-secondary text-sm text-gray-500 mb-1">${item.institution} • ${item.period}</div>
         </div>`
     )
     .join("");
 
-  return `<section id="education" class="py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
-    <div class="max-w-4xl mx-auto text-center mb-10">
-      <h2 class="font-Ovo text-3xl mb-2">${data.sections.education.title}</h2>
+  return `<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+    <div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10">
+      <h2 class="font-primary text-2xl sm:text-3xl mb-2">${data.sections.education.title}</h2>
     </div>
     <div class="max-w-2xl mx-auto flex flex-col gap-6">${educationItems}</div>
   </section>`;
@@ -261,16 +260,16 @@ const renderContactSection = (data: PortfolioData): string => {
   ]
     .map(
       (card) =>
-        `<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-Schibsted text-gray-700 dark:text-gray-200 justify-center shadow-sm" style="font-size:14px;font-weight:500;">
+        `<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-secondary text-gray-700 dark:text-gray-200 justify-center shadow-sm" style="font-size:14px;font-weight:500;">
             ${card.icon}<span class="break-words">${card.value}</span>
         </div>`
     )
     .join("");
 
-  return `<section id="contact" class="py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
-    <div class="max-w-2xl mx-auto text-center mb-4">
-      <h2 class="font-Ovo text-4xl mb-4">${data.sections.contact.title}</h2>
-      <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4 mb-4 px-4 sm:px-0">${contactInfo}</div>
+  return `<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
+    <div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4">
+      <h2 class="font-primary text-3xl sm:text-4xl mb-3 sm:mb-4">${data.sections.contact.title}</h2>
+      <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">${contactInfo}</div>
     </div>
   </section>`;
 };
@@ -282,16 +281,16 @@ const renderSocialSection = (data: PortfolioData): string => {
   const socialLinks = data.sections.social.items
     .map(
       (item) =>
-        `<a href="${item.url}" class="flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-Schibsted text-gray-700 dark:text-gray-200 hover:bg-primary-light dark:hover:bg-gray-800 transition w-full sm:w-auto justify-center" style="font-size:14px;font-weight:500;">
+        `<a href="${item.url}" class="flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-secondary text-gray-700 dark:text-gray-200 hover:bg-primary-light dark:hover:bg-gray-800 transition w-full sm:w-auto justify-center" style="font-size:14px;font-weight:500;">
           ${item.icon ? getIconSVG(item.icon) : ""}${item.platform}
         </a>`
     )
     .join("");
 
   return `<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full">
-    <div class="max-w-2xl mx-auto text-center mb-4 w-full px-4 sm:px-0">
-      <h3 class="font-Ovo text-2xl mb-4 mt-4">Social Media</h3>
-      <div class="flex flex-col sm:flex-row justify-center gap-4 mb-2 px-4 sm:px-0">${socialLinks}</div>
+    <div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0">
+      <h3 class="font-primary text-xl sm:text-2xl mb-3 sm:mb-4 mt-4">Social Media</h3>
+      <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">${socialLinks}</div>
     </div>
   </section>`;
 };
@@ -310,13 +309,13 @@ const renderFooter = (data: PortfolioData): string => {
     )
     .join("");
 
-  return `<footer class="py-8 bg-white dark:bg-black border-t border-gray-100 dark:border-gray-800 mt-0 px-4 sm:px-6 md:px-8 w-full">
+  return `<footer class="py-6 sm:py-8 bg-white dark:bg-black border-t border-gray-100 dark:border-gray-800 mt-0 px-4 sm:px-6 md:px-8 w-full">
     <div class="max-w-2xl mx-auto text-center flex flex-col gap-6 items-center">
-      <span class="font-Ovo text-2xl font-bold tracking-tight mb-2">${logoName}<span class='dynamic-primary'>.</span></span>
+      <span class="font-primary text-2xl font-bold tracking-tight mb-2">${logoName}<span class='dynamic-primary'>.</span></span>
       <div class="flex flex-wrap justify-center gap-8 mb-2">${navLinks}</div>
-      <p class="text-gray-500 dark:text-gray-400 text-sm mt-2 mb-2">${data.footer.copyright}</p>
+      <p class="font-secondary text-gray-500 dark:text-gray-400 text-sm mt-2 mb-2">${data.footer.copyright}</p>
       <div class="flex justify-center">
-        <span class="px-5 py-2 rounded-full glass-bg text-sm text-gray-700 dark:text-gray-200 font-medium">Built with Nithin.io</span>
+        <span class="px-5 py-2 rounded-full glass-bg text-sm font-secondary text-gray-700 dark:text-gray-200 font-medium">Built with Nithin.io</span>
       </div>
     </div>
   </footer>`;
@@ -417,6 +416,15 @@ const getBaseStyles = (): string => {
       --radius: 0.5rem;
     }
     
+    .font-primary {
+      font-family: var(--font-primary) !important;
+    }
+    
+    .font-secondary {
+      font-family: var(--font-secondary) !important;
+    }
+
+    /* ... keep existing code (common styles) */
     .w-full { width: 100%; }
     .max-w-2xl { max-width: 42rem; }
     .max-w-4xl { max-width: 56rem; }
@@ -442,6 +450,7 @@ const getBaseStyles = (): string => {
     .hidden { display: none; }
     .h-3 { height: 0.75rem; }
     .h-6 { height: 1.5rem; }
+    .h-28 { height: 7rem; }
     .w-3 { width: 0.75rem; }
     .w-6 { width: 1.5rem; }
     .w-28 { width: 7rem; }
@@ -485,6 +494,7 @@ const getBaseStyles = (): string => {
     .dark\\:bg-darkTheme { background-color: #111111; }
     .bg-white\\/80 { background-color: rgba(255, 255, 255, 0.8); }
     .dark\\:bg-black\\/90 { background-color: rgba(0, 0, 0, 0.9); }
+    .object-cover { object-fit: cover; }
     .p-5 { padding: 1.25rem; }
     .p-7 { padding: 1.75rem; }
     .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
@@ -498,7 +508,9 @@ const getBaseStyles = (): string => {
     .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
     .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
     .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+    .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
     .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
     .py-16 { padding-top: 4rem; padding-bottom: 4rem; }
     .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
     .pt-36 { padding-top: 9rem; }
@@ -513,6 +525,7 @@ const getBaseStyles = (): string => {
     .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
     .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
     .text-5xl { font-size: 3rem; line-height: 1; }
+    .text-6xl { font-size: 3.75rem; line-height: 1; }
     .text-\\[16px\\] { font-size: 16px; }
     .font-medium { font-weight: 500; }
     .font-bold { font-weight: 700; }
@@ -547,9 +560,6 @@ const getBaseStyles = (): string => {
     .dark\\:hover\\:bg-gray-900:hover { background-color: rgb(17 24 39); }
     .hover\\:shadow-md:hover { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
     .hover\\:underline:hover { text-decoration: underline; }
-    .font-Ovo { font-family: 'Ovo', serif; }
-    .font-Outfit { font-family: 'Outfit', sans-serif; }
-    .font-Schibsted { font-family: 'Schibsted Grotesk', sans-serif; }
     .z-50 { z-index: 50; }
     .fixed { position: fixed; }
     .top-0 { top: 0; }
@@ -562,18 +572,30 @@ const getBaseStyles = (): string => {
       .sm\\:px-0 { padding-left: 0; padding-right: 0; }
       .sm\\:px-4 { padding-left: 1rem; padding-right: 1rem; }
       .sm\\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\\:py-16 { padding-top: 4rem; padding-bottom: 4rem; }
       .sm\\:py-20 { padding-top: 5rem; padding-bottom: 5rem; }
       .sm\\:gap-8 { gap: 2rem; }
       .sm\\:flex-row { flex-direction: row; }
       .sm\\:w-auto { width: auto; }
+      .sm\\:text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+      .sm\\:text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+      .sm\\:text-5xl { font-size: 3rem; line-height: 1; }
       .sm\\:text-6xl { font-size: 3.75rem; line-height: 1; }
+      .sm\\:text-\\[16px\\] { font-size: 16px; }
+      .sm\\:mb-4 { margin-bottom: 1rem; }
+      .sm\\:mb-6 { margin-bottom: 1.5rem; }
+      .sm\\:mb-8 { margin-bottom: 2rem; }
+      .sm\\:mb-10 { margin-bottom: 2.5rem; }
+      .sm\\:mb-12 { margin-bottom: 3rem; }
       .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     
     @media (min-width: 768px) {
       .md\\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .md\\:py-20 { padding-top: 5rem; padding-bottom: 5rem; }
       .md\\:gap-10 { gap: 2.5rem; }
       .md\\:flex { display: flex; }
+      .md\\:text-6xl { font-size: 3.75rem; line-height: 1; }
       .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     
@@ -583,13 +605,29 @@ const getBaseStyles = (): string => {
   `;
 };
 
-// Portfolio Styles
-const getPortfolioStyles = (primaryColor: string): string => {
+// Portfolio Styles with fonts support
+const getPortfolioStyles = (primaryColor: string, fonts?: { primary: string; secondary: string }): string => {
+  const fontMap = {
+    ovo: "Ovo, serif",
+    playfair: "Playfair Display, serif",
+    poppins: "Poppins, sans-serif",
+    inter: "Inter, sans-serif",
+    montserrat: "Montserrat, sans-serif",
+    raleway: "Raleway, sans-serif",
+    schibsted: "Schibsted Grotesk, sans-serif",
+    outfit: "Outfit, sans-serif"
+  };
+
+  const primaryFont = fontMap[(fonts?.primary || "ovo") as keyof typeof fontMap] || fontMap.ovo;
+  const secondaryFont = fontMap[(fonts?.secondary || "schibsted") as keyof typeof fontMap] || fontMap.schibsted;
+
   return `
     :root {
       --primary-color: ${primaryColor};
       --primary-color-light: rgba(${hexToRgb(primaryColor)}, 0.08);
       --glass-bg: rgba(${hexToRgb(primaryColor)}, 0.1);
+      --font-primary: ${primaryFont};
+      --font-secondary: ${secondaryFont};
     }
     
     .dynamic-primary {
@@ -656,4 +694,3 @@ function hexToRgb(hex: string): string {
     ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
     : '0, 0, 0';
 }
-

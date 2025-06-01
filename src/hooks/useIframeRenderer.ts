@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 
 export const useIframeRenderer = (portfolioData: any, currentView: string) => {
@@ -83,7 +82,7 @@ const generatePortfolioHTML = (portfolioData: any): string => {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Ovo&family=Schibsted+Grotesk:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Ovo&family=Schibsted+Grotesk:wght@400;500;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
@@ -92,6 +91,8 @@ const generatePortfolioHTML = (portfolioData: any): string => {
         --primary-color: ${portfolioData.settings.primaryColor};
         --primary-color-light: rgba(214, 88, 34, 0.08);
         --glass-bg: rgba(252, 186, 3, 0.1);
+        --font-primary: "${getFontFamily(portfolioData.settings.fonts?.primary || 'ovo')}";
+        --font-secondary: "${getFontFamily(portfolioData.settings.fonts?.secondary || 'schibsted')}";
       }
       .dynamic-primary {
         color: var(--primary-color) !important;
@@ -133,6 +134,12 @@ const generatePortfolioHTML = (portfolioData: any): string => {
           #000 100%
         ) !important;
       }
+      .font-primary {
+        font-family: var(--font-primary) !important;
+      }
+      .font-secondary {
+        font-family: var(--font-secondary) !important;
+      }
       html, body {
         margin: 0;
         padding: 0;
@@ -157,6 +164,13 @@ const generatePortfolioHTML = (portfolioData: any): string => {
               auto: "repeat(auto-fit, minmax(200px, 1fr))",
             },
             fontFamily: {
+              primary: ["var(--font-primary)"],
+              secondary: ["var(--font-secondary)"],
+              playfair: ["Playfair Display", "serif"],
+              poppins: ["Poppins", "sans-serif"],
+              inter: ["Inter", "sans-serif"],
+              montserrat: ["Montserrat", "sans-serif"],
+              raleway: ["Raleway", "sans-serif"],
               Outfit: ["Outfit", "sans-serif"],
               Ovo: ["Ovo", "serif"],
               Schibsted: ["Schibsted Grotesk", "sans-serif"],
@@ -210,11 +224,27 @@ const generatePortfolioHTML = (portfolioData: any): string => {
   `;
 };
 
+// Helper function to get font family from font key
+const getFontFamily = (fontKey: string): string => {
+  const fontMap = {
+    ovo: "Ovo, serif",
+    playfair: "Playfair Display, serif", 
+    poppins: "Poppins, sans-serif",
+    inter: "Inter, sans-serif",
+    montserrat: "Montserrat, sans-serif",
+    raleway: "Raleway, sans-serif",
+    schibsted: "Schibsted Grotesk, sans-serif",
+    outfit: "Outfit, sans-serif"
+  };
+  return fontMap[fontKey as keyof typeof fontMap] || fontMap.ovo;
+};
+
 // Extract client-side script to separate function
 const getClientSideScript = (portfolioData: any): string => {
   return `
       // Icon SVG function
       function getIconSVG(name) {
+        // ... keep existing code (icon SVG definitions)
         switch (name) {
           case "mail":
             return \`<svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mr-2 flex-shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'/></svg>\`;
@@ -291,6 +321,27 @@ const getClientSideScript = (portfolioData: any): string => {
           data.settings.primaryColor || "#d65822"
         );
 
+        // Set fonts based on settings
+        const fontMap = {
+          ovo: "Ovo, serif",
+          playfair: "Playfair Display, serif",
+          poppins: "Poppins, sans-serif",
+          inter: "Inter, sans-serif",
+          montserrat: "Montserrat, sans-serif",
+          raleway: "Raleway, sans-serif",
+          schibsted: "Schibsted Grotesk, sans-serif",
+          outfit: "Outfit, sans-serif"
+        };
+
+        document.documentElement.style.setProperty(
+          "--font-primary",
+          fontMap[data.settings.fonts?.primary || "ovo"]
+        );
+        document.documentElement.style.setProperty(
+          "--font-secondary",
+          fontMap[data.settings.fonts?.secondary || "schibsted"]
+        );
+
         // Calculate a very light version of primary color for backgrounds
         function hexToRgba(hex, alpha) {
           let c = hex.replace("#", "");
@@ -327,13 +378,13 @@ const getClientSideScript = (portfolioData: any): string => {
 
         // Header/Navbar
         let nav = \`<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50">
-                <span class="font-Ovo text-xl font-bold tracking-tight">\${logoName}<span class='dynamic-primary'>.</span></span>
-                <ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 font-Ovo text-lg border-none bg-transparent shadow-none">\${navLinks}</ul>
+                <span class="font-primary text-xl font-bold tracking-tight">\${logoName}<span class='dynamic-primary'>.</span></span>
+                <ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 font-primary text-lg border-none bg-transparent shadow-none">\${navLinks}</ul>
                 <div class="flex items-center gap-4">
                     <button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none">
                         <span id="theme-toggle-icon"></span>
                     </button>
-                    <a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white font-Ovo font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a>
+                    <a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white font-primary font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a>
                 </div>
             </nav>\`;
 
@@ -352,9 +403,9 @@ const getClientSideScript = (portfolioData: any): string => {
           });
           hero = \`<div class="hero-bg w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full">
                     <img src="\${data.settings.profileImage}" alt="Profile" class="rounded-full w-28 h-28 object-cover mb-8 border-4 border-white shadow-md animate-fade-in" />
-                    <h2 class="font-Ovo text-xl mb-3 animate-slide-up">Hi! I'm \${data.settings.name} <span class="inline-block">👋</span></h2>
-                    <h1 class="font-Ovo text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 animate-slide-up">\${data.settings.title}<br />based in \${data.settings.location}.</h1>
-                    <p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">\${data.settings.summary}</p>
+                    <h2 class="font-primary text-xl mb-3 animate-slide-up">Hi! I'm \${data.settings.name} <span class="inline-block">👋</span></h2>
+                    <h1 class="font-primary text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 animate-slide-up">\${data.settings.title}<br />based in \${data.settings.location}.</h1>
+                    <p class="font-secondary text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">\${data.settings.summary}</p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">\${ctas}</div>
                 </header></div>\`;
         }
@@ -367,16 +418,16 @@ const getClientSideScript = (portfolioData: any): string => {
             data.sections.about.skills &&
             data.sections.about.skills.enabled
           ) {
-            skills = \`<h2 class="font-Ovo text-2xl mb-4 mt-8">\${
+            skills = \`<h2 class="font-primary text-2xl mb-4 mt-8">\${
               data.sections.about.skills.title
             }</h2><div class="flex flex-wrap justify-center gap-3">\${data.sections.about.skills.items
               .map(
                 (skill) =>
-                  \`<span class="px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300">\${skill}</span>\`
+                  \`<span class="font-secondary px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300">\${skill}</span>\`
               )
               .join("")}</div>\`;
           }
-          about = \`<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center"><h2 class="font-Ovo text-2xl sm:text-3xl mb-3 sm:mb-4">\${data.sections.about.title}</h2><p class="mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">\${data.sections.about.content}</p>\${skills}</div></section>\`;
+          about = \`<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center"><h2 class="font-primary text-2xl sm:text-3xl mb-3 sm:mb-4">\${data.sections.about.title}</h2><p class="font-secondary mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">\${data.sections.about.content}</p>\${skills}</div></section>\`;
         }
 
         // Projects Section
@@ -386,39 +437,39 @@ const getClientSideScript = (portfolioData: any): string => {
             .map(
               (project) =>
                 \`<div class="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-2xl p-7 flex flex-col gap-3 shadow-sm hover:shadow-md transition w-full max-w-md mx-auto">
-                                <h3 class="font-Ovo text-lg mb-1">\${
+                                <h3 class="font-primary text-lg mb-1">\${
                                   project.title
                                 }</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">\${
+                                <p class="font-secondary text-sm text-gray-600 dark:text-gray-400">\${
                                   project.description
                                 }</p>
                                 <div class="flex flex-wrap gap-2 mb-2">\${project.tags
                                   .map(
                                     (tag) =>
-                                      \`<span class="text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">\${tag}</span>\`
+                                      \`<span class="font-secondary text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">\${tag}</span>\`
                                   )
                                   .join("")}</div>
                                 \${
                                   project.previewUrl &&
                                   project.previewUrl !== "#"
-                                    ? \`<a href="\${project.previewUrl}" class="dynamic-primary font-normal hover:underline text-base flex items-center gap-1">View project <span aria-hidden="true">→</span></a>\`
+                                    ? \`<a href="\${project.previewUrl}" class="font-secondary dynamic-primary font-normal hover:underline text-base flex items-center gap-1">View project <span aria-hidden="true">→</span></a>\`
                                     : ""
                                 }
                             </div>\`
             )
             .join("");
-          projects = \`<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-Ovo text-2xl sm:text-3xl mb-2">\${data.sections.projects.title}</h2></div><div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">\${projectCards}</div></section>\`;
+          projects = \`<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-primary text-2xl sm:text-3xl mb-2">\${data.sections.projects.title}</h2></div><div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">\${projectCards}</div></section>\`;
         }
 
         // Experience Section
         let experience = "";
         if (data.sections.experience && data.sections.experience.enabled) {
-          experience = \`<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-Ovo text-2xl sm:text-3xl mb-2">\${
+          experience = \`<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-primary text-2xl sm:text-3xl mb-2">\${
             data.sections.experience.title
           }</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6 sm:gap-8">\${data.sections.experience.items
             .map(
               (item) =>
-                \`<div class="flex gap-4 items-start"><div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div><div><h3 class="font-Ovo text-lg mb-1">\${item.position}</h3><div class="text-sm text-gray-500 mb-1">\${item.company} • \${item.period}</div><p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">\${item.description}</p></div></div>\`
+                \`<div class="flex gap-4 items-start"><div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div><div><h3 class="font-primary text-lg mb-1">\${item.position}</h3><div class="font-secondary text-sm text-gray-500 mb-1">\${item.company} • \${item.period}</div><p class="font-secondary text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">\${item.description}</p></div></div>\`
             )
             .join("")}</div></section>\`;
         }
@@ -426,12 +477,12 @@ const getClientSideScript = (portfolioData: any): string => {
         // Education Section
         let education = "";
         if (data.sections.education && data.sections.education.enabled) {
-          education = \`<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-Ovo text-2xl sm:text-3xl mb-2">\${
+          education = \`<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="font-primary text-2xl sm:text-3xl mb-2">\${
             data.sections.education.title
           }</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6">\${data.sections.education.items
             .map(
               (item) =>
-                \`<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col gap-1 shadow-sm w-full"><h3 class="font-Ovo text-lg mb-1">\${item.degree}</h3><div class="text-sm text-gray-500 mb-1">\${item.institution} • \${item.period}</div></div>\`
+                \`<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col gap-1 shadow-sm w-full"><h3 class="font-primary text-lg mb-1">\${item.degree}</h3><div class="font-secondary text-sm text-gray-500 mb-1">\${item.institution} • \${item.period}</div></div>\`
             )
             .join("")}</div></section>\`;
         }
@@ -441,7 +492,7 @@ const getClientSideScript = (portfolioData: any): string => {
         if (data.sections.contact && data.sections.contact.enabled) {
           contact = \`<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">
                     <div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4">
-                        <h2 class="font-Ovo text-3xl sm:text-4xl mb-3 sm:mb-4">\${
+                        <h2 class="font-primary text-3xl sm:text-4xl mb-3 sm:mb-4">\${
                           data.sections.contact.title
                         }</h2>
                         <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">
@@ -461,7 +512,7 @@ const getClientSideScript = (portfolioData: any): string => {
                             ]
                               .map(
                                 (card) =>
-                                  \`<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-Schibsted text-gray-700 dark:text-gray-200 justify-center shadow-sm" style="font-size:14px;font-weight:500;">
+                                  \`<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-secondary text-gray-700 dark:text-gray-200 justify-center shadow-sm" style="font-size:14px;font-weight:500;">
                                             \${card.icon}<span class="break-words">\${card.value}</span>
                                         </div>\`
                               )
@@ -476,14 +527,14 @@ const getClientSideScript = (portfolioData: any): string => {
         if (data.sections.social && data.sections.social.enabled) {
           social = \`<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full">
                     <div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0">
-                        <h3 class="font-Ovo text-xl sm:text-2xl mb-3 sm:mb-4 mt-4">Social Media</h3>
+                        <h3 class="font-primary text-xl sm:text-2xl mb-3 sm:mb-4 mt-4">Social Media</h3>
                         <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">
                             \${data.sections.social.items
                               .map(
                                 (item) =>
                                   \`<a href="\${
                                     item.url
-                                  }" class="flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-Schibsted text-gray-700 dark:text-gray-200 justify-center shadow-sm hover:scale-105 transition-transform duration-300">
+                                  }" class="flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm font-secondary text-gray-700 dark:text-gray-200 justify-center shadow-sm hover:scale-105 transition-transform duration-300">
                                             \${getIconSVG(item.icon)}<span>\${
                                     item.platform
                                   }</span>
@@ -498,7 +549,7 @@ const getClientSideScript = (portfolioData: any): string => {
         // Footer - ensure it covers full width and bottom
         let footer = "";
         if (data.footer && data.footer.enabled) {
-          footer = \`<footer class="footer-bg-smoke py-8 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto w-full">
+          footer = \`<footer class="footer-bg-smoke py-8 text-center text-sm font-secondary text-gray-600 dark:text-gray-400 mt-auto w-full">
                     <div class="max-w-2xl mx-auto px-4">
                         \${data.footer.copyright}
                     </div>

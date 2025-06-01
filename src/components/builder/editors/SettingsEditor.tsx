@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 
 const SettingsEditor: React.FC = () => {
@@ -30,12 +31,39 @@ const SettingsEditor: React.FC = () => {
     "#EA580C", "#9333EA", "#0891B2", "#16A34A", "#DB2777"
   ];
 
+  const primaryFontOptions = [
+    { value: "ovo", label: "Ovo (Serif)" },
+    { value: "playfair", label: "Playfair Display (Serif)" },
+    { value: "poppins", label: "Poppins (Sans-serif)" },
+    { value: "inter", label: "Inter (Sans-serif)" },
+    { value: "montserrat", label: "Montserrat (Sans-serif)" },
+    { value: "raleway", label: "Raleway (Sans-serif)" }
+  ];
+
+  const secondaryFontOptions = [
+    { value: "schibsted", label: "Schibsted Grotesk (Sans-serif)" },
+    { value: "outfit", label: "Outfit (Sans-serif)" }
+  ];
+
   const handleChange = (field: string, value: string) => {
     setPortfolioData({
       ...portfolioData,
       settings: {
         ...settings,
         [field]: value
+      }
+    });
+  };
+
+  const handleFontChange = (fontType: "primary" | "secondary", value: string) => {
+    setPortfolioData({
+      ...portfolioData,
+      settings: {
+        ...settings,
+        fonts: {
+          ...settings.fonts,
+          [fontType]: value
+        }
       }
     });
   };
@@ -142,6 +170,50 @@ const SettingsEditor: React.FC = () => {
               className="flex-1 text-xs"
               placeholder="#0067C7"
             />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t pt-4">
+        <h3 className="text-sm font-medium mb-4">Typography</h3>
+        
+        <div className="space-y-3">
+          <div>
+            <Label htmlFor="primary-font" className="text-sm">Primary Font (Headings)</Label>
+            <Select 
+              value={settings?.fonts?.primary || "ovo"} 
+              onValueChange={(value) => handleFontChange("primary", value)}
+            >
+              <SelectTrigger className="w-full mt-1">
+                <SelectValue placeholder="Select primary font" />
+              </SelectTrigger>
+              <SelectContent>
+                {primaryFontOptions.map((font) => (
+                  <SelectItem key={font.value} value={font.value}>
+                    {font.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <Label htmlFor="secondary-font" className="text-sm">Secondary Font (Body Text)</Label>
+            <Select 
+              value={settings?.fonts?.secondary || "schibsted"} 
+              onValueChange={(value) => handleFontChange("secondary", value)}
+            >
+              <SelectTrigger className="w-full mt-1">
+                <SelectValue placeholder="Select secondary font" />
+              </SelectTrigger>
+              <SelectContent>
+                {secondaryFontOptions.map((font) => (
+                  <SelectItem key={font.value} value={font.value}>
+                    {font.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
