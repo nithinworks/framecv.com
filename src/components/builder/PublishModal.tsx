@@ -64,7 +64,7 @@ const PublishModal: React.FC<PublishModalProps> = ({
           slug_name: formData.slugName,
           full_name: formData.fullName,
           email: formData.email,
-          portfolio_data: portfolioData
+          portfolio_data: portfolioData as any
         });
 
       if (error) {
