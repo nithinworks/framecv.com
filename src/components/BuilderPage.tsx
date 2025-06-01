@@ -20,7 +20,7 @@ const BuilderPage: React.FC = () => {
   const [showEditorHint, setShowEditorHint] = useState(true);
   const isMobile = useIsMobile();
   
-  // Always set view to desktop
+  // Set initial view to desktop on load
   useEffect(() => {
     setCurrentView("desktop");
     

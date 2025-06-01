@@ -1,10 +1,13 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
   PanelLeft, 
   Download, 
   ChevronLeft,
-  Github
+  Github,
+  Monitor,
+  Smartphone
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +25,9 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   const { 
     showEditor, 
     setShowEditor,
-    portfolioData
+    portfolioData,
+    currentView,
+    setCurrentView
   } = usePortfolio();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -93,6 +98,41 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
               </div>
             )}
           </div>
+
+          {/* View Toggle - Only show on desktop */}
+          {!isMobile && (
+            <>
+              <div className="h-4 w-px bg-gray-800"></div>
+              <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentView("desktop")}
+                  className={`px-2 py-1 h-6 text-xs transition-all duration-300 ${
+                    currentView === "desktop" 
+                      ? "bg-white text-black hover:bg-gray-200" 
+                      : "text-gray-400 hover:text-white hover:bg-gray-700"
+                  }`}
+                >
+                  <Monitor className="h-3 w-3 mr-1" />
+                  Desktop
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentView("mobile")}
+                  className={`px-2 py-1 h-6 text-xs transition-all duration-300 ${
+                    currentView === "mobile" 
+                      ? "bg-white text-black hover:bg-gray-200" 
+                      : "text-gray-400 hover:text-white hover:bg-gray-700"
+                  }`}
+                >
+                  <Smartphone className="h-3 w-3 mr-1" />
+                  Mobile
+                </Button>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2">

@@ -16,8 +16,8 @@ const PortfolioPreview: React.FC = () => {
     }
     
     if (currentView === "mobile") {
-      // Mobile preview with device frame and elegant rounded corners
-      return "max-w-[412px] h-[732px] mx-auto bg-white rounded-xl overflow-hidden shadow-lg";
+      // Mobile preview with Android S24 dimensions (412x915px) and device frame
+      return "w-[412px] h-[915px] mx-auto bg-white rounded-xl overflow-hidden shadow-lg";
     }
     
     // Desktop preview - clean with subtle rounded corners
