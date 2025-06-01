@@ -98,42 +98,35 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
               </div>
             )}
           </div>
-
-          {/* View Toggle - Only show on desktop */}
-          {!isMobile && (
-            <>
-              <div className="h-4 w-px bg-gray-800"></div>
-              <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCurrentView("desktop")}
-                  className={`px-2 py-1 h-6 text-xs transition-all duration-300 ${
-                    currentView === "desktop" 
-                      ? "bg-white text-black hover:bg-gray-200" 
-                      : "text-gray-400 hover:text-white hover:bg-gray-700"
-                  }`}
-                >
-                  <Monitor className="h-3 w-3 mr-1" />
-                  Desktop
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCurrentView("mobile")}
-                  className={`px-2 py-1 h-6 text-xs transition-all duration-300 ${
-                    currentView === "mobile" 
-                      ? "bg-white text-black hover:bg-gray-200" 
-                      : "text-gray-400 hover:text-white hover:bg-gray-700"
-                  }`}
-                >
-                  <Smartphone className="h-3 w-3 mr-1" />
-                  Mobile
-                </Button>
-              </div>
-            </>
-          )}
         </div>
+
+        {/* Centered View Toggle - Only show on desktop */}
+        {!isMobile && (
+          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
+            <div className="flex items-center bg-gray-900 rounded-full p-1 border border-gray-700">
+              <button
+                onClick={() => setCurrentView("desktop")}
+                className={`p-2 rounded-full transition-all duration-200 ${
+                  currentView === "desktop" 
+                    ? "bg-white text-gray-900" 
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Monitor className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setCurrentView("mobile")}
+                className={`p-2 rounded-full transition-all duration-200 ${
+                  currentView === "mobile" 
+                    ? "bg-white text-gray-900" 
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Smartphone className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center gap-2">
           <Button
