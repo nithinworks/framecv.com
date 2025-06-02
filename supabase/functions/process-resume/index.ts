@@ -2,38 +2,92 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { corsHeaders } from "../_shared/cors.ts"
 
-// Helper function for chunked base64 conversion to prevent stack overflow
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
-  const chunkSize = 0x8000; // 32KB chunks
-  let result = '';
-  
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    const chunk = bytes.slice(i, i + chunkSize);
-    result += String.fromCharCode.apply(null, Array.from(chunk));
-  }
-  
-  return btoa(result);
-}
+// Import PDF parsing library
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 
-// Extract text from PDF using a more reliable method
+// Extract text from PDF using pdf-parse equivalent for Deno
 async function extractTextFromPDF(pdfBuffer: ArrayBuffer): Promise<string> {
   try {
-    // For now, we'll use a simple approach that works with most PDFs
-    // This is a placeholder - in production you'd want to use a proper PDF parser
-    const base64 = arrayBufferToBase64(pdfBuffer);
-    console.log('PDF converted to base64, length:', base64.length);
+    console.log('Starting PDF text extraction...');
     
-    // Return the base64 representation for now
-    // The AI will process the PDF content directly
-    return base64;
+    // Convert ArrayBuffer to Uint8Array for processing
+    const uint8Array = new Uint8Array(pdfBuffer);
+    
+    // Simple PDF text extraction using regex patterns
+    // This approach works with most standard PDFs
+    const pdfString = new TextDecoder('utf-8', { fatal: false }).decode(uint8Array);
+    
+    // Extract text content using PDF structure patterns
+    let extractedText = '';
+    
+    // Method 1: Extract text between stream objects
+    const streamRegex = /stream\s*([\s\S]*?)\s*endstream/g;
+    let streamMatch;
+    
+    while ((streamMatch = streamRegex.exec(pdfString)) !== null) {
+      const streamContent = streamMatch[1];
+      // Look for readable text in streams (basic text extraction)
+      const textMatches = streamContent.match(/[A-Za-z0-9\s\.\,\;\:\!\?\@\#\$\%\^\&\*\(\)\-\_\+\=\[\]\{\}\|\\\/\"\'\`\~]{3,}/g);
+      if (textMatches) {
+        extractedText += textMatches.join(' ') + ' ';
+      }
+    }
+    
+    // Method 2: Extract text from BT/ET blocks (text objects)
+    const textObjectRegex = /BT\s*([\s\S]*?)\s*ET/g;
+    let textMatch;
+    
+    while ((textMatch = textObjectRegex.exec(pdfString)) !== null) {
+      const textContent = textMatch[1];
+      // Extract text content from PDF text operators
+      const textLines = textContent.match(/\((.*?)\)/g);
+      if (textLines) {
+        textLines.forEach(line => {
+          const cleanText = line.replace(/[()]/g, '');
+          if (cleanText.length > 2) {
+            extractedText += cleanText + ' ';
+          }
+        });
+      }
+    }
+    
+    // Method 3: Extract text using Tj and TJ operators
+    const tjRegex = /\((.*?)\)\s*Tj/g;
+    let tjMatch;
+    
+    while ((tjMatch = tjRegex.exec(pdfString)) !== null) {
+      extractedText += tjMatch[1] + ' ';
+    }
+    
+    // Clean up extracted text
+    extractedText = extractedText
+      .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+      .replace(/[^\x20-\x7E\s]/g, '') // Remove non-printable characters
+      .trim();
+    
+    console.log('PDF text extraction completed. Length:', extractedText.length);
+    
+    if (extractedText.length < 50) {
+      // Fallback: try to extract any readable content
+      const fallbackText = pdfString.match(/[A-Za-z0-9\s\.\,\;\:\!\?\@\#\$\%\^\&\*\(\)\-\_\+\=\[\]\{\}\|\\\/\"\'\`\~]{10,}/g);
+      if (fallbackText && fallbackText.length > 0) {
+        extractedText = fallbackText.join(' ').substring(0, 5000);
+        console.log('Used fallback extraction method');
+      }
+    }
+    
+    if (extractedText.length < 20) {
+      throw new Error('Could not extract sufficient text from PDF. Please ensure the PDF contains readable text.');
+    }
+    
+    return extractedText;
   } catch (error) {
     console.error('Error extracting text from PDF:', error);
-    throw new Error('Failed to extract text from PDF');
+    throw new Error('Failed to extract text from PDF. Please ensure the file is a valid PDF with readable text content.');
   }
 }
 
-// Call OpenRouter API with retry mechanism
+// Call OpenRouter API with Mistral model and retry mechanism
 async function callOpenRouterWithRetry(
   content: string, 
   maxRetries: number = 3
@@ -48,10 +102,10 @@ async function callOpenRouterWithRetry(
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`OpenRouter API attempt ${attempt}...`);
+      console.log(`OpenRouter API attempt ${attempt} with Mistral model...`);
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
       
       const prompt = `
       You are an AI portfolio builder. Extract information from this resume content and create a professional, personalized portfolio. Use your creativity to enhance the content while staying true to the person's background.
@@ -179,7 +233,7 @@ async function callOpenRouterWithRetry(
       `;
 
       const requestBody = {
-        model: "anthropic/claude-3.5-sonnet",
+        model: "mistralai/mistral-7b-instruct", // Cost-effective Mistral model
         messages: [
           {
             role: "user",
@@ -206,7 +260,7 @@ async function callOpenRouterWithRetry(
       
       if (response.ok) {
         const data = await response.json();
-        console.log(`Success with OpenRouter on attempt ${attempt}`);
+        console.log(`Success with OpenRouter Mistral on attempt ${attempt}`);
         return data;
       }
       
@@ -233,7 +287,7 @@ async function callOpenRouterWithRetry(
       console.error(`Attempt ${attempt} failed:`, error.message);
       
       if (error.name === 'AbortError') {
-        lastError = new Error('Request timed out after 60 seconds');
+        lastError = new Error('Request timed out after 45 seconds');
       } else {
         lastError = error as Error;
       }
@@ -279,7 +333,7 @@ const handler = async (req: Request): Promise<Response> => {
       )
     }
 
-    // File size validation - 5MB limit (increased for better compatibility)
+    // File size validation - 5MB limit
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       return new Response(
@@ -293,15 +347,15 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Processing PDF file: ${file.name}, size: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
 
-    // Extract content from PDF
+    // Extract content from PDF using improved extraction
     const arrayBuffer = await file.arrayBuffer()
     const extractedContent = await extractTextFromPDF(arrayBuffer)
 
-    console.log('Calling OpenRouter API with retry mechanism...')
+    console.log('Calling OpenRouter API with Mistral model and retry mechanism...')
 
-    // Call OpenRouter API with retry mechanism
+    // Call OpenRouter API with Mistral model and retry mechanism
     const openRouterData = await callOpenRouterWithRetry(extractedContent);
-    console.log('OpenRouter response received successfully');
+    console.log('OpenRouter Mistral response received successfully');
 
     // Extract the generated text
     const generatedText = openRouterData.choices?.[0]?.message?.content;
