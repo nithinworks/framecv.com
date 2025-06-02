@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -64,8 +65,14 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
       return;
     }
 
+    // Enhanced validation to match server-side rules
+    if (name.trim().length > 100) {
+      toast.error("Name must be 100 characters or less");
+      return;
+    }
+
     // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       toast.error("Please enter a valid email address");
       return;
@@ -107,9 +114,13 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                 placeholder="Enter your full name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                maxLength={100}
                 required
                 disabled={isLoading}
               />
+              <p className="text-xs text-gray-500">
+                Maximum 100 characters
+              </p>
             </div>
             
             <div className="space-y-2">
@@ -126,7 +137,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
             </div>
             
             <div className="text-sm text-gray-600 dark:text-gray-400 py-2">
-              We'll use these details to help improve our service and may occasionally send you updates about your portfolio.
+              We'll use these details to help improve our service and may occasionally send you updates about your portfolio. Rate limits: 10 submissions per hour.
             </div>
           </form>
         </div>

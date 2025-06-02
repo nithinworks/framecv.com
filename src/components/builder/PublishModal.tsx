@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -44,10 +43,16 @@ const PublishModal: React.FC<PublishModalProps> = ({
       return;
     }
 
-    // Slug validation (alphanumeric and dashes only)
-    const slugRegex = /^[a-z0-9-]+$/;
+    // Enhanced slug validation to match server-side rules
+    const slugRegex = /^[a-z0-9-]{3,50}$/;
     if (!slugRegex.test(formData.slugName)) {
-      toast.error("Slug name can only contain lowercase letters, numbers, and dashes");
+      toast.error("Slug name must be 3-50 characters, lowercase letters, numbers, and dashes only");
+      return;
+    }
+
+    // Full name length validation
+    if (formData.fullName.trim().length > 100) {
+      toast.error("Full name must be 100 characters or less");
       return;
     }
 
@@ -69,11 +74,22 @@ const PublishModal: React.FC<PublishModalProps> = ({
 
       if (error) {
         console.error('Error publishing portfolio:', error);
+        
+        // Handle specific error types
         if (error.code === '23505') {
           toast.error("This slug name is already taken. Please choose a different one.");
+        } else if (error.message.includes('Rate limit exceeded')) {
+          toast.error("You've reached the daily limit of 5 portfolio publications. Please try again tomorrow.");
+        } else if (error.message.includes('Invalid slug name format')) {
+          toast.error("Invalid slug name format. Use only lowercase letters, numbers, and dashes (3-50 characters).");
+        } else if (error.message.includes('Invalid email format')) {
+          toast.error("Please enter a valid email address.");
+        } else if (error.message.includes('Full name must be')) {
+          toast.error("Full name must be between 1 and 100 characters.");
         } else {
           toast.error("Failed to publish portfolio. Please try again.");
         }
+        
         setStep("form");
         setIsLoading(false);
         return;
@@ -125,8 +141,12 @@ const PublishModal: React.FC<PublishModalProps> = ({
                 placeholder="Enter your full name"
                 value={formData.fullName}
                 onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                maxLength={100}
                 required
               />
+              <p className="text-xs text-gray-500">
+                Maximum 100 characters
+              </p>
             </div>
             
             <div className="space-y-2">
@@ -149,10 +169,13 @@ const PublishModal: React.FC<PublishModalProps> = ({
                 placeholder="your-portfolio-name"
                 value={formData.slugName}
                 onChange={(e) => setFormData(prev => ({ ...prev, slugName: e.target.value.toLowerCase() }))}
+                minLength={3}
+                maxLength={50}
+                pattern="[a-z0-9-]+"
                 required
               />
               <p className="text-xs text-gray-500">
-                Your portfolio will be available at: knowabout.io/{formData.slugName || "your-portfolio-name"}
+                3-50 characters, lowercase letters, numbers, and dashes only. Your portfolio will be available at: knowabout.io/{formData.slugName || "your-portfolio-name"}
               </p>
             </div>
             
@@ -185,6 +208,7 @@ const PublishModal: React.FC<PublishModalProps> = ({
                     <li>• Once published, the details cannot be edited</li>
                     <li>• Your portfolio will automatically delete after 30 days</li>
                     <li>• The slug name cannot be changed once published</li>
+                    <li>• Maximum 5 portfolios can be published per email per day</li>
                   </ul>
                 </div>
               </div>
