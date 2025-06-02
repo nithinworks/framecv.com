@@ -1,10 +1,11 @@
+
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, ExternalLink, Copy, CheckCircle } from "lucide-react";
+import { Loader2, ExternalLink, Copy, CheckCircle, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PortfolioData } from "@/types/portfolio";
 
@@ -19,7 +20,7 @@ const PublishModal: React.FC<PublishModalProps> = ({
   onOpenChange,
   portfolioData,
 }) => {
-  const [step, setStep] = useState<"form" | "instructions" | "success">("form");
+  const [step, setStep] = useState<"instructions" | "form" | "success">("instructions");
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -27,6 +28,10 @@ const PublishModal: React.FC<PublishModalProps> = ({
     slugName: "",
   });
   const [publishedUrl, setPublishedUrl] = useState("");
+
+  const handleAgree = () => {
+    setStep("form");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,10 +61,6 @@ const PublishModal: React.FC<PublishModalProps> = ({
       return;
     }
 
-    setStep("instructions");
-  };
-
-  const handlePublish = async () => {
     setIsLoading(true);
 
     try {
@@ -90,7 +91,6 @@ const PublishModal: React.FC<PublishModalProps> = ({
           toast.error("Failed to publish portfolio. Please try again.");
         }
         
-        setStep("form");
         setIsLoading(false);
         return;
       }
@@ -102,7 +102,6 @@ const PublishModal: React.FC<PublishModalProps> = ({
     } catch (error) {
       console.error('Publishing error:', error);
       toast.error("An error occurred. Please try again.");
-      setStep("form");
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +113,7 @@ const PublishModal: React.FC<PublishModalProps> = ({
   };
 
   const handleClose = () => {
-    setStep("form");
+    setStep("instructions");
     setFormData({ fullName: "", email: "", slugName: "" });
     setPublishedUrl("");
     onOpenChange(false);
@@ -125,11 +124,41 @@ const PublishModal: React.FC<PublishModalProps> = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {step === "form" && "Publish Portfolio"}
-            {step === "instructions" && "Publishing Terms"}
-            {step === "success" && "Portfolio Published!"}
+            {step === "instructions" && "Publish Portfolio"}
+            {step === "form" && "Portfolio Details"}
+            {step === "success" && "Published Successfully!"}
           </DialogTitle>
         </DialogHeader>
+
+        {step === "instructions" && (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 mt-1">
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                </div>
+                <div className="text-sm space-y-3">
+                  <p className="font-medium">Before you publish:</p>
+                  <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                    <li>• Your portfolio will be publicly accessible</li>
+                    <li>• Published portfolios automatically expire after 30 days</li>
+                    <li>• The slug name cannot be changed once published</li>
+                    <li>• Maximum 5 portfolios per email per day</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-4">
+              <Button type="button" variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button onClick={handleAgree}>
+                I Agree, Continue
+              </Button>
+            </div>
+          </div>
+        )}
 
         {step === "form" && (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -143,6 +172,7 @@ const PublishModal: React.FC<PublishModalProps> = ({
                 onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
                 maxLength={100}
                 required
+                disabled={isLoading}
               />
               <p className="text-xs text-gray-500">
                 Maximum 100 characters
@@ -158,6 +188,7 @@ const PublishModal: React.FC<PublishModalProps> = ({
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -173,6 +204,7 @@ const PublishModal: React.FC<PublishModalProps> = ({
                 maxLength={50}
                 pattern="[a-z0-9-]+"
                 required
+                disabled={isLoading}
               />
               <p className="text-xs text-gray-500">
                 3-50 characters, lowercase letters, numbers, and dashes only. Your portfolio will be available at: knowabout.io/{formData.slugName || "your-portfolio-name"}
@@ -180,45 +212,10 @@ const PublishModal: React.FC<PublishModalProps> = ({
             </div>
             
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button type="submit">
-                Continue
-              </Button>
-            </div>
-          </form>
-        )}
-
-        {step === "instructions" && (
-          <div className="space-y-4">
-            <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 mt-0.5">
-                  <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">!</span>
-                  </div>
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium text-amber-800 dark:text-amber-200 mb-2">
-                    Important Information:
-                  </p>
-                  <ul className="text-amber-700 dark:text-amber-300 space-y-1">
-                    <li>• Your portfolio will be publicly accessible at knowabout.io/{formData.slugName}</li>
-                    <li>• Once published, the details cannot be edited</li>
-                    <li>• Your portfolio will automatically delete after 30 days</li>
-                    <li>• The slug name cannot be changed once published</li>
-                    <li>• Maximum 5 portfolios can be published per email per day</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setStep("form")}>
+              <Button type="button" variant="outline" onClick={() => setStep("instructions")} disabled={isLoading}>
                 Back
               </Button>
-              <Button onClick={handlePublish} disabled={isLoading}>
+              <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -229,26 +226,27 @@ const PublishModal: React.FC<PublishModalProps> = ({
                 )}
               </Button>
             </div>
-          </div>
+          </form>
         )}
 
         {step === "success" && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="text-center py-4">
-              <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Portfolio Published Successfully!</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Your portfolio is now live and accessible to everyone.
+              <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Portfolio is Live!</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Your portfolio is now accessible to everyone at the URL below.
               </p>
             </div>
 
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-              <Label className="text-sm font-medium">Live URL:</Label>
-              <div className="flex items-center gap-2 mt-1">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <Input
                   value={publishedUrl}
                   readOnly
-                  className="flex-1"
+                  className="flex-1 bg-transparent border-0 focus-visible:ring-0 text-sm"
                 />
                 <Button
                   size="sm"
@@ -267,15 +265,10 @@ const PublishModal: React.FC<PublishModalProps> = ({
                   <ExternalLink className="h-4 w-4" />
                 </Button>
               </div>
-            </div>
 
-            <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <div className="text-sm text-blue-800 dark:text-blue-200">
-                <p className="font-medium mb-1">Published Details:</p>
-                <p>Name: {formData.fullName}</p>
-                <p>Email: {formData.email}</p>
-                <p>Slug: {formData.slugName}</p>
-                <p>Expires: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
+              <div className="text-xs text-gray-500 space-y-1">
+                <p><span className="font-medium">Expires:</span> {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
+                <p><span className="font-medium">Slug:</span> {formData.slugName}</p>
               </div>
             </div>
             

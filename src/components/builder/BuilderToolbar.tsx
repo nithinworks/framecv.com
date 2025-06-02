@@ -6,8 +6,6 @@ import {
   Download, 
   ChevronLeft,
   Github,
-  Monitor,
-  Smartphone,
   Globe
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
@@ -17,6 +15,7 @@ import { useState } from "react";
 import GitHubDeploy from "@/components/builder/GitHubDeploy";
 import UserDetailsModal from "@/components/builder/UserDetailsModal";
 import PublishModal from "@/components/builder/PublishModal";
+import DeviceToggle from "@/components/builder/DeviceToggle";
 import { useDownloadCode } from "@/hooks/useDownloadCode";
 
 interface BuilderToolbarProps {
@@ -27,9 +26,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   const { 
     showEditor, 
     setShowEditor,
-    portfolioData,
-    currentView,
-    setCurrentView
+    portfolioData
   } = usePortfolio();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -37,11 +34,13 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<"download" | "deploy" | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Use the download code hook
   const { downloadSourceCode } = useDownloadCode();
 
-  const handleDownloadClick = () => {
+  const handleDownloadClick = async () => {
+    setIsDownloading(true);
     setPendingAction("download");
     setShowUserDetails(true);
   };
@@ -51,11 +50,22 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
     setShowUserDetails(true);
   };
 
-  const handleUserDetailsSuccess = () => {
+  const handleUserDetailsSuccess = async () => {
     if (pendingAction === "download") {
-      downloadSourceCode();
+      try {
+        await downloadSourceCode();
+      } finally {
+        setIsDownloading(false);
+      }
     } else if (pendingAction === "deploy") {
       setShowGitHubDeploy(true);
+    }
+    setPendingAction(null);
+  };
+
+  const handleUserDetailsClose = () => {
+    if (pendingAction === "download") {
+      setIsDownloading(false);
     }
     setPendingAction(null);
   };
@@ -103,31 +113,10 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
           </div>
         </div>
 
-        {/* Centered View Toggle - Only show on desktop */}
+        {/* Centered Device Toggle - Only show on desktop */}
         {!isMobile && (
           <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
-            <div className="flex items-center bg-gray-900 rounded-full p-1 border border-gray-700">
-              <button
-                onClick={() => setCurrentView("desktop")}
-                className={`p-2 rounded-full transition-all duration-200 ${
-                  currentView === "desktop" 
-                    ? "bg-white text-gray-900" 
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Monitor className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setCurrentView("mobile")}
-                className={`p-2 rounded-full transition-all duration-200 ${
-                  currentView === "mobile" 
-                    ? "bg-white text-gray-900" 
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Smartphone className="h-4 w-4" />
-              </button>
-            </div>
+            <DeviceToggle />
           </div>
         )}
 
@@ -156,17 +145,32 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
             variant="ghost"
             size="sm"
             onClick={handleDownloadClick}
+            disabled={isDownloading}
             className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
           >
-            <Download className="h-4 w-4 mr-2" />
-            {!isMobile && "Download"}
+            {isDownloading ? (
+              <>
+                <div className="h-4 w-4 mr-2 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                {!isMobile && "Processing..."}
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4 mr-2" />
+                {!isMobile && "Download"}
+              </>
+            )}
           </Button>
         </div>
       </div>
 
       <UserDetailsModal 
         open={showUserDetails}
-        onOpenChange={setShowUserDetails}
+        onOpenChange={(open) => {
+          setShowUserDetails(open);
+          if (!open) {
+            handleUserDetailsClose();
+          }
+        }}
         actionType={pendingAction || "download"}
         portfolioName={portfolioData.settings.name}
         onSuccess={handleUserDetailsSuccess}
