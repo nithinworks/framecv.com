@@ -25,11 +25,11 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ file, onFileSelect }) =
       return false;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > 5 * 1024 * 1024) { // Updated to 5MB to match edge function limit
       console.log('File too large detected');
       toast({
         title: "File too large",
-        description: "Maximum file size is 2MB",
+        description: "Maximum file size is 5MB",
         variant: "destructive",
       });
       return false;
@@ -112,7 +112,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ file, onFileSelect }) =
         ) : (
           <div className="text-center">
             <p className="font-medium text-foreground mb-1">Drop your resume here</p>
-            <p className="text-sm text-muted-foreground">PDF only, max 2MB</p>
+            <p className="text-sm text-muted-foreground">PDF only, max 5MB</p>
           </div>
         )}
       </label>

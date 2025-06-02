@@ -66,6 +66,7 @@ async function extractTextFromPDF(pdfBuffer: ArrayBuffer): Promise<string> {
       .trim();
     
     console.log('PDF text extraction completed. Length:', extractedText.length);
+    console.log('Extract sample (first 200 chars):', extractedText.substring(0, 200));
     
     if (extractedText.length < 50) {
       // Fallback: try to extract any readable content
@@ -231,6 +232,8 @@ async function callOpenRouterWithRetry(
 
       Resume content: ${content}
       `;
+      
+      console.log('Prompt to OpenRouter (first 200 chars):', prompt.substring(0, 200) + '...');
 
       const requestBody = {
         model: "mistralai/mistral-7b-instruct", // Cost-effective Mistral model
@@ -243,6 +246,8 @@ async function callOpenRouterWithRetry(
         temperature: 0.3,
         max_tokens: 4000
       };
+
+      console.log('Sending request to OpenRouter with model:', requestBody.model);
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -261,6 +266,16 @@ async function callOpenRouterWithRetry(
       if (response.ok) {
         const data = await response.json();
         console.log(`Success with OpenRouter Mistral on attempt ${attempt}`);
+        console.log('OpenRouter response status:', response.status);
+        console.log('OpenRouter response received with model:', data.model);
+        console.log('Response tokens used:', 
+          data.usage?.prompt_tokens ? `Prompt tokens: ${data.usage.prompt_tokens}` : 'Prompt tokens: unknown',
+          data.usage?.completion_tokens ? `, Completion tokens: ${data.usage.completion_tokens}` : ', Completion tokens: unknown',
+          data.usage?.total_tokens ? `, Total tokens: ${data.usage.total_tokens}` : ', Total tokens: unknown'
+        );
+        console.log('Response sample (first 200 chars):', 
+          data.choices?.[0]?.message?.content?.substring(0, 200) + '...' || 'No content in response'
+        );
         return data;
       }
       
@@ -311,6 +326,8 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log('Process-resume function called');
+    
     const formData = await req.formData()
     const file = formData.get('file') as File
     
@@ -345,11 +362,14 @@ const handler = async (req: Request): Promise<Response> => {
       )
     }
 
-    console.log(`Processing PDF file: ${file.name}, size: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+    console.log(`Processing PDF file: ${file.name}, size: ${(file.size / (1024 * 1024)).toFixed(2)}MB, type: ${file.type}`);
 
     // Extract content from PDF using improved extraction
     const arrayBuffer = await file.arrayBuffer()
+    console.log(`File converted to ArrayBuffer, size: ${arrayBuffer.byteLength} bytes`);
+    
     const extractedContent = await extractTextFromPDF(arrayBuffer)
+    console.log(`Extracted content length: ${extractedContent.length} characters`);
 
     console.log('Calling OpenRouter API with Mistral model and retry mechanism...')
 
@@ -378,6 +398,9 @@ const handler = async (req: Request): Promise<Response> => {
       if (!portfolioData.settings || !portfolioData.sections) {
         throw new Error('Invalid portfolio data structure received from OpenRouter');
       }
+      
+      console.log('Portfolio data structure validated. Settings:', JSON.stringify(portfolioData.settings));
+      console.log('Portfolio sections available:', Object.keys(portfolioData.sections).join(', '));
       
     } catch (parseError) {
       console.error('JSON parsing error:', parseError);
