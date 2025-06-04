@@ -4,6 +4,7 @@ import LandingHeader from "./landing/LandingHeader";
 import AnnouncementBar from "./landing/AnnouncementBar";
 import HeroContent from "./landing/HeroContent";
 import UploadSection from "./landing/UploadSection";
+import ToastTestButton from "./landing/ToastTestButton";
 import HowItWorksSection from "./landing/HowItWorksSection";
 import FeaturesSection from "./landing/FeaturesSection";
 import LandingFooter from "./landing/LandingFooter";
@@ -26,6 +27,7 @@ const LandingPage: React.FC = () => {
           <AnnouncementBar isLoaded={isLoaded} />
           <HeroContent isLoaded={isLoaded} />
           <UploadSection isLoaded={isLoaded} />
+          <ToastTestButton />
         </div>
       </section>
 
@@ -34,6 +36,3 @@ const LandingPage: React.FC = () => {
       <LandingFooter />
     </div>
   );
-};
-
-export default LandingPage;
