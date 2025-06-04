@@ -25,11 +25,13 @@ const handleSubmit = useCallback(
     e.preventDefault();
     
     if (!file) {
+      console.log('🔍 DEBUG: About to show "No file selected" toast');
       toast({
         title: "No file selected",
         description: "Please upload a resume PDF",
         variant: "destructive",
       });
+      console.log('🔍 DEBUG: Toast called for no file');
       return;
     }
     
@@ -45,10 +47,12 @@ const handleSubmit = useCallback(
       lastModified: new Date(file.lastModified).toISOString()
     });
     
+    console.log('🔍 DEBUG: About to show "Processing" toast');
     toast({
       title: "Processing your resume",
       description: "AI is analyzing your PDF...",
     });
+    console.log('🔍 DEBUG: Processing toast called');
     
     try {
       const formData = new FormData();
@@ -79,10 +83,12 @@ const handleSubmit = useCallback(
           sectionsCount: data.portfolioData.sections ? Object.keys(data.portfolioData.sections).length : 0
         });
         
+        console.log('🔍 DEBUG: About to show success toast');
         toast({
           title: "Resume processed successfully!",
           description: "Your portfolio has been generated.",
         });
+        console.log('🔍 DEBUG: Success toast called');
         
         console.log('🎯 Navigating to builder with portfolio data...');
         navigate("/builder", { 
@@ -95,9 +101,14 @@ const handleSubmit = useCallback(
       
     } catch (error) {
       console.error('💥 Resume processing failed:', error);
+      console.log('🔍 DEBUG: About to show error toast');
+      console.log('🔍 DEBUG: Toast function available?', typeof toast);
+      
+      // Add a fallback alert for debugging
+      alert('DEBUG: Error occurred - check if toast appears');
       
       // Show the error toast for any failure
-      toast({
+      const toastResult = toast({
         title: "AI Processing Failed",
         description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
         variant: "destructive",
@@ -117,6 +128,9 @@ const handleSubmit = useCallback(
           </Button>
         ),
       });
+      
+      console.log('🔍 DEBUG: Error toast called, result:', toastResult);
+      console.log('🔍 DEBUG: Toast function type:', typeof toast);
     } finally {
       console.log('🏁 Resume processing finished');
       setIsProcessing(false);
@@ -125,7 +139,6 @@ const handleSubmit = useCallback(
   },
   [file, navigate, setGlobalProcessing, toast]
 );
-
   const handleCreateManually = () => {
     console.log('👤 Creating portfolio manually with sample data');
     navigate("/builder", { 
