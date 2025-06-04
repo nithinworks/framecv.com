@@ -36,3 +36,6 @@ const LandingPage: React.FC = () => {
       <LandingFooter />
     </div>
   );
+};
+
+export default LandingPage;
