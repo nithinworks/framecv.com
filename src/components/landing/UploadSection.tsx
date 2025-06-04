@@ -66,36 +66,13 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
         
         if (error) {
           console.error('❌ Supabase function error:', error);
-          console.error('Error details:', {
-            message: error.message,
-            details: error.details || 'No additional details',
-            hint: error.hint || 'No hint provided',
-            code: error.code || 'No error code'
-          });
           
-          // Enhanced error handling with user-friendly messages
-          let userMessage = "Our AI is experiencing some technical difficulties. Please try creating your portfolio manually instead.";
-          let shouldSuggestManual = true;
-          
-          // Check for specific error types and customize messages
-          if (error.message?.includes('overloaded') || error.message?.includes('503')) {
-            userMessage = "🤖 Our AI is overcooked right now! Too many people are using it. Please try creating your portfolio manually or wait a few minutes.";
-          } else if (error.message?.includes('rate limit') || error.message?.includes('429')) {
-            userMessage = "🕐 Our AI needs a breather! Rate limit reached. Please try again in a few minutes or create manually.";
-          } else if (error.message?.includes('Invalid file type') || error.message?.includes('File too large')) {
-            userMessage = error.message;
-            shouldSuggestManual = false;
-          } else if (error.message?.includes('API key') || error.message?.includes('Authentication')) {
-            userMessage = "🔧 Our AI is having authentication issues. Please try creating your portfolio manually for now.";
-          } else if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
-            userMessage = "⏰ The AI took too long to respond. Please try creating your portfolio manually or try again later.";
-          }
-          
+          // Simple single toast message for any error
           toast({
             title: "AI Processing Failed",
-            description: userMessage,
+            description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
             variant: "destructive",
-            action: shouldSuggestManual ? (
+            action: (
               <Button
                 variant="outline"
                 size="sm"
@@ -109,10 +86,10 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
               >
                 Create Manually
               </Button>
-            ) : undefined,
+            ),
           });
           
-          throw new Error(error.message || 'Failed to process resume');
+          throw new Error('AI processing failed');
         }
         
         console.log('✅ Supabase function success:', data);
@@ -138,8 +115,8 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
           console.error('❌ No portfolio data received:', data);
           
           toast({
-            title: "AI Processing Incomplete",
-            description: "🤖 Our AI got confused and didn't return your portfolio data. Please try creating manually!",
+            title: "AI Processing Failed",
+            description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
             variant: "destructive",
             action: (
               <Button
@@ -163,13 +140,12 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
         
       } catch (error) {
         console.error('💥 Resume processing failed:', error);
-        console.error('Error stack:', error.stack);
         
         // Only show toast if we haven't already shown one for this specific error
-        if (!error.message?.includes('Failed to process resume') && !error.message?.includes('No portfolio data received')) {
+        if (!error.message?.includes('AI processing failed') && !error.message?.includes('No portfolio data received')) {
           toast({
-            title: "Unexpected Error",
-            description: "🤖 Our AI had an unexpected hiccup! Please try creating your portfolio manually.",
+            title: "AI Processing Failed",
+            description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
             variant: "destructive",
             action: (
               <Button
