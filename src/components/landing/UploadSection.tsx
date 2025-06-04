@@ -25,90 +25,49 @@ const handleSubmit = useCallback(
     e.preventDefault();
     
     if (!file) {
-      console.log('🔍 DEBUG: About to show "No file selected" toast');
       toast({
         title: "No file selected",
         description: "Please upload a resume PDF",
         variant: "destructive",
       });
-      console.log('🔍 DEBUG: Toast called for no file');
       return;
     }
     
     setIsProcessing(true);
     setGlobalProcessing(true);
     
-    // Enhanced logging for browser console
-    console.log('🚀 Starting resume processing...');
-    console.log('📄 File details:', {
-      name: file.name,
-      type: file.type,
-      size: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
-      lastModified: new Date(file.lastModified).toISOString()
-    });
-    
-    console.log('🔍 DEBUG: About to show "Processing" toast');
     toast({
       title: "Processing your resume",
       description: "AI is analyzing your PDF...",
     });
-    console.log('🔍 DEBUG: Processing toast called');
     
     try {
       const formData = new FormData();
       formData.append('file', file);
       
-      console.log('📡 Calling Supabase edge function...');
-      const startTime = Date.now();
-      
       const { data, error } = await supabase.functions.invoke('process-resume', {
         body: formData,
       });
       
-      const processingTime = Date.now() - startTime;
-      console.log(`⏱️ Processing completed in ${processingTime}ms`);
-      
       if (error) {
-        console.error('❌ Supabase function error:', error);
         throw new Error('Supabase function failed');
       }
       
-      console.log('✅ Supabase function success:', data);
-      
       if (data?.portfolioData) {
-        console.log('📊 Portfolio data received:', {
-          hasSettings: !!data.portfolioData.settings,
-          hasSections: !!data.portfolioData.sections,
-          name: data.portfolioData.settings?.name || 'Unknown',
-          sectionsCount: data.portfolioData.sections ? Object.keys(data.portfolioData.sections).length : 0
-        });
-        
-        console.log('🔍 DEBUG: About to show success toast');
         toast({
           title: "Resume processed successfully!",
           description: "Your portfolio has been generated.",
         });
-        console.log('🔍 DEBUG: Success toast called');
         
-        console.log('🎯 Navigating to builder with portfolio data...');
         navigate("/builder", { 
           state: { portfolioData: data.portfolioData }
         });
       } else {
-        console.error('❌ No portfolio data received:', data);
         throw new Error('No portfolio data received');
       }
       
     } catch (error) {
-      console.error('💥 Resume processing failed:', error);
-      console.log('🔍 DEBUG: About to show error toast');
-      console.log('🔍 DEBUG: Toast function available?', typeof toast);
-      
-      // Add a fallback alert for debugging
-      alert('DEBUG: Error occurred - check if toast appears');
-      
-      // Show the error toast for any failure
-      const toastResult = toast({
+      toast({
         title: "AI Processing Failed",
         description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
         variant: "destructive",
@@ -117,30 +76,25 @@ const handleSubmit = useCallback(
             variant="outline"
             size="sm"
             onClick={() => {
-              console.log('👤 User chose to create portfolio manually after error');
               navigate("/builder", { 
                 state: { portfolioData: samplePortfolioData }
               });
             }}
-            className="ml-2"
+            className="ml-2 bg-white text-black border-gray-600 hover:bg-gray-100"
           >
             Create Manually
           </Button>
         ),
       });
-      
-      console.log('🔍 DEBUG: Error toast called, result:', toastResult);
-      console.log('🔍 DEBUG: Toast function type:', typeof toast);
     } finally {
-      console.log('🏁 Resume processing finished');
       setIsProcessing(false);
       setGlobalProcessing(false);
     }
   },
   [file, navigate, setGlobalProcessing, toast]
 );
+
   const handleCreateManually = () => {
-    console.log('👤 Creating portfolio manually with sample data');
     navigate("/builder", { 
       state: { portfolioData: samplePortfolioData }
     });
