@@ -72,6 +72,46 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
             hint: error.hint || 'No hint provided',
             code: error.code || 'No error code'
           });
+          
+          // Enhanced error handling with user-friendly messages
+          let userMessage = "Our AI is experiencing some technical difficulties. Please try creating your portfolio manually instead.";
+          let shouldSuggestManual = true;
+          
+          // Check for specific error types and customize messages
+          if (error.message?.includes('overloaded') || error.message?.includes('503')) {
+            userMessage = "🤖 Our AI is overcooked right now! Too many people are using it. Please try creating your portfolio manually or wait a few minutes.";
+          } else if (error.message?.includes('rate limit') || error.message?.includes('429')) {
+            userMessage = "🕐 Our AI needs a breather! Rate limit reached. Please try again in a few minutes or create manually.";
+          } else if (error.message?.includes('Invalid file type') || error.message?.includes('File too large')) {
+            userMessage = error.message;
+            shouldSuggestManual = false;
+          } else if (error.message?.includes('API key') || error.message?.includes('Authentication')) {
+            userMessage = "🔧 Our AI is having authentication issues. Please try creating your portfolio manually for now.";
+          } else if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
+            userMessage = "⏰ The AI took too long to respond. Please try creating your portfolio manually or try again later.";
+          }
+          
+          toast({
+            title: "AI Processing Failed",
+            description: userMessage,
+            variant: "destructive",
+            action: shouldSuggestManual ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  console.log('👤 User chose to create portfolio manually after error');
+                  navigate("/builder", { 
+                    state: { portfolioData: samplePortfolioData }
+                  });
+                }}
+                className="ml-2"
+              >
+                Create Manually
+              </Button>
+            ) : undefined,
+          });
+          
           throw new Error(error.message || 'Failed to process resume');
         }
         
@@ -96,6 +136,28 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
           });
         } else {
           console.error('❌ No portfolio data received:', data);
+          
+          toast({
+            title: "AI Processing Incomplete",
+            description: "🤖 Our AI got confused and didn't return your portfolio data. Please try creating manually!",
+            variant: "destructive",
+            action: (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  console.log('👤 User chose to create portfolio manually after incomplete processing');
+                  navigate("/builder", { 
+                    state: { portfolioData: samplePortfolioData }
+                  });
+                }}
+                className="ml-2"
+              >
+                Create Manually
+              </Button>
+            ),
+          });
+          
           throw new Error('No portfolio data received');
         }
         
@@ -103,11 +165,29 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
         console.error('💥 Resume processing failed:', error);
         console.error('Error stack:', error.stack);
         
-        toast({
-          title: "Processing failed",
-          description: error.message || "Failed to process your resume. Please try again.",
-          variant: "destructive",
-        });
+        // Only show toast if we haven't already shown one for this specific error
+        if (!error.message?.includes('Failed to process resume') && !error.message?.includes('No portfolio data received')) {
+          toast({
+            title: "Unexpected Error",
+            description: "🤖 Our AI had an unexpected hiccup! Please try creating your portfolio manually.",
+            variant: "destructive",
+            action: (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  console.log('👤 User chose to create portfolio manually after unexpected error');
+                  navigate("/builder", { 
+                    state: { portfolioData: samplePortfolioData }
+                  });
+                }}
+                className="ml-2"
+              >
+                Create Manually
+              </Button>
+            ),
+          });
+        }
       } finally {
         console.log('🏁 Resume processing finished');
         setIsProcessing(false);
