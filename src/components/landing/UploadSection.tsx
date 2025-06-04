@@ -20,158 +20,111 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
   const { toast } = useToast();
   const { setIsProcessing: setGlobalProcessing } = usePortfolio();
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      
-      if (!file) {
-        toast({
-          title: "No file selected",
-          description: "Please upload a resume PDF",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      setIsProcessing(true);
-      setGlobalProcessing(true);
-      
-      // Enhanced logging for browser console
-      console.log('🚀 Starting resume processing...');
-      console.log('📄 File details:', {
-        name: file.name,
-        type: file.type,
-        size: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
-        lastModified: new Date(file.lastModified).toISOString()
-      });
-      
+const handleSubmit = useCallback(
+  async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!file) {
       toast({
-        title: "Processing your resume",
-        description: "AI is analyzing your PDF...",
+        title: "No file selected",
+        description: "Please upload a resume PDF",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsProcessing(true);
+    setGlobalProcessing(true);
+    
+    // Enhanced logging for browser console
+    console.log('🚀 Starting resume processing...');
+    console.log('📄 File details:', {
+      name: file.name,
+      type: file.type,
+      size: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
+      lastModified: new Date(file.lastModified).toISOString()
+    });
+    
+    toast({
+      title: "Processing your resume",
+      description: "AI is analyzing your PDF...",
+    });
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      console.log('📡 Calling Supabase edge function...');
+      const startTime = Date.now();
+      
+      const { data, error } = await supabase.functions.invoke('process-resume', {
+        body: formData,
       });
       
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        console.log('📡 Calling Supabase edge function...');
-        const startTime = Date.now();
-        
-        const { data, error } = await supabase.functions.invoke('process-resume', {
-          body: formData,
+      const processingTime = Date.now() - startTime;
+      console.log(`⏱️ Processing completed in ${processingTime}ms`);
+      
+      if (error) {
+        console.error('❌ Supabase function error:', error);
+        throw new Error('Supabase function failed');
+      }
+      
+      console.log('✅ Supabase function success:', data);
+      
+      if (data?.portfolioData) {
+        console.log('📊 Portfolio data received:', {
+          hasSettings: !!data.portfolioData.settings,
+          hasSections: !!data.portfolioData.sections,
+          name: data.portfolioData.settings?.name || 'Unknown',
+          sectionsCount: data.portfolioData.sections ? Object.keys(data.portfolioData.sections).length : 0
         });
         
-        const processingTime = Date.now() - startTime;
-        console.log(`⏱️ Processing completed in ${processingTime}ms`);
+        toast({
+          title: "Resume processed successfully!",
+          description: "Your portfolio has been generated.",
+        });
         
-        if (error) {
-          console.error('❌ Supabase function error:', error);
-          
-          // Simple single toast message for any error
-          toast({
-            title: "AI Processing Failed",
-            description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
-            variant: "destructive",
-            action: (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  console.log('👤 User chose to create portfolio manually after error');
-                  navigate("/builder", { 
-                    state: { portfolioData: samplePortfolioData }
-                  });
-                }}
-                className="ml-2"
-              >
-                Create Manually
-              </Button>
-            ),
-          });
-          
-          throw new Error('AI processing failed');
-        }
-        
-        console.log('✅ Supabase function success:', data);
-        
-        if (data?.portfolioData) {
-          console.log('📊 Portfolio data received:', {
-            hasSettings: !!data.portfolioData.settings,
-            hasSections: !!data.portfolioData.sections,
-            name: data.portfolioData.settings?.name || 'Unknown',
-            sectionsCount: data.portfolioData.sections ? Object.keys(data.portfolioData.sections).length : 0
-          });
-          
-          toast({
-            title: "Resume processed successfully!",
-            description: "Your portfolio has been generated.",
-          });
-          
-          console.log('🎯 Navigating to builder with portfolio data...');
-          navigate("/builder", { 
-            state: { portfolioData: data.portfolioData }
-          });
-        } else {
-          console.error('❌ No portfolio data received:', data);
-          
-          toast({
-            title: "AI Processing Failed",
-            description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
-            variant: "destructive",
-            action: (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  console.log('👤 User chose to create portfolio manually after incomplete processing');
-                  navigate("/builder", { 
-                    state: { portfolioData: samplePortfolioData }
-                  });
-                }}
-                className="ml-2"
-              >
-                Create Manually
-              </Button>
-            ),
-          });
-          
-          throw new Error('No portfolio data received');
-        }
-        
-      } catch (error) {
-        console.error('💥 Resume processing failed:', error);
-        
-        // Only show toast if we haven't already shown one for this specific error
-        if (!error.message?.includes('AI processing failed') && !error.message?.includes('No portfolio data received')) {
-          toast({
-            title: "AI Processing Failed",
-            description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
-            variant: "destructive",
-            action: (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  console.log('👤 User chose to create portfolio manually after unexpected error');
-                  navigate("/builder", { 
-                    state: { portfolioData: samplePortfolioData }
-                  });
-                }}
-                className="ml-2"
-              >
-                Create Manually
-              </Button>
-            ),
-          });
-        }
-      } finally {
-        console.log('🏁 Resume processing finished');
-        setIsProcessing(false);
-        setGlobalProcessing(false);
+        console.log('🎯 Navigating to builder with portfolio data...');
+        navigate("/builder", { 
+          state: { portfolioData: data.portfolioData }
+        });
+      } else {
+        console.error('❌ No portfolio data received:', data);
+        throw new Error('No portfolio data received');
       }
-    },
-    [file, navigate, setGlobalProcessing, toast]
-  );
+      
+    } catch (error) {
+      console.error('💥 Resume processing failed:', error);
+      
+      // Show the error toast for any failure
+      toast({
+        title: "AI Processing Failed",
+        description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
+        variant: "destructive",
+        action: (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              console.log('👤 User chose to create portfolio manually after error');
+              navigate("/builder", { 
+                state: { portfolioData: samplePortfolioData }
+              });
+            }}
+            className="ml-2"
+          >
+            Create Manually
+          </Button>
+        ),
+      });
+    } finally {
+      console.log('🏁 Resume processing finished');
+      setIsProcessing(false);
+      setGlobalProcessing(false);
+    }
+  },
+  [file, navigate, setGlobalProcessing, toast]
+);
 
   const handleCreateManually = () => {
     console.log('👤 Creating portfolio manually with sample data');
