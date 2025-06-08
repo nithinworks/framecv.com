@@ -48,11 +48,28 @@ const handleSubmit = useCallback(
         body: formData,
       });
       
+      // Add detailed logging to debug the response structure
+      console.log('Supabase response - data:', JSON.stringify(data, null, 2));
+      console.log('Supabase response - error:', JSON.stringify(error, null, 2));
+      
+      // Check for Supabase function errors first
       if (error) {
         console.error('Supabase function error:', error);
+        
+        // Check if the error contains our structured error info
+        if (error.message?.includes('NOT_RESUME')) {
+          toast({
+            title: "Invalid Document Type",
+            description: "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
         throw error;
       }
       
+      // Success case
       if (data?.portfolioData) {
         toast({
           title: "Resume processed successfully!",
@@ -62,53 +79,71 @@ const handleSubmit = useCallback(
         navigate("/builder", { 
           state: { portfolioData: data.portfolioData }
         });
-      } else if (data?.error) {
-        // Handle specific error types from the edge function
+        return;
+      } 
+      
+      // Check for structured error responses in data
+      if (data?.type || data?.error) {
+        console.log('Structured error in data:', data);
+        
         if (data.type === 'NOT_RESUME') {
           toast({
             title: "Invalid Document Type",
-            description: data.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
+            description: data.details || data.message || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
             variant: "destructive",
           });
-          return; // Early return to prevent fallback toast
-        } else if (data.type === 'VALIDATION_ERROR') {
+          return;
+        }
+        
+        if (data.type === 'VALIDATION_ERROR') {
           toast({
             title: "Validation Error",
-            description: data.details || "Please check your file and try again.",
+            description: data.details || data.message || "Please check your file and try again.",
             variant: "destructive",
           });
-          return; // Early return to prevent fallback toast
-        } else {
-          throw new Error(data.details || data.error);
+          return;
         }
-      } else {
-        throw new Error('No portfolio data received');
+        
+        // Other structured errors
+        throw new Error(data.details || data.message || data.error || 'Unknown error from edge function');
       }
+      
+      // If no portfolio data and no clear error structure
+      throw new Error('No portfolio data received');
       
     } catch (error: any) {
-      console.error('Processing error:', error);
+      console.error('Processing error (full):', error);
+      console.error('Error message:', error.message);
+      console.error('Error name:', error.name);
+      console.error('Error stack:', error.stack);
       
-      // Check if it's a structured error response from the edge function
-      if (error.context?.res?.data) {
-        const errorData = error.context.res.data;
-        if (errorData.type === 'NOT_RESUME') {
-          toast({
-            title: "Invalid Document Type",
-            description: errorData.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
-            variant: "destructive",
-          });
-          return; // Early return to prevent fallback toast
-        } else if (errorData.type === 'VALIDATION_ERROR') {
-          toast({
-            title: "Validation Error", 
-            description: errorData.details || "Please check your file and try again.",
-            variant: "destructive",
-          });
-          return; // Early return to prevent fallback toast
-        }
+      // Check error message for keywords (most reliable fallback)
+      const errorMessage = error.message?.toLowerCase() || '';
+      const errorString = String(error).toLowerCase();
+      
+      if (errorMessage.includes('not_resume') || 
+          errorMessage.includes('not a resume') || 
+          errorMessage.includes('voter information') ||
+          errorString.includes('not_resume') ||
+          errorString.includes('voter information')) {
+        toast({
+          title: "Invalid Document Type",
+          description: "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
+          variant: "destructive",
+        });
+        return;
       }
       
-      // Only show the "AI cooked" toast for genuine processing failures
+      if (errorMessage.includes('validation') || errorString.includes('validation')) {
+        toast({
+          title: "Validation Error",
+          description: "Please check your file and try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Default AI processing error
       toast({
         title: "AI Processing Failed",
         description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
