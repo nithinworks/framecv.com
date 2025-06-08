@@ -243,8 +243,85 @@ const handler = async (req) => {
     
     console.log(`📄 Processing PDF file: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`);
 
+    // First, validate if the document is actually a resume
+    const validationPrompt = `
+Analyze this PDF document and determine if it is a resume/CV or not.
+
+A resume/CV typically contains:
+- Personal/contact information (name, email, phone, etc.)
+- Work experience or employment history
+- Education background
+- Skills section
+- Professional summary or objective
+
+Respond with ONLY one of these exact formats:
+- If it IS a resume: "VALID_RESUME"
+- If it is NOT a resume: "NOT_RESUME: [brief description of what the document actually is]"
+
+Examples:
+- "NOT_RESUME: This appears to be a financial report"
+- "NOT_RESUME: This is a research paper about machine learning"
+- "NOT_RESUME: This document contains terms and conditions"
+- "VALID_RESUME"
+`;
+
+    const validationRequestBody = {
+      contents: [{
+        parts: [
+          { text: validationPrompt },
+          { 
+            inline_data: {
+              mime_type: file.type,
+              data: base64Data
+            }
+          }
+        ]
+      }],
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 100,
+        topP: 0.9,
+        topK: 40
+      },
+      safetySettings: [
+        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }
+      ]
+    };
+
+    console.log('🔍 Validating if document is a resume...');
+    const validationData = await callGeminiWithRetry(geminiApiKeys, validationRequestBody);
+    
+    const validationText = validationData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (!validationText) {
+      throw new Error('No validation response from Gemini');
+    }
+
+    console.log('📋 Validation response:', validationText);
+
+    // Check if it's not a resume
+    if (!validationText.includes('VALID_RESUME')) {
+      const errorMessage = validationText.startsWith('NOT_RESUME:') 
+        ? validationText.replace('NOT_RESUME:', '').trim()
+        : 'This document does not appear to be a resume';
+
+      return new Response(JSON.stringify({
+        error: 'Invalid document type',
+        type: 'NOT_RESUME',
+        details: `${errorMessage}. Please upload a valid resume/CV in PDF format.`,
+        suggestion: 'Please upload a document that contains your work experience, education, and skills.'
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400
+      });
+    }
+
+    console.log('✅ Document validated as a resume, proceeding with portfolio generation...');
+
     // Simplified and more focused prompt to reduce token usage
-    const prompt = `
+    const portfolioPrompt = `
 Extract information from this resume PDF and create a professional portfolio JSON. Use creativity to enhance content while staying accurate.
 
 GUIDELINES:
@@ -322,10 +399,10 @@ Return ONLY valid JSON with this structure:
 `;
 
     // Optimized request body with lower token limits
-    const requestBody = {
+    const portfolioRequestBody = {
       contents: [{
         parts: [
-          { text: prompt },
+          { text: portfolioPrompt },
           { 
             inline_data: {
               mime_type: file.type,
@@ -335,8 +412,8 @@ Return ONLY valid JSON with this structure:
         ]
       }],
       generationConfig: {
-        temperature: 0.2, // Lower for more consistent results
-        maxOutputTokens: 3000, // Reduced from 4000
+        temperature: 0.2,
+        maxOutputTokens: 3000,
         topP: 0.9,
         topK: 40
       },
@@ -348,10 +425,10 @@ Return ONLY valid JSON with this structure:
       ]
     };
 
-    console.log('🚀 Calling Gemini API with enhanced retry mechanism...');
+    console.log('🚀 Calling Gemini API for portfolio generation...');
     
-    // Call Gemini API with retry mechanism
-    const geminiData = await callGeminiWithRetry(geminiApiKeys, requestBody);
+    // Call Gemini API with retry mechanism for portfolio generation
+    const geminiData = await callGeminiWithRetry(geminiApiKeys, portfolioRequestBody);
     
     console.log('✅ Gemini response received successfully');
 
@@ -399,7 +476,8 @@ Return ONLY valid JSON with this structure:
     
     if (error.message.includes('No file provided') || 
         error.message.includes('Invalid file type') || 
-        error.message.includes('File too large')) {
+        error.message.includes('File too large') ||
+        error.message.includes('Invalid document type')) {
       statusCode = 400;
       errorType = 'VALIDATION_ERROR';
     } else if (error.message.includes('Authentication failed') || 
