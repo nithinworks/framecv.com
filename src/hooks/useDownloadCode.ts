@@ -1,4 +1,3 @@
-
 import { usePortfolio } from "@/context/PortfolioContext";
 
 export const useDownloadCode = () => {
@@ -22,7 +21,7 @@ function getIconSVG(name) {
     case "linkedin":
       return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>';
     case "github":
-      return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>';
+      return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.237 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>';
     case "twitter":
       return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>';
     case "instagram":
@@ -220,12 +219,11 @@ async function renderPortfolio() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", renderPortfolio);`;
-  };
+document.addEventListener("DOMContentLoaded", renderPortfolio);
 
-  const downloadSourceCode = () => {
-    // HTML template with all font support
-    const htmlCode = `<!DOCTYPE html>
+const downloadSourceCode = () => {
+  // HTML template with all font support
+  const htmlCode = `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
@@ -235,7 +233,6 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
     <script src="./tailwind.config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Include all available fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Ovo&family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
@@ -250,140 +247,298 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
   </body>
 </html>`;
 
-    const cssCode = `:root {
-  --primary-color: ${portfolioData.settings.primaryColor};
-  --primary-color-light: rgba(214, 88, 34, 0.08);
-  --glass-bg: rgba(252, 186, 3, 0.1);
-}
-.dynamic-primary {
-  color: var(--primary-color) !important;
-}
-.bg-dynamic-primary {
-  background-color: var(--primary-color) !important;
-}
-.border-dynamic-primary {
-  border-color: var(--primary-color) !important;
-}
-.bg-primary-light {
-  background: var(--primary-color-light) !important;
-}
-.glass-bg {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(2px);
-}
-.hero-bg {
-  background: linear-gradient(120deg, var(--primary-color-light) 0%, #fff 100%);
-}
-.dark .hero-bg {
-  background: #000 !important;
-}
-.footer-bg-smoke {
-  background: linear-gradient(120deg, var(--primary-color-light) 0%, #fff 100%);
-}
-.dark .footer-bg-smoke {
-  background: linear-gradient(
-    120deg,
-    rgba(252, 186, 3, 0.1) 0%,
-    #000 100%
-  ) !important;
-}
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  overflow-x: hidden;
-}
-#app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-.main-content {
-  flex: 1;
-}`;
+  const cssCode = `:root {
+    --primary-color: ${portfolioData.settings.primaryColor};
+    --primary-color-light: rgba(22, 163, 74, 0.08);
+    --primary-color-rgb: 22, 163, 74;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  .dynamic-primary {
+    color: var(--primary-color) !important;
+  }
+  .bg-dynamic-primary {
+    background-color: var(--primary-color) !important;
+  }
+  .border-dynamic-primary {
+    border-color: var(--primary-color) !important;
+  }
+  .bg-primary-light {
+    background: var(--primary-color-light) !important;
+  }
+  .glass-bg {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .hero-bg {
+    background: linear-gradient(135deg, var(--primary-color-light) 0%, #fff 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg .smoke-effect {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(
+        circle at 60% 40%,
+        var(--primary-color-light) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        circle at 20% 80%,
+        var(--primary-color-light) 0%,
+        transparent 80%
+      );
+  }
+  .hero-bg::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 50%
+    );
+    opacity: 0.5;
+  }
+  .dark .hero-bg {
+    background: linear-gradient(135deg, #000 0%, #111 100%) !important;
+  }
+  .dark .hero-bg::before {
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    );
+  }
+  .footer-bg-smoke {
+    background: linear-gradient(
+      135deg,
+      rgba(var(--primary-color-rgb, 22, 163, 74), 0.06) 0%,
+      transparent 100%
+    );
+  }
+  .dark .footer-bg-smoke {
+    background: linear-gradient(
+      135deg,
+      rgba(var(--primary-color-rgb, 22, 163, 74), 0.1) 0%,
+      transparent 100%
+    ) !important;
+  }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+  #app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .main-content {
+    flex: 1;
+  }
+  /* Modern Card Styles */
+  .modern-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+  }
+  .modern-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+  }
+  .dark .modern-card {
+    background: rgba(17, 17, 17, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  /* Smooth Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color-light);
+  }
+  /* Custom Animations */
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+  /* Gradient Text */
+  .gradient-text {
+    color: var(--primary-color) !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
+  }
+  .primary-text {
+    color: var(--primary-color) !important;
+  }
 
-    const twConfigCode = `tailwind.config = {
-  theme: {
-    extend: {
-      gridTemplateColumns: {
-        auto: "repeat(auto-fit, minmax(200px, 1fr))",
-      },
-      fontFamily: {
-        Ovo: ["Ovo", "serif"],
-        Playfair: ["Playfair Display", "serif"],
-        Poppins: ["Poppins", "sans-serif"],
-        Inter: ["Inter", "sans-serif"],
-        Montserrat: ["Montserrat", "sans-serif"],
-        Raleway: ["Raleway", "sans-serif"],
-        Schibsted: ["Schibsted Grotesk", "sans-serif"],
-        Outfit: ["Outfit", "sans-serif"],
-      },
-      animation: {
-        "fade-in": "fadeIn 0.7s ease-out both",
-        "slide-up": "slideUp 0.7s cubic-bezier(0.4,0,0.2,1) both",
-      },
-      keyframes: {
-        fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7em;
+  }
+
+  .framecv-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 999px;
+    padding: 0.18em 0.7em 0.18em 0.4em;
+    font-size: 0.93em;
+    color: #444;
+    font-weight: 500;
+    box-shadow: none;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+    opacity: 0.85;
+  }
+  .framecv-badge:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--primary-color);
+    opacity: 1;
+  }
+  .framecv-badge svg {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .hero-title-spaced {
+    line-height: 1.22;
+  }
+  `;
+
+  const twConfigCode = `tailwind.config = {
+    theme: {
+      extend: {
+        gridTemplateColumns: {
+          auto: "repeat(auto-fit, minmax(200px, 1fr))",
         },
-        slideUp: {
-          "0%": { transform: "translateY(30px)", opacity: "0" },
-          "100%": { transform: "translateY(0)", opacity: "1" },
+        fontFamily: {
+          Ovo: ["Ovo", "serif"],
+          Playfair: ["Playfair Display", "serif"],
+          Poppins: ["Poppins", "sans-serif"],
+          Inter: ["Inter", "sans-serif"],
+          Montserrat: ["Montserrat", "sans-serif"],
+          Raleway: ["Raleway", "sans-serif"],
+          Schibsted: ["Schibsted Grotesk", "sans-serif"],
+          Outfit: ["Outfit", "sans-serif"],
         },
-      },
-      colors: {
-        darkTheme: "#111111",
-        white: "#fff",
-        black: "#000",
-        gray: {
-          100: "#f5f5f5",
-          200: "#e5e5e5",
-          300: "#d4d4d4",
-          400: "#a3a3a3",
-          500: "#737373",
-          600: "#525252",
-          700: "#404040",
-          800: "#262626",
-          900: "#181818",
+        animation: {
+          "fade-in": "fadeIn 0.7s ease-out both",
+          "slide-up": "slideUp 0.7s cubic-bezier(0.4,0,0.2,1) both",
+          float: "float 3s ease-in-out infinite",
+          "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+          "bounce-slow": "bounce 3s infinite",
+        },
+        keyframes: {
+          fadeIn: {
+            "0%": { opacity: "0" },
+            "100%": { opacity: "1" },
+          },
+          slideUp: {
+            "0%": { transform: "translateY(30px)", opacity: "0" },
+            "100%": { transform: "translateY(0)", opacity: "1" },
+          },
+          float: {
+            "0%, 100%": { transform: "translateY(0)" },
+            "50%": { transform: "translateY(-10px)" },
+          },
+        },
+        colors: {
+          darkTheme: "#111111",
+          white: "#fff",
+          black: "#000",
+          gray: {
+            100: "#f5f5f5",
+            200: "#e5e5e5",
+            300: "#d4d4d4",
+            400: "#a3a3a3",
+            500: "#737373",
+            600: "#525252",
+            700: "#404040",
+            800: "#262626",
+            900: "#181818",
+          },
+        },
+        boxShadow: {
+          soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
+          hover:
+            "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+        },
+        backdropBlur: {
+          xs: "2px",
         },
       },
     },
-  },
-  darkMode: "selector",
-};`;
+    darkMode: "selector",
+  };`;
 
-    // Use the complete JavaScript code with font support
-    const jsCode = generateCompleteJavaScript(portfolioData);
-    const jsonCode = JSON.stringify(portfolioData, null, 2);
+  // Use the complete JavaScript code with font support
+  const jsCode = generateCompleteJavaScript(portfolioData);
+  const jsonCode = JSON.stringify(portfolioData, null, 2);
 
-    const files = [
-      { name: "index.html", content: htmlCode },
-      { name: "styles.css", content: cssCode },
-      { name: "script.js", content: jsCode },
-      { name: "tailwind.config.js", content: twConfigCode },
-      { name: "portfolio-data.json", content: jsonCode }
-    ];
+  const files = [
+    { name: "index.html", content: htmlCode },
+    { name: "styles.css", content: cssCode },
+    { name: "script.js", content: jsCode },
+    { name: "tailwind.config.js", content: twConfigCode },
+    { name: "portfolio-data.json", content: jsonCode }
+  ];
 
-    import('jszip').then(JSZip => {
-      const zip = new JSZip.default();
-      
-      files.forEach(file => {
-        zip.file(file.name, file.content);
-      });
-
-      zip.generateAsync({ type: "blob" }).then(content => {
-        const url = URL.createObjectURL(content);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${portfolioData.settings.name.replace(/\s+/g, '-')}-Portfolio-Code.zip`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      });
+  import('jszip').then(JSZip => {
+    const zip = new JSZip.default();
+    
+    files.forEach(file => {
+      zip.file(file.name, file.content);
     });
-  };
 
-  return { downloadSourceCode };
+    zip.generateAsync({ type: "blob" }).then(content => {
+      const url = URL.createObjectURL(content);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${portfolioData.settings.name.replace(/\s+/g, '-')}-Portfolio-Code.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  });
 };
