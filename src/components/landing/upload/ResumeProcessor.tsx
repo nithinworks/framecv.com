@@ -55,44 +55,56 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
       console.log('Data:', data);
       console.log('Error:', error);
       
-      // Handle the case where we get an error response but it's actually a validation error
-      if (error) {
-        console.log('Function invocation error detected:', error);
+      // Handle FunctionsHttpError specifically - it means we got a 400/500 response
+      if (error && error.name === 'FunctionsHttpError') {
+        console.log('FunctionsHttpError detected - checking response details');
         
-        // Check if it's a FunctionsHttpError with status 400 (validation error)
-        if (error.name === 'FunctionsHttpError') {
-          try {
-            // Try to parse the error message for specific error types
-            const errorMessage = error.message || '';
-            console.log('FunctionsHttpError message:', errorMessage);
-            
-            // Check if the error contains our specific error response
-            if (errorMessage.includes('NOT_RESUME') || errorMessage.includes('Invalid document type')) {
-              console.log('NOT_RESUME error detected from FunctionsHttpError');
-              toast({
-                title: "Invalid Document Type",
-                description: "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
-                variant: "destructive",
-              });
-              return;
-            }
-            
-            if (errorMessage.includes('VALIDATION_ERROR')) {
-              console.log('VALIDATION_ERROR detected from FunctionsHttpError');
-              toast({
-                title: "Validation Error",
-                description: "Please check your file and try again.",
-                variant: "destructive",
-              });
-              return;
-            }
-          } catch (parseError) {
-            console.log('Failed to parse FunctionsHttpError:', parseError);
+        // For validation errors (400 status), the error details should be in the data
+        // Let's check if we have data with error information
+        if (data && data.error) {
+          console.log('Error details found in data:', data);
+          
+          if (data.error === 'Invalid document type' || data.type === 'NOT_RESUME') {
+            console.log('NOT_RESUME error detected');
+            toast({
+              title: "Invalid Document Type",
+              description: data.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
+              variant: "destructive",
+            });
+            return;
+          }
+          
+          if (data.type === 'VALIDATION_ERROR') {
+            console.log('VALIDATION_ERROR detected');
+            toast({
+              title: "Validation Error",
+              description: data.details || "Please check your file and try again.",
+              variant: "destructive",
+            });
+            return;
           }
         }
         
-        // If it's not a specific validation error, throw it to be handled by the main catch
-        throw error;
+        // If no specific error type found, show generic AI error
+        console.log('No specific error type found, showing generic AI error');
+        toast({
+          title: "AI Processing Failed",
+          description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
+          variant: "destructive",
+          action: (
+            <button
+              onClick={() => {
+                navigate("/builder", { 
+                  state: { portfolioData: samplePortfolioData }
+                });
+              }}
+              className="ml-2 bg-white text-black border border-gray-600 hover:bg-gray-100 px-3 py-1 rounded text-sm"
+            >
+              Create Manually
+            </button>
+          ),
+        });
+        return;
       }
       
       // Success case
@@ -109,30 +121,10 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
           state: { portfolioData: data.portfolioData }
         });
         return;
-      } 
-      
-      // Check for structured error responses in data (fallback)
-      if (data?.type === 'NOT_RESUME') {
-        console.log('NOT_RESUME response in data');
-        toast({
-          title: "Invalid Document Type",
-          description: data.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
-          variant: "destructive",
-        });
-        return;
       }
       
-      if (data?.type === 'VALIDATION_ERROR') {
-        console.log('VALIDATION_ERROR response in data');
-        toast({
-          title: "Validation Error",
-          description: data.details || "Please check your file and try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      console.log('No portfolio data or error type found, throwing error');
+      // No data received
+      console.log('No portfolio data received');
       throw new Error('No portfolio data received');
       
     } catch (error: any) {
@@ -141,22 +133,7 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
       console.log('Error name:', error.name);
       console.log('Error message:', error.message);
       
-      // Check error message for specific types
-      const errorMessage = error.message?.toLowerCase() || '';
-      
-      if (errorMessage.includes('not_resume') || 
-          errorMessage.includes('not a resume') || 
-          errorMessage.includes('invalid document')) {
-        console.log('NOT_RESUME error detected in message');
-        toast({
-          title: "Invalid Document Type",
-          description: "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // Default AI processing error
+      // This catch block should only handle network errors and other unexpected issues
       console.log('Showing default AI overcooked message');
       toast({
         title: "AI Processing Failed",
