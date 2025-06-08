@@ -221,18 +221,16 @@ async function renderPortfolio() {
 }
 
 document.addEventListener("DOMContentLoaded", renderPortfolio);`;
-
-    return { downloadSourceCode };
   };
 
   const downloadSourceCode = () => {
     // HTML template with all font support
-    const htmlCode = \`<!DOCTYPE html>
+    const htmlCode = `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio - \${portfolioData.settings.name}</title>
+    <title>Portfolio - ${portfolioData.settings.name}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./tailwind.config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -249,10 +247,10 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
     <div id="app"></div>
     <script src="./script.js"></script>
   </body>
-</html>\`;
+</html>`;
 
-    const cssCode = \`:root {
-    --primary-color: \${portfolioData.settings.primaryColor};
+    const cssCode = `:root {
+    --primary-color: ${portfolioData.settings.primaryColor};
     --primary-color-light: rgba(22, 163, 74, 0.08);
     --primary-color-rgb: 22, 163, 74;
     --glass-bg: rgba(255, 255, 255, 0.1);
@@ -447,9 +445,9 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
   .hero-title-spaced {
     line-height: 1.22;
   }
-  \`;
+  `;
 
-    const twConfigCode = \`tailwind.config = {
+    const twConfigCode = `tailwind.config = {
     theme: {
       extend: {
         gridTemplateColumns: {
@@ -513,7 +511,7 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
       },
     },
     darkMode: "selector",
-  };\`;
+  };`;
 
     // Use the complete JavaScript code with font support
     const jsCode = generateCompleteJavaScript(portfolioData);
@@ -538,7 +536,7 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
         const url = URL.createObjectURL(content);
         const a = document.createElement("a");
         a.href = url;
-        a.download = \`\${portfolioData.settings.name.replace(/\\s+/g, '-')}-Portfolio-Code.zip\`;
+        a.download = `${portfolioData.settings.name.replace(/\s+/g, '-')}-Portfolio-Code.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
