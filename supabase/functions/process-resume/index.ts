@@ -24,6 +24,8 @@ function getGeminiApiKeys() {
     const key = Deno.env.get(`GEMINI_API_KEY_${i}`);
     if (key) keys.push(key);
   }
+  
+  console.log(`Found ${keys.length} Gemini API keys`);
   return keys;
 }
 
@@ -41,6 +43,7 @@ class CircuitBreaker {
     
     if (failures >= this.threshold) {
       if (Date.now() - lastFail < this.timeout) {
+        console.log(`Circuit breaker OPEN for key ${keyPrefix}`);
         return true;
       }
       this.failures.set(keyPrefix, 0);
@@ -54,12 +57,14 @@ class CircuitBreaker {
     const current = this.failures.get(keyPrefix) || 0;
     this.failures.set(keyPrefix, current + 1);
     this.lastFailTime.set(keyPrefix, Date.now());
+    console.log(`Circuit breaker recorded failure for key ${keyPrefix}, total: ${current + 1}`);
   }
 
   recordSuccess(apiKey: string) {
     const keyPrefix = apiKey.substring(0, 10);
     this.failures.set(keyPrefix, 0);
     this.lastFailTime.delete(keyPrefix);
+    console.log(`Circuit breaker recorded success for key ${keyPrefix}`);
   }
 }
 
@@ -67,41 +72,61 @@ const circuitBreaker = new CircuitBreaker();
 
 // Enhanced retry mechanism with model selection
 async function callGeminiWithRetry(apiKeys, requestBody, model = 'gemini-2.0-flash-001', maxRetries = 2) {
+  console.log(`=== CALLING GEMINI API ===`);
+  console.log(`Model: ${model}`);
+  console.log(`Available keys: ${apiKeys.length}`);
+  console.log(`Request body size: ${JSON.stringify(requestBody).length} chars`);
+  
   let lastError = null;
   const availableKeys = apiKeys.filter(key => !circuitBreaker.isOpen(key));
   
+  console.log(`Available keys after circuit breaker filter: ${availableKeys.length}`);
+  
   if (availableKeys.length === 0) {
+    console.log('ERROR: All API keys are temporarily unavailable');
     throw new Error('All API keys are temporarily unavailable');
   }
 
   for (const apiKey of availableKeys) {
+    const keyPrefix = apiKey.substring(0, 10);
+    console.log(`Trying API key: ${keyPrefix}...`);
+    
     for(let attempt = 1; attempt <= maxRetries; attempt++){
+      console.log(`Attempt ${attempt}/${maxRetries} with key ${keyPrefix}`);
+      
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => {
+        console.log('Request timeout triggered');
+        controller.abort();
+      }, 30000);
       
       try {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, 
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'User-Agent': 'Supabase-Edge-Function/1.0'
-            },
-            body: JSON.stringify(requestBody),
-            signal: controller.signal
-          }
-        );
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        console.log(`Making request to: ${url.replace(apiKey, '[HIDDEN]')}`);
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'Supabase-Edge-Function/1.0'
+          },
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
+        });
         
         clearTimeout(timeoutId);
+        console.log(`Response status: ${response.status}`);
         
         if (response.ok) {
           const data = await response.json();
+          console.log('SUCCESS: API call completed');
+          console.log('Response candidates:', data.candidates?.length || 0);
           circuitBreaker.recordSuccess(apiKey);
           return data;
         }
         
         const errorText = await response.text();
+        console.log(`API Error ${response.status}: ${errorText}`);
         
         if (response.status === 503) {
           lastError = new Error(`Service overloaded: ${errorText}`);
@@ -109,6 +134,7 @@ async function callGeminiWithRetry(apiKeys, requestBody, model = 'gemini-2.0-fla
           
           if (attempt < maxRetries) {
             const delay = Math.min(2000 * Math.pow(2, attempt), 10000);
+            console.log(`Retrying in ${delay}ms...`);
             await new Promise(resolve => setTimeout(resolve, delay));
           }
           continue;
@@ -120,16 +146,19 @@ async function callGeminiWithRetry(apiKeys, requestBody, model = 'gemini-2.0-fla
           
           if (attempt < maxRetries) {
             const delay = Math.min(5000 * Math.pow(2, attempt), 30000);
+            console.log(`Rate limited, retrying in ${delay}ms...`);
             await new Promise(resolve => setTimeout(resolve, delay));
           }
           continue;
         }
         
         if (response.status === 400) {
+          console.log('Bad request error, not retrying');
           throw new Error(`Bad request: ${errorText}`);
         }
         
         if (response.status === 401 || response.status === 403) {
+          console.log('Authentication error, not retrying');
           throw new Error(`Authentication failed: ${errorText}`);
         }
         
@@ -138,6 +167,7 @@ async function callGeminiWithRetry(apiKeys, requestBody, model = 'gemini-2.0-fla
         
         if (attempt < maxRetries) {
           const delay = Math.min(1000 * Math.pow(2, attempt), 5000);
+          console.log(`Retrying in ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
         }
         
@@ -145,36 +175,55 @@ async function callGeminiWithRetry(apiKeys, requestBody, model = 'gemini-2.0-fla
         clearTimeout(timeoutId);
         
         if (error.name === 'AbortError') {
+          console.log('Request timed out');
           lastError = new Error('Request timed out');
           circuitBreaker.recordFailure(apiKey);
         } else if (error.message.includes('Authentication failed')) {
+          console.log('Authentication failed, breaking key loop');
           break;
         } else {
+          console.log('Network or other error:', error.message);
           lastError = error;
           circuitBreaker.recordFailure(apiKey);
         }
         
         if (attempt < maxRetries && !error.message.includes('Authentication failed')) {
           const delay = Math.min(1000 * Math.pow(2, attempt), 5000);
+          console.log(`Retrying in ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
     }
   }
   
+  console.log('ERROR: All API keys exhausted');
   throw lastError || new Error('All API keys exhausted');
 }
 
 const handler = async (req) => {
+  console.log('=== PROCESS-RESUME FUNCTION STARTED ===');
+  console.log(`Request method: ${req.method}`);
+  console.log(`Request URL: ${req.url}`);
+  
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log('Parsing form data...');
     const formData = await req.formData();
     const file = formData.get('file');
     
+    console.log('File info:', {
+      exists: !!file,
+      name: file?.name,
+      size: file?.size,
+      type: file?.type
+    });
+    
     if (!file) {
+      console.log('ERROR: No file provided');
       return new Response(JSON.stringify({
         error: 'No file provided'
       }), {
@@ -184,8 +233,10 @@ const handler = async (req) => {
     }
 
     // File validation
+    console.log('Validating file...');
     const allowedTypes = ['application/pdf'];
     if (!allowedTypes.includes(file.type)) {
+      console.log(`ERROR: Invalid file type: ${file.type}`);
       return new Response(JSON.stringify({
         error: 'Invalid file type',
         details: 'Only PDF files are allowed'
@@ -197,6 +248,7 @@ const handler = async (req) => {
 
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
+      console.log(`ERROR: File too large: ${file.size} bytes`);
       return new Response(JSON.stringify({
         error: 'File too large',  
         details: `File size exceeds 2MB limit`
@@ -206,15 +258,20 @@ const handler = async (req) => {
       });
     }
 
+    console.log('Getting Gemini API keys...');
     const geminiApiKeys = getGeminiApiKeys();
     if (geminiApiKeys.length === 0) {
+      console.log('ERROR: No API keys available');
       throw new Error('No API keys available');
     }
 
+    console.log('Converting file to base64...');
     const arrayBuffer = await file.arrayBuffer();
     const base64Data = arrayBufferToBase64(arrayBuffer);
+    console.log(`Base64 data length: ${base64Data.length} chars`);
 
     // Document validation using Flash-Lite model
+    console.log('=== STARTING DOCUMENT VALIDATION ===');
     const validationPrompt = `
 Analyze this PDF and determine if it's a resume/CV.
 
@@ -247,6 +304,7 @@ Respond with ONLY:
       }
     };
 
+    console.log('Calling Gemini for document validation...');
     const validationData = await callGeminiWithRetry(
       geminiApiKeys, 
       validationRequestBody, 
@@ -254,7 +312,10 @@ Respond with ONLY:
     );
     
     const validationText = validationData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    console.log('Validation result:', validationText);
+    
     if (!validationText) {
+      console.log('ERROR: No validation response received');
       throw new Error('No validation response received');
     }
 
@@ -264,6 +325,7 @@ Respond with ONLY:
         ? validationText.replace('NOT_RESUME:', '').trim()
         : 'This document does not appear to be a resume';
 
+      console.log('Document validation failed:', errorMessage);
       return new Response(JSON.stringify({
         error: 'Invalid document type',
         type: 'NOT_RESUME',
@@ -274,7 +336,10 @@ Respond with ONLY:
       });
     }
 
+    console.log('Document validation passed, proceeding to portfolio generation');
+
     // Portfolio generation using Flash model
+    console.log('=== STARTING PORTFOLIO GENERATION ===');
     const portfolioPrompt = `
 Extract information from this resume PDF and create a professional portfolio JSON.
 
@@ -370,6 +435,7 @@ Return ONLY valid JSON:
       }
     };
 
+    console.log('Calling Gemini for portfolio generation...');
     const geminiData = await callGeminiWithRetry(
       geminiApiKeys, 
       portfolioRequestBody, 
@@ -377,33 +443,49 @@ Return ONLY valid JSON:
     );
 
     const generatedText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+    console.log('Portfolio generation completed');
+    console.log('Generated text length:', generatedText?.length || 0);
+    
     if (!generatedText) {
+      console.log('ERROR: No content generated');
       throw new Error('No content generated');
     }
 
     // Parse and validate JSON
+    console.log('Parsing generated JSON...');
     let portfolioData;
     try {
       const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
+        console.log('ERROR: No JSON found in response');
         throw new Error('No JSON found in response');
       }
       
       portfolioData = JSON.parse(jsonMatch[0]);
       
       if (!portfolioData.settings || !portfolioData.sections) {
+        console.log('ERROR: Invalid portfolio structure');
         throw new Error('Invalid portfolio structure');
       }
       
+      console.log('SUCCESS: Portfolio data parsed and validated');
+      
     } catch (parseError) {
+      console.log('JSON parsing error:', parseError.message);
       throw new Error(`JSON parsing failed: ${parseError.message}`);
     }
     
+    console.log('=== FUNCTION COMPLETED SUCCESSFULLY ===');
     return new Response(JSON.stringify({ portfolioData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
+    console.log('=== FUNCTION ERROR ===');
+    console.log('Error name:', error.name);
+    console.log('Error message:', error.message);
+    console.log('Error stack:', error.stack);
+    
     let statusCode = 500;
     let errorType = 'INTERNAL_ERROR';
     
@@ -432,6 +514,8 @@ Return ONLY valid JSON:
       timestamp: new Date().toISOString()
     };
 
+    console.log('Returning error response:', errorResponse);
+    
     return new Response(JSON.stringify(errorResponse), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: statusCode
