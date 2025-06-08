@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,6 @@ const handleSubmit = useCallback(
         body: formData,
       });
       
-      // Add detailed logging to debug the response structure
       console.log('Supabase response - data:', JSON.stringify(data, null, 2));
       console.log('Supabase response - error:', JSON.stringify(error, null, 2));
       
@@ -56,16 +56,47 @@ const handleSubmit = useCallback(
       if (error) {
         console.error('Supabase function error:', error);
         
-        // Check if the error contains our structured error info
-        if (error.message?.includes('NOT_RESUME')) {
-          toast({
-            title: "Invalid Document Type",
-            description: "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
-            variant: "destructive",
-          });
-          return;
+        // For FunctionsHttpError, we need to extract the actual error response
+        if (error.name === 'FunctionsHttpError') {
+          try {
+            // Try to get the error details from the response
+            const response = await fetch(error.context?.url || '', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${await supabase.auth.getSession().then(s => s.data.session?.access_token)}`,
+                'apikey': supabase.supabaseKey,
+              },
+              body: formData,
+            });
+            
+            if (!response.ok) {
+              const errorData = await response.json();
+              console.log('Extracted error data:', errorData);
+              
+              if (errorData.type === 'NOT_RESUME') {
+                toast({
+                  title: "Invalid Document Type",
+                  description: errorData.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
+                  variant: "destructive",
+                });
+                return;
+              }
+              
+              if (errorData.type === 'VALIDATION_ERROR') {
+                toast({
+                  title: "Validation Error",
+                  description: errorData.details || "Please check your file and try again.",
+                  variant: "destructive",
+                });
+                return;
+              }
+            }
+          } catch (fetchError) {
+            console.error('Error extracting error details:', fetchError);
+          }
         }
         
+        // Fallback to generic AI processing error
         throw error;
       }
       
