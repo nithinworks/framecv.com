@@ -50,7 +50,8 @@ const handleSubmit = useCallback(
       });
       
       if (error) {
-        throw new Error('Supabase function failed');
+        console.error('Supabase function error:', error);
+        throw error;
       }
       
       if (data?.portfolioData) {
@@ -62,11 +63,51 @@ const handleSubmit = useCallback(
         navigate("/builder", { 
           state: { portfolioData: data.portfolioData }
         });
+      } else if (data?.error) {
+        // Handle specific error types from the edge function
+        if (data.type === 'NOT_RESUME') {
+          toast({
+            title: "Invalid Document Type",
+            description: data.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
+            variant: "destructive",
+          });
+        } else if (data.type === 'VALIDATION_ERROR') {
+          toast({
+            title: "Validation Error",
+            description: data.details || "Please check your file and try again.",
+            variant: "destructive",
+          });
+        } else {
+          throw new Error(data.details || data.error);
+        }
       } else {
         throw new Error('No portfolio data received');
       }
       
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Processing error:', error);
+      
+      // Check if it's a structured error response from the edge function
+      if (error.context?.res?.data) {
+        const errorData = error.context.res.data;
+        if (errorData.type === 'NOT_RESUME') {
+          toast({
+            title: "Invalid Document Type",
+            description: errorData.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
+            variant: "destructive",
+          });
+          return;
+        } else if (errorData.type === 'VALIDATION_ERROR') {
+          toast({
+            title: "Validation Error", 
+            description: errorData.details || "Please check your file and try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+      
+      // Default fallback for other errors
       toast({
         title: "AI Processing Failed",
         description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
