@@ -55,8 +55,43 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
       console.log('Data:', data);
       console.log('Error:', error);
       
+      // Handle the case where we get an error response but it's actually a validation error
       if (error) {
-        console.log('Function invocation error detected');
+        console.log('Function invocation error detected:', error);
+        
+        // Check if it's a FunctionsHttpError with status 400 (validation error)
+        if (error.name === 'FunctionsHttpError') {
+          try {
+            // Try to parse the error message for specific error types
+            const errorMessage = error.message || '';
+            console.log('FunctionsHttpError message:', errorMessage);
+            
+            // Check if the error contains our specific error response
+            if (errorMessage.includes('NOT_RESUME') || errorMessage.includes('Invalid document type')) {
+              console.log('NOT_RESUME error detected from FunctionsHttpError');
+              toast({
+                title: "Invalid Document Type",
+                description: "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
+                variant: "destructive",
+              });
+              return;
+            }
+            
+            if (errorMessage.includes('VALIDATION_ERROR')) {
+              console.log('VALIDATION_ERROR detected from FunctionsHttpError');
+              toast({
+                title: "Validation Error",
+                description: "Please check your file and try again.",
+                variant: "destructive",
+              });
+              return;
+            }
+          } catch (parseError) {
+            console.log('Failed to parse FunctionsHttpError:', parseError);
+          }
+        }
+        
+        // If it's not a specific validation error, throw it to be handled by the main catch
         throw error;
       }
       
@@ -76,7 +111,7 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
         return;
       } 
       
-      // Check for structured error responses in data
+      // Check for structured error responses in data (fallback)
       if (data?.type === 'NOT_RESUME') {
         console.log('NOT_RESUME response in data');
         toast({
@@ -103,26 +138,8 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
     } catch (error: any) {
       console.log('=== CATCH BLOCK TRIGGERED ===');
       console.log('Caught error:', error);
-      
-      // Handle FunctionsHttpError specifically
-      if (error.name === 'FunctionsHttpError' && error.context) {
-        try {
-          const errorResponse = error.context;
-          console.log('FunctionsHttpError context:', errorResponse);
-          
-          if (errorResponse.type === 'NOT_RESUME') {
-            console.log('Document identified as NOT_RESUME');
-            toast({
-              title: "Invalid Document Type", 
-              description: errorResponse.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
-              variant: "destructive",
-            });
-            return;
-          }
-        } catch (parseError) {
-          console.log('Failed to parse error context:', parseError);
-        }
-      }
+      console.log('Error name:', error.name);
+      console.log('Error message:', error.message);
       
       // Check error message for specific types
       const errorMessage = error.message?.toLowerCase() || '';
