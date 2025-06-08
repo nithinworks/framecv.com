@@ -1,3 +1,4 @@
+
 import { usePortfolio } from "@/context/PortfolioContext";
 
 export const useDownloadCode = () => {
@@ -219,16 +220,19 @@ async function renderPortfolio() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", renderPortfolio);
+document.addEventListener("DOMContentLoaded", renderPortfolio);`;
 
-const downloadSourceCode = () => {
-  // HTML template with all font support
-  const htmlCode = `<!DOCTYPE html>
+    return { downloadSourceCode };
+  };
+
+  const downloadSourceCode = () => {
+    // HTML template with all font support
+    const htmlCode = \`<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio - ${portfolioData.settings.name}</title>
+    <title>Portfolio - \${portfolioData.settings.name}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./tailwind.config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -245,10 +249,10 @@ const downloadSourceCode = () => {
     <div id="app"></div>
     <script src="./script.js"></script>
   </body>
-</html>`;
+</html>\`;
 
-  const cssCode = `:root {
-    --primary-color: ${portfolioData.settings.primaryColor};
+    const cssCode = \`:root {
+    --primary-color: \${portfolioData.settings.primaryColor};
     --primary-color-light: rgba(22, 163, 74, 0.08);
     --primary-color-rgb: 22, 163, 74;
     --glass-bg: rgba(255, 255, 255, 0.1);
@@ -443,9 +447,9 @@ const downloadSourceCode = () => {
   .hero-title-spaced {
     line-height: 1.22;
   }
-  `;
+  \`;
 
-  const twConfigCode = `tailwind.config = {
+    const twConfigCode = \`tailwind.config = {
     theme: {
       extend: {
         gridTemplateColumns: {
@@ -509,36 +513,39 @@ const downloadSourceCode = () => {
       },
     },
     darkMode: "selector",
-  };`;
+  };\`;
 
-  // Use the complete JavaScript code with font support
-  const jsCode = generateCompleteJavaScript(portfolioData);
-  const jsonCode = JSON.stringify(portfolioData, null, 2);
+    // Use the complete JavaScript code with font support
+    const jsCode = generateCompleteJavaScript(portfolioData);
+    const jsonCode = JSON.stringify(portfolioData, null, 2);
 
-  const files = [
-    { name: "index.html", content: htmlCode },
-    { name: "styles.css", content: cssCode },
-    { name: "script.js", content: jsCode },
-    { name: "tailwind.config.js", content: twConfigCode },
-    { name: "portfolio-data.json", content: jsonCode }
-  ];
+    const files = [
+      { name: "index.html", content: htmlCode },
+      { name: "styles.css", content: cssCode },
+      { name: "script.js", content: jsCode },
+      { name: "tailwind.config.js", content: twConfigCode },
+      { name: "portfolio-data.json", content: jsonCode }
+    ];
 
-  import('jszip').then(JSZip => {
-    const zip = new JSZip.default();
-    
-    files.forEach(file => {
-      zip.file(file.name, file.content);
+    import('jszip').then(JSZip => {
+      const zip = new JSZip.default();
+      
+      files.forEach(file => {
+        zip.file(file.name, file.content);
+      });
+
+      zip.generateAsync({ type: "blob" }).then(content => {
+        const url = URL.createObjectURL(content);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = \`\${portfolioData.settings.name.replace(/\\s+/g, '-')}-Portfolio-Code.zip\`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
     });
+  };
 
-    zip.generateAsync({ type: "blob" }).then(content => {
-      const url = URL.createObjectURL(content);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${portfolioData.settings.name.replace(/\s+/g, '-')}-Portfolio-Code.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-  });
+  return { downloadSourceCode };
 };
