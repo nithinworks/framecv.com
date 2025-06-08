@@ -17,7 +17,8 @@ const BuilderPage: React.FC = () => {
     setCurrentView
   } = usePortfolio();
   
-  const [showEditorHint, setShowEditorHint] = useState(true);
+  const [currentDevice, setCurrentDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [showPreview, setShowPreview] = useState(true);
   const isMobile = useIsMobile();
   
   // Set initial view to desktop on load
@@ -29,13 +30,15 @@ const BuilderPage: React.FC = () => {
       description: "Click the Editor button to start customizing your portfolio"
     });
   }, [setCurrentView]);
+  
+  const handleDeviceChange = (device: 'desktop' | 'tablet' | 'mobile') => {
+    setCurrentDevice(device);
+    setCurrentView(device === 'mobile' ? 'mobile' : 'desktop');
+  };
 
-  // Hide editor hint when editor is opened
-  useEffect(() => {
-    if (showEditor) {
-      setShowEditorHint(false);
-    }
-  }, [showEditor]);
+  const handlePreviewToggle = () => {
+    setShowPreview(!showPreview);
+  };
   
   if (isProcessing) {
     return (
@@ -51,7 +54,11 @@ const BuilderPage: React.FC = () => {
 
   return (
     <div className="h-screen bg-[#171717] overflow-hidden">
-      <BuilderToolbar showEditorHint={showEditorHint} />
+      <BuilderToolbar 
+        currentDevice={currentDevice}
+        onDeviceChange={handleDeviceChange}
+        onPreviewToggle={handlePreviewToggle}
+      />
       
       <div className="h-full pt-14 flex overflow-hidden">
         {/* Editor Sidebar */}

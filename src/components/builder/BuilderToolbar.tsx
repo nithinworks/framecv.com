@@ -1,7 +1,7 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Eye, Code, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Eye, Code, Monitor, Smartphone, Tablet, Github, Upload } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import GitHubDeploy from "./GitHubDeploy";
 import PublishModal from "./PublishModal";
@@ -11,19 +11,23 @@ interface BuilderToolbarProps {
   currentDevice: 'desktop' | 'tablet' | 'mobile';
   onDeviceChange: (device: 'desktop' | 'tablet' | 'mobile') => void;
   onPreviewToggle: () => void;
+  showEditorHint?: boolean;
 }
 
 const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
   currentDevice,
   onDeviceChange,
-  onPreviewToggle
+  onPreviewToggle,
+  showEditorHint
 }) => {
   const { 
-    showPreview, 
     showCode, 
     setShowCode,
-    isProcessing
+    portfolioData
   } = usePortfolio();
+
+  const [showGitHubDeploy, setShowGitHubDeploy] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
 
   const deviceIcons = {
     desktop: Monitor,
@@ -53,10 +57,10 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Preview Toggle - Hidden when preview is already shown on mobile */}
+        {/* Preview Toggle */}
         <Button
           onClick={onPreviewToggle}
-          variant={showPreview ? "default" : "outline"}
+          variant="outline"
           size="sm"
           className="flex items-center gap-2"
         >
@@ -79,11 +83,39 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
         <DownloadDropdown />
 
         {/* GitHub Deploy */}
-        <GitHubDeploy />
+        <Button
+          onClick={() => setShowGitHubDeploy(true)}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <Github className="h-4 w-4" />
+          <span className="hidden sm:inline">Deploy</span>
+        </Button>
 
         {/* Publish Modal */}
-        <PublishModal />
+        <Button
+          onClick={() => setShowPublishModal(true)}
+          variant="default"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <Upload className="h-4 w-4" />
+          <span className="hidden sm:inline">Publish</span>
+        </Button>
       </div>
+
+      {/* Modals */}
+      <GitHubDeploy 
+        open={showGitHubDeploy} 
+        onOpenChange={setShowGitHubDeploy} 
+      />
+      
+      <PublishModal 
+        open={showPublishModal} 
+        onOpenChange={setShowPublishModal}
+        portfolioData={portfolioData}
+      />
     </div>
   );
 };
