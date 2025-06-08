@@ -270,20 +270,30 @@ const handler = async (req) => {
     const base64Data = arrayBufferToBase64(arrayBuffer);
     console.log(`Base64 data length: ${base64Data.length} chars`);
 
-    // Document validation using Flash-Lite model
+    // Document validation using Flash-Lite model with improved prompt
     console.log('=== STARTING DOCUMENT VALIDATION ===');
     const validationPrompt = `
-Analyze this PDF and determine if it's a resume/CV.
+You are a document classifier. Analyze this PDF document and determine if it is a resume/CV.
 
-A resume typically contains:
-- Personal/contact information
+A resume/CV typically contains:
+- Personal information (name, contact details)
 - Work experience or employment history
 - Education background
 - Skills section
+- Professional summary or objective
 
-Respond with ONLY:
-- "VALID_RESUME" if it IS a resume
-- "NOT_RESUME: [brief description]" if it is NOT a resume`;
+Other types of documents include:
+- Forms (application forms, registration forms, bank forms)
+- Reports (financial reports, project reports)
+- Letters (cover letters, recommendation letters)
+- Certificates or diplomas
+- Invoices or receipts
+
+Respond with EXACTLY one of these options:
+1. "VALID_RESUME" - if this is clearly a resume or CV
+2. "NOT_RESUME" - if this is any other type of document
+
+Be very strict - only respond with "VALID_RESUME" if you are confident this is actually a resume/CV.`;
 
     const validationRequestBody = {
       contents: [{
@@ -298,9 +308,9 @@ Respond with ONLY:
         ]
       }],
       generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 50,
-        topP: 0.9
+        temperature: 0,
+        maxOutputTokens: 20,
+        topP: 1.0
       }
     };
 
@@ -312,7 +322,7 @@ Respond with ONLY:
     );
     
     const validationText = validationData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    console.log('Validation result:', validationText);
+    console.log('Raw validation result:', validationText);
     
     if (!validationText) {
       console.log('ERROR: No validation response received');
@@ -320,16 +330,12 @@ Respond with ONLY:
     }
 
     // Check if document is not a resume
-    if (!validationText.includes('VALID_RESUME')) {
-      const errorMessage = validationText.startsWith('NOT_RESUME:') 
-        ? validationText.replace('NOT_RESUME:', '').trim()
-        : 'This document does not appear to be a resume';
-
-      console.log('Document validation failed:', errorMessage);
+    if (validationText !== 'VALID_RESUME') {
+      console.log('Document validation failed - not a resume');
       return new Response(JSON.stringify({
         error: 'Invalid document type',
         type: 'NOT_RESUME',
-        details: `${errorMessage}. Please upload a valid resume/CV.`
+        details: 'This document does not appear to be a resume/CV. Please upload a valid resume in PDF format.'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400
