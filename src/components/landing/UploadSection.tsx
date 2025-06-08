@@ -64,7 +64,7 @@ const handleSubmit = useCallback(
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${await supabase.auth.getSession().then(s => s.data.session?.access_token)}`,
-                'apikey': supabase.supabaseKey,
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsbmxiZHJscnV1b2ZmbnlhbHRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNzA4MzUsImV4cCI6MjA2MzY0NjgzNX0.24LD3CVvwmgnj-_SLCGX4jpyc3PnKn_klSjrDfS6Bqo',
               },
               body: formData,
             });
