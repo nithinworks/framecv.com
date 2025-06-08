@@ -6,8 +6,15 @@ import {
   Download, 
   ChevronLeft,
   Github,
-  Globe
+  Globe,
+  ChevronDown
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -39,10 +46,23 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   // Use the download code hook
   const { downloadSourceCode } = useDownloadCode();
 
-  const handleDownloadClick = async () => {
+  const handleDownloadSourceCode = async () => {
     setIsDownloading(true);
     setPendingAction("download");
     setShowUserDetails(true);
+  };
+
+  const handleDownloadJSON = () => {
+    const dataStr = JSON.stringify(portfolioData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'portfolio-data.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleDeployClick = () => {
@@ -141,25 +161,39 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
             {!isMobile && "Deploy"}
           </Button>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDownloadClick}
-            disabled={isDownloading}
-            className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
-          >
-            {isDownloading ? (
-              <>
-                <div className="h-4 w-4 mr-2 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-                {!isMobile && "Processing..."}
-              </>
-            ) : (
-              <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isDownloading}
+                className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
+              >
+                {isDownloading ? (
+                  <>
+                    <div className="h-4 w-4 mr-2 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                    {!isMobile && "Processing..."}
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4 mr-2" />
+                    {!isMobile && "Download"}
+                    <ChevronDown className="h-3 w-3 ml-1" />
+                  </>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={handleDownloadSourceCode}>
                 <Download className="h-4 w-4 mr-2" />
-                {!isMobile && "Download"}
-              </>
-            )}
-          </Button>
+                Download Source Code
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDownloadJSON}>
+                <Download className="h-4 w-4 mr-2" />
+                Download JSON
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
