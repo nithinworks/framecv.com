@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -71,12 +70,14 @@ const handleSubmit = useCallback(
             description: data.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
             variant: "destructive",
           });
+          return; // Early return to prevent fallback toast
         } else if (data.type === 'VALIDATION_ERROR') {
           toast({
             title: "Validation Error",
             description: data.details || "Please check your file and try again.",
             variant: "destructive",
           });
+          return; // Early return to prevent fallback toast
         } else {
           throw new Error(data.details || data.error);
         }
@@ -96,18 +97,18 @@ const handleSubmit = useCallback(
             description: errorData.details || "This document does not appear to be a resume. Please upload a valid resume/CV in PDF format.",
             variant: "destructive",
           });
-          return;
+          return; // Early return to prevent fallback toast
         } else if (errorData.type === 'VALIDATION_ERROR') {
           toast({
             title: "Validation Error", 
             description: errorData.details || "Please check your file and try again.",
             variant: "destructive",
           });
-          return;
+          return; // Early return to prevent fallback toast
         }
       }
       
-      // Default fallback for other errors
+      // Only show the "AI cooked" toast for genuine processing failures
       toast({
         title: "AI Processing Failed",
         description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
