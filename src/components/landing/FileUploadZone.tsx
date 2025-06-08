@@ -12,48 +12,27 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ file, onFileSelect }) =
   const [dragActive, setDragActive] = useState(false);
   const { toast } = useToast();
 
-  const validateFile = useCallback(async (file: File): Promise<boolean> => {
-    // Check file type - only PDF allowed
+  const validateFile = useCallback((file: File): boolean => {
+    console.log('Validating file:', file.name, 'Type:', file.type, 'Size:', file.size);
+    
     if (file.type !== "application/pdf") {
+      console.log('Invalid file type detected');
       toast({
         title: "Invalid file type",
-        description: "Only PDF files are allowed",
+        description: "Please upload a PDF file",
         variant: "destructive",
       });
       return false;
     }
 
-    // Check file size - max 2MB
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > 2 * 1024 * 1024) { // Updated to 2MB to match edge function limit
+      console.log('File too large detected');
       toast({
         title: "File too large",
         description: "Maximum file size is 2MB",
         variant: "destructive",
       });
       return false;
-    }
-
-    // Check for single page - we'll do basic validation using PDF.js-like approach
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const uint8Array = new Uint8Array(arrayBuffer);
-      const text = new TextDecoder().decode(uint8Array);
-      
-      // Count occurrences of page objects in PDF
-      const pageMatches = text.match(/\/Type\s*\/Page[^s]/g);
-      const pageCount = pageMatches ? pageMatches.length : 0;
-      
-      if (pageCount > 1) {
-        toast({
-          title: "Multi-page PDF not supported",
-          description: "Please upload a single-page PDF resume",
-          variant: "destructive",
-        });
-        return false;
-      }
-    } catch (error) {
-      // If we can't validate pages, allow the file to proceed
-      // The server-side validation will catch any issues
     }
 
     return true;
@@ -70,14 +49,15 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ file, onFileSelect }) =
   }, []);
 
   const handleDrop = useCallback(
-    async (e: React.DragEvent) => {
+    (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
       setDragActive(false);
 
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         const droppedFile = e.dataTransfer.files[0];
-        if (await validateFile(droppedFile)) {
+        console.log('File dropped:', droppedFile.name);
+        if (validateFile(droppedFile)) {
           onFileSelect(droppedFile);
         } else {
           onFileSelect(null);
@@ -88,11 +68,12 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ file, onFileSelect }) =
   );
 
   const handleChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       e.preventDefault();
       if (e.target.files && e.target.files[0]) {
         const selectedFile = e.target.files[0];
-        if (await validateFile(selectedFile)) {
+        console.log('File selected:', selectedFile.name);
+        if (validateFile(selectedFile)) {
           onFileSelect(selectedFile);
         } else {
           onFileSelect(null);
@@ -130,8 +111,8 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ file, onFileSelect }) =
           </div>
         ) : (
           <div className="text-center">
-            <p className="font-medium text-foreground mb-1">Drop your PDF resume here</p>
-            <p className="text-sm text-muted-foreground">PDF only, max 2MB, single page</p>
+            <p className="font-medium text-foreground mb-1">Drop your resume here</p>
+            <p className="text-sm text-muted-foreground">PDF only, max 2MB</p>
           </div>
         )}
       </label>
