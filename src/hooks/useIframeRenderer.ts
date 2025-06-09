@@ -50,7 +50,7 @@ export const useIframeRenderer = (portfolioData: any, currentView: string) => {
         // Start with a clean document
         iframeDoc.open();
         
-        // Generate the full HTML document using the new theme
+        // Generate the full HTML document using the updated theme
         const html = generatePortfolioHTML(portfolioData);
         
         // Write the HTML to the iframe
@@ -69,7 +69,7 @@ export const useIframeRenderer = (portfolioData: any, currentView: string) => {
   };
 };
 
-// Generate portfolio HTML with the new theme
+// Generate portfolio HTML with the updated theme
 const generatePortfolioHTML = (portfolioData: any): string => {
   return `
 <!DOCTYPE html>
@@ -177,7 +177,7 @@ const getTailwindConfig = (): string => {
   `;
 };
 
-// Get portfolio styles (CSS)
+// Get portfolio styles (CSS) - Updated with new styles
 const getPortfolioStyles = (): string => {
   return `
     :root {
@@ -215,6 +215,14 @@ const getPortfolioStyles = (): string => {
       background: linear-gradient(135deg, var(--primary-color-light) 0%, #fff 100%);
       position: relative;
       overflow: hidden;
+    }
+
+    .hero-bg .smoke-effect {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle at 60% 40%, var(--primary-color-light) 0%, transparent 70%), radial-gradient(circle at 20% 80%, var(--primary-color-light) 0%, transparent 80%);
     }
 
     .hero-bg::before {
@@ -310,6 +318,15 @@ const getPortfolioStyles = (): string => {
       animation: float 3s ease-in-out infinite;
     }
 
+    /* Gradient Text */
+    .gradient-text {
+      color: var(--primary-color) !important;
+      background: none !important;
+      -webkit-background-clip: unset !important;
+      -webkit-text-fill-color: unset !important;
+      background-clip: unset !important;
+    }
+
     .primary-text {
       color: var(--primary-color) !important;
     }
@@ -321,33 +338,48 @@ const getPortfolioStyles = (): string => {
       gap: 0.7em;
     }
 
+    .footer-badge-wrapper {
+      margin-top: 1.1em;
+      display: flex;
+      justify-content: center;
+    }
+
     .framecv-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.3em;
-      background: rgba(0, 0, 0, 0.04);
-      border-radius: 999px;
-      padding: 0.18em 0.7em 0.18em 0.4em;
-      font-size: 0.93em;
-      color: #444;
-      font-weight: 500;
-      box-shadow: none;
-      transition: background 0.2s, color 0.2s;
+      gap: 0.5em;
+      background: #fff;
+      border-radius: 1.7em;
+      padding: 0.32em 1.2em 0.32em 0.7em;
+      font-size: 1em;
+      color: var(--primary-color);
+      font-weight: 600;
+      border: 1.5px solid rgba(var(--primary-color-rgb, 22, 163, 74), 0.13);
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.07);
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
       text-decoration: none;
-      opacity: 0.85;
+      opacity: 0.97;
+      letter-spacing: 0.01em;
     }
 
     .framecv-badge:hover {
-      background: rgba(0, 0, 0, 0.1);
+      background: #f6f6f6;
       color: var(--primary-color);
+      border: 1.5px solid var(--primary-color);
+      box-shadow: 0 4px 18px 0 rgba(var(--primary-color-rgb, 22, 163, 74), 0.1);
       opacity: 1;
     }
 
     .framecv-badge svg {
-      width: 1em;
-      height: 1em;
+      width: 1.2em;
+      height: 1.2em;
       display: inline-block;
       vertical-align: middle;
+      margin-right: 0.22em;
+      border-radius: 0.3em;
+      background: #fff;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+      padding: 0.09em;
     }
 
     .hero-title-spaced {
@@ -497,7 +529,7 @@ const getClientSideScript = (portfolioData: any): string => {
         // Navigation bar
         let nav = '<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50 border-b border-gray-200 dark:border-gray-800"><span class="' + primaryFontClass + ' text-xl font-bold tracking-tight primary-text">' + logoName + '<span class="dynamic-primary">.</span></span><ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 ' + primaryFontClass + ' text-lg">' + navLinks + '</ul><div class="flex items-center gap-4"><button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none hover:scale-110"><span id="theme-toggle-icon"></span></button><a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white ' + primaryFontClass + ' font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg">Connect</a></div></nav>';
 
-        // Hero section with floating animation and enhanced background
+        // Hero section with updated smoke effect
         let hero = "";
         if (data.sections.hero && data.sections.hero.enabled) {
           let ctas = "";
@@ -507,7 +539,7 @@ const getClientSideScript = (portfolioData: any): string => {
             ctas += '<a href="' + btn.url + '" class="flex items-center gap-2 ' + (btn.isPrimary ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg" : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300 hover:shadow-md") + '">' + (iconName ? getIconSVG(iconName) : "") + "<span>" + btn.text + "</span></a>";
           });
           
-          hero = '<div class="hero-bg w-full min-h-[60vh] relative overflow-hidden"><div class="absolute inset-0 pointer-events-none z-0" style="background: radial-gradient(circle at 60% 40%, var(--primary-color-light) 0%, transparent 70%), radial-gradient(circle at 20% 80%, var(--primary-color-light) 0%, transparent 80%);"></div><header id="home" class="relative z-10 pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full"><img src="' + data.settings.profileImage + '" alt="Profile" class="rounded-full w-24 h-24 object-cover mb-8 border-4 border-white shadow-lg float-animation" /><h2 class="' + primaryFontClass + " text-2xl mb-3 animate-slide-up primary-text\\">Hi! I'm " + data.settings.name + ' <span class="inline-block">👋</span></h2><h1 class="' + primaryFontClass + ' text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-slide-up hero-title-spaced">' + data.settings.title + "<br />based in " + data.settings.location + '.</h1><p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">' + data.settings.summary + '</p><div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">' + ctas + "</div></header></div>";
+          hero = '<div class="hero-bg w-full min-h-[60vh] relative overflow-hidden"><div class="smoke-effect"></div><header id="home" class="relative z-10 pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full"><img src="' + data.settings.profileImage + '" alt="Profile" class="rounded-full w-24 h-24 object-cover mb-8 border-4 border-white shadow-lg float-animation" /><h2 class="' + primaryFontClass + " text-2xl mb-3 animate-slide-up primary-text\\">Hi! I'm " + data.settings.name + ' <span class="inline-block">👋</span></h2><h1 class="' + primaryFontClass + ' text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-slide-up hero-title-spaced">' + data.settings.title + "<br />based in " + data.settings.location + '.</h1><p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">' + data.settings.summary + '</p><div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">' + ctas + "</div></header></div>";
         }
 
         // About section with modern cards
@@ -599,10 +631,10 @@ const getClientSideScript = (portfolioData: any): string => {
           social = '<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0"><h3 class="' + primaryFontClass + ' text-xl sm:text-2xl mb-3 sm:mb-4 mt-4 primary-text">Social Media</h3><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">' + socialLinks + "</div></div></section>";
         }
 
-        // Footer with FrameCV badge
+        // Footer with updated FrameCV badge
         let footer = "";
         if (data.footer && data.footer.enabled) {
-          const framecvBadge = '<a href="https://framecv.com" class="framecv-badge" target="_blank" rel="noopener noreferrer" title="Built with FrameCV"><svg viewBox=\\'0 0 20 20\\' fill=\\'none\\' xmlns=\\'http://www.w3.org/2000/svg\\'><rect width=\\'20\\' height=\\'20\\' rx=\\'4\\' fill=\\'#fff\\'/><path d=\\'M6.5 6.5h7v7h-7v-7zm1 1v5h5v-5h-5z\\' fill=\\'#16A34A\\'/></svg><span>Built with FrameCV</span></a>';
+          const framecvBadge = '<div class="footer-badge-wrapper"><a href="https://framecv.com" class="framecv-badge" target="_blank" rel="noopener noreferrer" title="Built with FrameCV"><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' xmlns=\\'http://www.w3.org/2000/svg\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'3\\' fill=\\'currentColor\\'/><rect x=\\'7\\' y=\\'7\\' width=\\'10\\' height=\\'10\\' rx=\\'1\\' fill=\\'white\\'/><rect x=\\'9\\' y=\\'9\\' width=\\'6\\' height=\\'6\\' rx=\\'0.5\\' fill=\\'currentColor\\'/></svg><span>Built with FrameCV</span></a></div>';
           footer = '<footer class="footer-bg-smoke py-8 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto w-full"><div class="footer-content max-w-2xl mx-auto px-4">' + data.footer.copyright + framecvBadge + "</div></footer>";
         } else {
           footer = '<footer class="bg-white dark:bg-darkTheme py-4 mt-auto w-full"></footer>';
