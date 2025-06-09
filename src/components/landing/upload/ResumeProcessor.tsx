@@ -20,7 +20,7 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
     if (!file) {
       toast({
         title: "No file selected",
-        description: "Please upload a resume PDF",
+        description: "Please upload a single-page PDF resume",
         variant: "destructive",
       });
       return;
@@ -42,8 +42,42 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
         body: formData,
       });
       
-      if (error || !data?.portfolioData) {
-        throw new Error('Processing failed');
+      if (error) {
+        console.error('Processing error:', error);
+        
+        // Handle specific error types
+        if (error.message?.includes('Rate limit exceeded')) {
+          toast({
+            title: "Daily limit reached",
+            description: "You've reached the 5 uploads per day limit. Please try again tomorrow.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        if (error.message?.includes('single-page') || error.message?.includes('1 page')) {
+          toast({
+            title: "Multi-page PDF detected",
+            description: "Please upload a single-page resume only. Consider condensing your resume to one page.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        if (error.message?.includes('not a valid resume')) {
+          toast({
+            title: "Document not recognized",
+            description: "The uploaded file doesn't appear to be a resume. Please upload a proper CV/resume document.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        throw new Error(error.message || 'Processing failed');
+      }
+      
+      if (!data?.portfolioData) {
+        throw new Error('No portfolio data received');
       }
       
       toast({
@@ -56,9 +90,11 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
       });
       
     } catch (error: any) {
+      console.error('Resume processing error:', error);
+      
       toast({
         title: "AI Processing Failed",
-        description: "🤖 Our AI partner is overcooked right now! Please try creating your portfolio manually.",
+        description: "🤖 Our AI partner is temporarily unavailable. Please try creating your portfolio manually.",
         variant: "destructive",
         action: (
           <button

@@ -2,8 +2,115 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 
+// Simple in-memory store for rate limiting (resets on function restart)
+const ipRequestCounts = new Map<string, { count: number; lastReset: number }>();
+const RATE_LIMIT_PER_DAY = 5;
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+// Enhanced logging function
+function logRequest(ip: string, status: string, details: any = {}) {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] IP: ${ip} | Status: ${status} | Details:`, JSON.stringify(details));
+}
+
+// IP-based rate limiting
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = ipRequestCounts.get(ip);
+  
+  if (!record || (now - record.lastReset) > DAY_IN_MS) {
+    // Reset or create new record
+    ipRequestCounts.set(ip, { count: 1, lastReset: now });
+    return true;
+  }
+  
+  if (record.count >= RATE_LIMIT_PER_DAY) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
+// Get client IP from headers
+function getClientIP(req: Request): string {
+  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+         req.headers.get('x-real-ip') || 
+         req.headers.get('cf-connecting-ip') || 
+         'unknown';
+}
+
+// Enhanced PDF validation including page count
+async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; error?: string }> {
+  try {
+    // Basic file checks
+    if (file.type !== "application/pdf") {
+      logRequest(ip, "INVALID_FILE_TYPE", { fileType: file.type, fileName: file.name });
+      return { valid: false, error: "File must be a PDF" };
+    }
+
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      logRequest(ip, "FILE_TOO_LARGE", { fileSize: file.size, fileName: file.name });
+      return { valid: false, error: "File size must be under 2MB" };
+    }
+
+    if (file.size < 1000) { // Less than 1KB is suspicious
+      logRequest(ip, "FILE_TOO_SMALL", { fileSize: file.size, fileName: file.name });
+      return { valid: false, error: "File appears to be corrupted or empty" };
+    }
+
+    // Read file content to validate PDF structure and page count
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    // Check PDF header
+    const pdfHeader = String.fromCharCode(...uint8Array.slice(0, 4));
+    if (pdfHeader !== "%PDF") {
+      logRequest(ip, "INVALID_PDF_HEADER", { fileName: file.name });
+      return { valid: false, error: "Invalid PDF file format" };
+    }
+
+    // Count pages by looking for /Count entries in PDF structure
+    const pdfContent = String.fromCharCode(...uint8Array);
+    
+    // Look for page count indicators
+    const pageCountMatches = pdfContent.match(/\/Count\s+(\d+)/g);
+    const pageObjectMatches = pdfContent.match(/\/Type\s*\/Page[^s]/g);
+    
+    let pageCount = 0;
+    
+    if (pageCountMatches && pageCountMatches.length > 0) {
+      // Extract the highest count value
+      pageCount = Math.max(...pageCountMatches.map(match => {
+        const countMatch = match.match(/\/Count\s+(\d+)/);
+        return countMatch ? parseInt(countMatch[1]) : 0;
+      }));
+    } else if (pageObjectMatches) {
+      // Fallback: count page objects
+      pageCount = pageObjectMatches.length;
+    }
+
+    // If we can't determine page count reliably, we'll proceed but log it
+    if (pageCount === 0) {
+      logRequest(ip, "PAGE_COUNT_UNKNOWN", { fileName: file.name, fileSize: file.size });
+      // Allow processing but log for monitoring
+    } else if (pageCount > 1) {
+      logRequest(ip, "MULTI_PAGE_PDF", { fileName: file.name, pageCount });
+      return { valid: false, error: "Only single-page PDF resumes are supported" };
+    }
+
+    logRequest(ip, "FILE_VALIDATED", { fileName: file.name, fileSize: file.size, pageCount });
+    return { valid: true };
+
+  } catch (error) {
+    logRequest(ip, "VALIDATION_ERROR", { error: error.message, fileName: file.name });
+    return { valid: false, error: "Failed to validate PDF file" };
+  }
+}
+
 // Helper function for chunked base64 conversion
-function arrayBufferToBase64(buffer) {
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   const chunkSize = 0x8000;
   let result = '';
@@ -15,7 +122,7 @@ function arrayBufferToBase64(buffer) {
 }
 
 // Get all available Gemini API keys
-function getGeminiApiKeys() {
+function getGeminiApiKeys(): string[] {
   const keys = [];
   const primaryKey = Deno.env.get('GEMINI_API_KEY');
   if (primaryKey) keys.push(primaryKey);
@@ -29,7 +136,7 @@ function getGeminiApiKeys() {
 }
 
 // Enhanced retry mechanism with model selection
-async function callGeminiWithRetry(apiKeys, requestBody, model = 'gemini-2.0-flash-001') {
+async function callGeminiWithRetry(apiKeys: string[], requestBody: any, model = 'gemini-2.0-flash-001') {
   let lastError = null;
   
   for (const apiKey of apiKeys) {
@@ -61,16 +168,34 @@ async function callGeminiWithRetry(apiKeys, requestBody, model = 'gemini-2.0-fla
   throw lastError || new Error('All API keys exhausted');
 }
 
-const handler = async (req) => {
+const handler = async (req: Request) => {
+  // Get client IP
+  const clientIP = getClientIP(req);
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Rate limiting check
+    if (!checkRateLimit(clientIP)) {
+      logRequest(clientIP, "RATE_LIMITED", { limit: RATE_LIMIT_PER_DAY });
+      return new Response(JSON.stringify({
+        error: 'Rate limit exceeded',
+        message: `Maximum ${RATE_LIMIT_PER_DAY} requests per day allowed. Please try again tomorrow.`
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 429
+      });
+    }
+
+    logRequest(clientIP, "REQUEST_STARTED");
+
     const formData = await req.formData();
-    const file = formData.get('file');
+    const file = formData.get('file') as File;
     
     if (!file) {
+      logRequest(clientIP, "NO_FILE_PROVIDED");
       return new Response(JSON.stringify({
         error: 'No file provided'
       }), {
@@ -79,21 +204,11 @@ const handler = async (req) => {
       });
     }
 
-    // File validation
-    const allowedTypes = ['application/pdf'];
-    if (!allowedTypes.includes(file.type)) {
+    // Enhanced file validation
+    const validation = await validatePDF(file, clientIP);
+    if (!validation.valid) {
       return new Response(JSON.stringify({
-        error: 'Invalid file type'
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400
-      });
-    }
-
-    const maxSize = 2 * 1024 * 1024;
-    if (file.size > maxSize) {
-      return new Response(JSON.stringify({
-        error: 'File too large'
+        error: validation.error
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400
@@ -102,11 +217,14 @@ const handler = async (req) => {
 
     const geminiApiKeys = getGeminiApiKeys();
     if (geminiApiKeys.length === 0) {
+      logRequest(clientIP, "NO_API_KEYS");
       throw new Error('No API keys available');
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const base64Data = arrayBufferToBase64(arrayBuffer);
+
+    logRequest(clientIP, "STARTING_AI_VALIDATION");
 
     // Document validation using Flash-Lite model
     const validationPrompt = `
@@ -153,8 +271,11 @@ Be very strict - only respond with "VALID_RESUME" if you are confident this is a
     const validationText = validationData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
     
     if (!validationText || validationText !== 'VALID_RESUME') {
-      throw new Error('Not a valid resume');
+      logRequest(clientIP, "INVALID_DOCUMENT", { validationResult: validationText });
+      throw new Error('Document is not a valid resume/CV');
     }
+
+    logRequest(clientIP, "STARTING_PORTFOLIO_GENERATION");
 
     // Portfolio generation using Flash model
     const portfolioPrompt = `
@@ -279,14 +400,22 @@ Return ONLY valid JSON:
       }
       
     } catch (parseError) {
+      logRequest(clientIP, "JSON_PARSE_ERROR", { error: parseError.message });
       throw new Error(`JSON parsing failed: ${parseError.message}`);
     }
+    
+    logRequest(clientIP, "SUCCESS", { 
+      fileName: file.name, 
+      fileSize: file.size,
+      processingTime: "completed"
+    });
     
     return new Response(JSON.stringify({ portfolioData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
+    logRequest(clientIP, "ERROR", { error: error.message });
     return new Response(JSON.stringify({
       error: 'Failed to process resume',
       details: error.message

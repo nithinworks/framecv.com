@@ -19,17 +19,29 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ file, onFileSelect }) =
       console.log('Invalid file type detected');
       toast({
         title: "Invalid file type",
-        description: "Please upload a PDF file",
+        description: "Please upload a PDF file only",
         variant: "destructive",
       });
       return false;
     }
 
-    if (file.size > 2 * 1024 * 1024) { // Updated to 2MB to match edge function limit
+    const maxSize = 2 * 1024 * 1024; // 2MB limit
+    if (file.size > maxSize) {
       console.log('File too large detected');
       toast({
         title: "File too large",
         description: "Maximum file size is 2MB",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    const minSize = 1000; // 1KB minimum
+    if (file.size < minSize) {
+      console.log('File too small detected');
+      toast({
+        title: "File too small",
+        description: "File appears to be empty or corrupted",
         variant: "destructive",
       });
       return false;
@@ -111,8 +123,9 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ file, onFileSelect }) =
           </div>
         ) : (
           <div className="text-center">
-            <p className="font-medium text-foreground mb-1">Drop your resume here</p>
-            <p className="text-sm text-muted-foreground">PDF only, max 2MB</p>
+            <p className="font-medium text-foreground mb-1">Drop your single-page resume here</p>
+            <p className="text-sm text-muted-foreground">PDF only, max 2MB, single page</p>
+            <p className="text-xs text-muted-foreground mt-1">5 uploads per day limit</p>
           </div>
         )}
       </label>
