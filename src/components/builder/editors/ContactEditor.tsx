@@ -1,4 +1,3 @@
-
 import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Input } from "@/components/ui/input";
@@ -41,7 +40,6 @@ const ContactEditor: React.FC = () => {
     const currentItems = sections.social?.items || [];
     const newItem = {
       platform: "linkedin",
-      name: "LinkedIn",
       url: "https://linkedin.com/in/johndoe",
       icon: "linkedin"
     };
@@ -72,6 +70,10 @@ const ContactEditor: React.FC = () => {
     { value: "youtube", label: "YouTube", icon: "youtube" },
     { value: "website", label: "Website", icon: "globe" }
   ];
+
+  const getPlatformLabel = (platform: string) => {
+    return socialPlatforms.find(p => p.value === platform)?.label || platform;
+  };
 
   return (
     <div className="space-y-6">
@@ -134,7 +136,7 @@ const ContactEditor: React.FC = () => {
           {(sections.social?.items || []).map((social, index) => (
             <div key={index} className="p-4 border rounded-lg space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Social Link {index + 1}</span>
+                <span className="text-sm font-medium">{getPlatformLabel(social.platform)}</span>
                 <Button 
                   onClick={() => removeSocialLink(index)} 
                   size="sm" 
@@ -150,18 +152,11 @@ const ContactEditor: React.FC = () => {
                   <Label className="text-xs">Platform</Label>
                   <Select 
                     value={social.platform || "linkedin"}
-                    onValueChange={(value) => {
-                      const platform = socialPlatforms.find(p => p.value === value);
-                      if (platform) {
-                        updateSocialLink(index, "platform", platform.value);
-                        updateSocialLink(index, "name", platform.label);
-                        updateSocialLink(index, "icon", platform.icon);
-                      }
-                    }}
+                    onValueChange={(value) => updateSocialLink(index, "platform", value)}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue>
-                        {social.name || socialPlatforms.find(p => p.value === social.platform)?.label || "Select platform"}
+                        {getPlatformLabel(social.platform)}
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>

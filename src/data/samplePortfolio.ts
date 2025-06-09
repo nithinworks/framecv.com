@@ -159,7 +159,6 @@ export const samplePortfolioData: PortfolioData = {
       "items": [
         {
           "platform": "linkedin",
-          "name": "LinkedIn",
           "url": "https://linkedin.com/in/sarahjohnson",
           "icon": "globe"
         }
