@@ -50,9 +50,21 @@ const ContactEditor: React.FC = () => {
 
   const updateSocialLink = (index: number, field: string, value: string) => {
     const currentItems = sections.social?.items || [];
-    const updatedItems = currentItems.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    );
+    const updatedItems = currentItems.map((item, i) => {
+      if (i === index) {
+        if (field === "platform") {
+          // When platform changes, also update the icon
+          const platformConfig = socialPlatforms.find(p => p.value === value);
+          return { 
+            ...item, 
+            platform: value,
+            icon: platformConfig?.icon || "globe"
+          };
+        }
+        return { ...item, [field]: value };
+      }
+      return item;
+    });
     handleSocialChange("items", updatedItems);
   };
 
