@@ -1,6 +1,11 @@
-
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +37,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
     actionType,
     portfolioName,
     onSuccess,
-    onClose: () => onOpenChange(false)
+    onClose: () => onOpenChange(false),
   });
 
   // Load user data from localStorage on component mount
@@ -53,13 +58,13 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
     const success = await submitUserDetails(storedName, storedEmail, true);
     if (!success) {
       // If auto-submit failed, keep the modal open for manual entry
-      console.log('Auto-submit failed, showing modal for manual entry');
+      console.log("Auto-submit failed, showing modal for manual entry");
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name.trim() || !email.trim()) {
       toast.error("Please fill in all fields");
       return;
@@ -82,7 +87,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
     if (success) {
       // Save to localStorage for future use
       saveUserData(name, email);
-      
+
       // Reset form
       setName("");
       setEmail("");
@@ -100,16 +105,23 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
       <DialogContent className="sm:max-w-md h-auto max-h-[85vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-lg font-semibold">
-            {actionType === "download" ? "Download Portfolio" : "Deploy to GitHub"}
+            {actionType === "download"
+              ? "Download Portfolio"
+              : "Deploy to GitHub"}
           </DialogTitle>
+          <DialogDescription>
+            {actionType === "download"
+              ? "Enter your details to download your portfolio."
+              : "Enter your details to deploy your portfolio to GitHub."}
+          </DialogDescription>
         </DialogHeader>
-        
+
         <div className="flex-1 min-h-0 overflow-y-auto pr-2">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="user-details-name">Name</Label>
               <Input
-                id="name"
+                id="user-details-name"
                 type="text"
                 placeholder="Enter your full name"
                 value={name}
@@ -118,11 +130,9 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                 required
                 disabled={isLoading}
               />
-              <p className="text-xs text-gray-500">
-                Maximum 100 characters
-              </p>
+              <p className="text-xs text-gray-500">Maximum 100 characters</p>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -135,13 +145,15 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                 disabled={isLoading}
               />
             </div>
-            
+
             <div className="text-sm text-gray-600 dark:text-gray-400 py-2">
-              We'll use these details to help improve our service and may occasionally send you updates about your portfolio. Rate limits: 10 submissions per hour.
+              We'll use these details to help improve our service and may
+              occasionally send you updates about your portfolio. Rate limits:
+              10 submissions per hour.
             </div>
           </form>
         </div>
-        
+
         <div className="flex-shrink-0 flex justify-end gap-3 pt-4 border-t mt-4">
           <Button
             type="button"
@@ -161,8 +173,10 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Saving...
               </>
+            ) : actionType === "download" ? (
+              "Download"
             ) : (
-              actionType === "download" ? "Download" : "Deploy"
+              "Deploy"
             )}
           </Button>
         </div>
