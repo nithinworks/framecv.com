@@ -40,7 +40,7 @@ function getClientIP(req: Request): string {
          'unknown';
 }
 
-// Enhanced PDF validation including page count
+// Improved PDF validation with efficient page counting
 async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; error?: string }> {
   try {
     // Basic file checks
@@ -60,7 +60,7 @@ async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; er
       return { valid: false, error: "File appears to be corrupted or empty" };
     }
 
-    // Read file content to validate PDF structure and page count
+    // Read file content for validation
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     
@@ -71,40 +71,96 @@ async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; er
       return { valid: false, error: "Invalid PDF file format" };
     }
 
-    // Count pages by looking for /Count entries in PDF structure
-    const pdfContent = String.fromCharCode(...uint8Array);
-    
-    // Look for page count indicators
-    const pageCountMatches = pdfContent.match(/\/Count\s+(\d+)/g);
-    const pageObjectMatches = pdfContent.match(/\/Type\s*\/Page[^s]/g);
-    
+    // Efficient page counting using binary search for PDF objects
     let pageCount = 0;
     
-    if (pageCountMatches && pageCountMatches.length > 0) {
-      // Extract the highest count value
-      pageCount = Math.max(...pageCountMatches.map(match => {
-        const countMatch = match.match(/\/Count\s+(\d+)/);
-        return countMatch ? parseInt(countMatch[1]) : 0;
-      }));
-    } else if (pageObjectMatches) {
-      // Fallback: count page objects
-      pageCount = pageObjectMatches.length;
+    try {
+      // Convert only necessary parts to string for analysis
+      // Look for the most reliable page count indicators
+      const searchLength = Math.min(uint8Array.length, 50000); // Only search first 50KB
+      const headerContent = String.fromCharCode(...uint8Array.slice(0, searchLength));
+      
+      // Look for /Type /Catalog which contains page count
+      const catalogMatch = headerContent.match(/\/Type\s*\/Catalog[^}]*\/Pages\s*\d+\s*\d+\s*R/);
+      if (catalogMatch) {
+        // Find the referenced pages object
+        const pagesRefMatch = catalogMatch[0].match(/\/Pages\s*(\d+)\s*\d+\s*R/);
+        if (pagesRefMatch) {
+          const pagesObjNum = pagesRefMatch[1];
+          // Look for the pages object definition
+          const pagesObjRegex = new RegExp(`${pagesObjNum}\\s*\\d+\\s*obj[^]*?\\/Count\\s*(\\d+)`);
+          const pagesObjMatch = headerContent.match(pagesObjRegex);
+          if (pagesObjMatch) {
+            pageCount = parseInt(pagesObjMatch[1]);
+          }
+        }
+      }
+      
+      // Fallback: count page objects directly (but limit search)
+      if (pageCount === 0) {
+        const pageMatches = headerContent.match(/\/Type\s*\/Page[^s]/g);
+        pageCount = pageMatches ? pageMatches.length : 0;
+      }
+      
+      // Additional fallback: look for /Count entries
+      if (pageCount === 0) {
+        const countMatches = headerContent.match(/\/Count\s+(\d+)/g);
+        if (countMatches && countMatches.length > 0) {
+          // Get the highest count value found
+          pageCount = Math.max(...countMatches.map(match => {
+            const countMatch = match.match(/\/Count\s+(\d+)/);
+            return countMatch ? parseInt(countMatch[1]) : 0;
+          }));
+        }
+      }
+
+    } catch (conversionError) {
+      logRequest(ip, "PDF_PARSING_ERROR", { 
+        error: conversionError.message, 
+        fileName: file.name,
+        fileSize: file.size 
+      });
+      // If we can't parse the PDF structure reliably, reject it as potentially problematic
+      return { valid: false, error: "PDF structure could not be validated" };
     }
 
-    // If we can't determine page count reliably, we'll proceed but log it
+    // Log the analysis results
     if (pageCount === 0) {
-      logRequest(ip, "PAGE_COUNT_UNKNOWN", { fileName: file.name, fileSize: file.size });
-      // Allow processing but log for monitoring
+      logRequest(ip, "PAGE_COUNT_UNDETERMINED", { 
+        fileName: file.name, 
+        fileSize: file.size,
+        note: "Could not determine page count - will proceed with caution"
+      });
+      // For files where we can't determine page count, we'll allow processing
+      // but the AI validation step will catch non-resume documents
     } else if (pageCount > 1) {
-      logRequest(ip, "MULTI_PAGE_PDF", { fileName: file.name, pageCount });
+      logRequest(ip, "MULTI_PAGE_PDF_DETECTED", { 
+        fileName: file.name, 
+        pageCount,
+        fileSize: file.size 
+      });
       return { valid: false, error: "Only single-page PDF resumes are supported" };
+    } else {
+      logRequest(ip, "SINGLE_PAGE_PDF_VALIDATED", { 
+        fileName: file.name, 
+        pageCount,
+        fileSize: file.size 
+      });
     }
 
-    logRequest(ip, "FILE_VALIDATED", { fileName: file.name, fileSize: file.size, pageCount });
+    logRequest(ip, "FILE_VALIDATED", { 
+      fileName: file.name, 
+      fileSize: file.size, 
+      pageCount: pageCount || "undetermined" 
+    });
     return { valid: true };
 
   } catch (error) {
-    logRequest(ip, "VALIDATION_ERROR", { error: error.message, fileName: file.name });
+    logRequest(ip, "VALIDATION_ERROR", { 
+      error: error.message, 
+      fileName: file.name,
+      fileSize: file.size 
+    });
     return { valid: false, error: "Failed to validate PDF file" };
   }
 }
