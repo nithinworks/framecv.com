@@ -1,4 +1,3 @@
-
 import { usePortfolio } from "@/context/PortfolioContext";
 
 export const useDownloadCode = () => {
@@ -18,7 +17,7 @@ function getIconSVG(name) {
     case "map":
       return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>';
     case "globe":
-      return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm0 0v20m0-20C7.52 2 2 6.48 2 12m10-10c4.52 0 10 4.48 10 10m-10-10v10m0 0l5-5m-5 5l-5-5"/></svg>';
+      return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 0c2.5 0 4.5 4.5 4.5 10S14.5 22 12 22 7.5 17.5 7.5 12 9.5 2 12 2zm0 0c5.25 0 9.5 4.03 9.5 10s-4.25 10-9.5 10m-9.5-10h19" /></svg>';
     case "linkedin":
       return '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>';
     case "github":
@@ -37,26 +36,38 @@ function getIconSVG(name) {
 // Font mapping for CSS classes
 function getFontClass(fontName) {
   switch (fontName) {
-    case "ovo": return "font-Ovo";
-    case "playfair": return "font-Playfair";
-    case "poppins": return "font-Poppins";
-    case "inter": return "font-Inter";
-    case "montserrat": return "font-Montserrat";
-    case "raleway": return "font-Raleway";
-    case "schibsted": return "font-Schibsted";
-    case "outfit": return "font-Outfit";
-    default: return "font-Ovo";
+    case "ovo":
+      return "font-Ovo";
+    case "playfair":
+      return "font-Playfair";
+    case "poppins":
+      return "font-Poppins";
+    case "inter":
+      return "font-Inter";
+    case "montserrat":
+      return "font-Montserrat";
+    case "raleway":
+      return "font-Raleway";
+    case "schibsted":
+      return "font-Schibsted";
+    case "outfit":
+      return "font-Outfit";
+    default:
+      return "font-Ovo";
   }
 }
+
 
 // Theme functions
 function setThemeIcon() {
   const iconSpan = document.getElementById("theme-toggle-icon");
   if (!iconSpan) return;
   if (document.documentElement.classList.contains("dark")) {
-    iconSpan.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>';
+    iconSpan.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>';
   } else {
-    iconSpan.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>';
+    iconSpan.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>';
   }
 }
 
@@ -70,8 +81,11 @@ window.toggleTheme = function () {
   setThemeIcon();
 };
 
-// Set initial theme
-if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+if (
+  localStorage.theme === "dark" ||
+  (!("theme" in localStorage) &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches)
+) {
   document.documentElement.classList.add("dark");
 } else {
   document.documentElement.classList.remove("dark");
@@ -83,124 +97,330 @@ async function renderPortfolio() {
     const res = await fetch("portfolio-data.json");
     if (!res.ok) throw new Error("Failed to fetch portfolio-data.json");
     const data = await res.json();
-    
+
     // Set CSS variables
-    document.documentElement.style.setProperty("--primary-color", data.settings.primaryColor || "#d65822");
-    
+    document.documentElement.style.setProperty(
+      "--primary-color",
+      data.settings.primaryColor || "#16A34A"
+    );
+
+    function hexToRgb(hex) {
+      let c = hex.replace("#", "");
+      if (c.length === 3)
+        c = c
+          .split("")
+          .map((x) => x + x)
+          .join("");
+      const num = parseInt(c, 16);
+      return [(num >> 16) & 255, (num >> 8) & 255, num & 255].join(",");
+    }
+    document.documentElement.style.setProperty(
+      "--primary-color-rgb",
+      hexToRgb(data.settings.primaryColor || "#16A34A")
+    );
+
     function hexToRgba(hex, alpha) {
       let c = hex.replace("#", "");
-      if (c.length === 3) c = c.split("").map((x) => x + x).join("");
+      if (c.length === 3)
+        c = c
+          .split("")
+          .map((x) => x + x)
+          .join("");
       const num = parseInt(c, 16);
-      return "rgba(" + ((num >> 16) & 255) + "," + ((num >> 8) & 255) + "," + (num & 255) + "," + alpha + ")";
+      return (
+        "rgba(" +
+        ((num >> 16) & 255) +
+        "," +
+        ((num >> 8) & 255) +
+        "," +
+        (num & 255) +
+        "," +
+        alpha +
+        ")"
+      );
     }
-    
-    document.documentElement.style.setProperty("--primary-color-light", hexToRgba(data.settings.primaryColor || "#d65822", 0.08));
-    document.documentElement.style.setProperty("--glass-bg", hexToRgba(data.settings.primaryColor || "#d65822", 0.1));
-    
-    // Apply custom fonts based on settings
-    const primaryFontClass = getFontClass(data.settings.fonts?.primary || "ovo");
-    const secondaryFontClass = getFontClass(data.settings.fonts?.secondary || "schibsted");
-    
-    // Get logo name
+    document.documentElement.style.setProperty(
+      "--primary-color-light",
+      hexToRgba(data.settings.primaryColor || "#0067c7", 0.08)
+    );
+    document.documentElement.style.setProperty(
+      "--glass-bg",
+      hexToRgba(data.settings.primaryColor || "#0067c7", 0.1)
+    );
+
+    const primaryFontClass = getFontClass(
+      data.settings.fonts?.primary || "ovo"
+    );
+    const secondaryFontClass = getFontClass(
+      data.settings.fonts?.secondary || "schibsted"
+    );
+
     const nameParts = (data.settings.name || "").trim().split(" ");
-    const logoName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
-    
-    // Build navigation
+    const logoName =
+      nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
+
     let navLinks = "";
     (data.navigation.items || []).forEach((link) => {
-      navLinks += '<li><a href="' + link.url + '" class="hover:dynamic-primary transition-colors duration-300">' + link.name + '</a></li>';
+      navLinks +=
+        '<li><a href="' +
+        link.url +
+        '" class="hover:text-dynamic-primary transition-colors duration-300 relative after:content-[\'\'] after:absolute after:w-0 after:h-0.5 after:bg-dynamic-primary after:left-0 after:-bottom-1 after:transition-all hover:after:w-full">' +
+        link.name +
+        "</a></li>";
     });
-    
-    // Navigation bar with primary font
-    let nav = '<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50"><span class="' + primaryFontClass + ' text-xl font-bold tracking-tight">' + logoName + '<span class="dynamic-primary">.</span></span><ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 ' + primaryFontClass + ' text-lg border-none bg-transparent shadow-none">' + navLinks + '</ul><div class="flex items-center gap-4"><button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none"><span id="theme-toggle-icon"></span></button><a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white ' + primaryFontClass + ' font-medium shadow hover:scale-105 transition-transform duration-300">Connect</a></div></nav>';
-    
-    // Hero section with font support
+
+    // Navigation bar
+    let nav =
+      '<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50 border-b border-gray-200 dark:border-gray-800"><span class="' +
+      primaryFontClass +
+      ' text-xl font-bold tracking-tight primary-text">' +
+      logoName +
+      '<span class="dynamic-primary">.</span></span><ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 ' +
+      primaryFontClass +
+      ' text-lg">' +
+      navLinks +
+      '</ul><div class="flex items-center gap-4"><button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none hover:scale-110"><span id="theme-toggle-icon"></span></button><a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white ' +
+      primaryFontClass +
+      ' font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg">Connect</a></div></nav>';
+
+    // Hero section
     let hero = "";
     if (data.sections.hero && data.sections.hero.enabled) {
       let ctas = "";
       (data.sections.hero.ctaButtons || []).forEach((btn) => {
-        ctas += '<a href="' + btn.url + '" class="flex items-center gap-2 ' + (btn.isPrimary ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-transform duration-300" : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors duration-300") + '">' + (btn.icon ? getIconSVG(btn.icon) : "") + '<span>' + btn.text + '</span></a>';
+        let iconName = btn.icon;
+        if (btn.text.toLowerCase().includes("resume")) iconName = "document";
+        ctas +=
+          '<a href="' +
+          btn.url +
+          '" class="flex items-center gap-2 ' +
+          (btn.isPrimary
+            ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg"
+            : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300 hover:shadow-md") +
+          '">' +
+          (iconName ? getIconSVG(iconName) : "") +
+          "<span>" +
+          btn.text +
+          "</span></a>";
       });
-      hero = '<div class="hero-bg w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full"><img src="' + data.settings.profileImage + '" alt="Profile" class="rounded-full w-28 h-28 object-cover mb-8 border-4 border-white shadow-md animate-fade-in" /><h2 class="' + primaryFontClass + ' text-xl mb-3 animate-slide-up">Hi! I\\'m ' + data.settings.name + ' <span class="inline-block">👋</span></h2><h1 class="' + primaryFontClass + ' text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 animate-slide-up">' + data.settings.title + '<br />based in ' + data.settings.location + '.</h1><p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">' + data.settings.summary + '</p><div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">' + ctas + '</div></header></div>';
+      hero =
+        '<div class="hero-bg w-full min-h-[60vh] relative overflow-hidden"><div class="absolute inset-0 pointer-events-none z-0" style="background: radial-gradient(circle at 60% 40%, var(--primary-color-light) 0%, transparent 70%), radial-gradient(circle at 20% 80%, var(--primary-color-light) 0%, transparent 80%);"></div><header id="home" class="relative z-10 pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full"><img src="' +
+        data.settings.profileImage +
+        '" alt="Profile" class="rounded-full w-24 h-24 object-cover mb-8 border-4 border-white shadow-lg float-animation" /><h2 class="' +
+        primaryFontClass +
+        " text-2xl mb-3 animate-slide-up primary-text\">Hi! I'm " +
+        data.settings.name +
+        ' <span class="inline-block">👋</span></h2><h1 class="' +
+        primaryFontClass +
+        ' text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-slide-up hero-title-spaced">' +
+        data.settings.title +
+        "<br />based in " +
+        data.settings.location +
+        '.</h1><p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">' +
+        data.settings.summary +
+        '</p><div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">' +
+        ctas +
+        "</div></header></div>";
     }
-    
-    // About section with font support
+
+    // About section
     let about = "";
     if (data.sections.about && data.sections.about.enabled) {
       let skills = "";
       if (data.sections.about.skills && data.sections.about.skills.enabled) {
         let skillTags = "";
         data.sections.about.skills.items.forEach((skill) => {
-          skillTags += '<span class="px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300">' + skill + '</span>';
+          skillTags +=
+            '<span class="px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md">' +
+            skill +
+            "</span>";
         });
-        skills = '<h2 class="' + primaryFontClass + ' text-2xl mb-4 mt-8">' + data.sections.about.skills.title + '</h2><div class="flex flex-wrap justify-center gap-3">' + skillTags + '</div>';
+        skills =
+          '<h2 class="' +
+          primaryFontClass +
+          ' text-2xl mb-4 mt-8 primary-text">' +
+          data.sections.about.skills.title +
+          '</h2><div class="flex flex-wrap justify-center gap-3">' +
+          skillTags +
+          "</div>";
       }
-      about = '<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-3 sm:mb-4">' + data.sections.about.title + '</h2><p class="mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">' + data.sections.about.content + '</p>' + skills + '</div></section>';
+      about =
+        '<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center"><h2 class="' +
+        primaryFontClass +
+        ' text-2xl sm:text-3xl mb-3 sm:mb-4 primary-text">' +
+        data.sections.about.title +
+        '</h2><p class="mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">' +
+        data.sections.about.content +
+        "</p>" +
+        skills +
+        "</div></section>";
     }
-    
-    // Projects section with font support
+
+    // Projects section
     let projects = "";
     if (data.sections.projects && data.sections.projects.enabled) {
       let projectCards = "";
       data.sections.projects.items.forEach((project) => {
         let projectTags = "";
         project.tags.forEach((tag) => {
-          projectTags += '<span class="text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">' + tag + '</span>';
+          projectTags +=
+            '<span class="text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">' +
+            tag +
+            "</span>";
         });
         let projectLink = "";
         if (project.previewUrl && project.previewUrl !== "#") {
-          projectLink = '<a href="' + project.previewUrl + '" class="dynamic-primary font-normal hover:underline text-base flex items-center gap-1">View project <span aria-hidden="true">→</span></a>';
+          projectLink =
+            '<a href="' +
+            project.previewUrl +
+            '" class="dynamic-primary font-normal hover:underline text-base flex items-center gap-1 group"><span>View project</span> <span class="transform group-hover:translate-x-1 transition-transform">→</span></a>';
         }
-        projectCards += '<div class="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-2xl p-7 flex flex-col gap-3 shadow-sm hover:shadow-md transition w-full max-w-md mx-auto"><h3 class="' + primaryFontClass + ' text-lg mb-1">' + project.title + '</h3><p class="text-sm text-gray-600 dark:text-gray-400">' + project.description + '</p><div class="flex flex-wrap gap-2 mb-2">' + projectTags + '</div>' + projectLink + '</div>';
+        projectCards +=
+          '<div class="modern-card rounded-2xl p-7 flex flex-col gap-3 w-full max-w-md mx-auto"><h3 class="' +
+          primaryFontClass +
+          ' text-lg mb-1 primary-text">' +
+          project.title +
+          '</h3><p class="text-sm text-gray-600 dark:text-gray-400">' +
+          project.description +
+          '</p><div class="flex flex-wrap gap-2 mb-2">' +
+          projectTags +
+          "</div>" +
+          projectLink +
+          "</div>";
       });
-      projects = '<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2">' + data.sections.projects.title + '</h2></div><div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">' + projectCards + '</div></section>';
+      projects =
+        '<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' +
+        primaryFontClass +
+        ' text-2xl sm:text-3xl mb-2 primary-text">' +
+        data.sections.projects.title +
+        '</h2></div><div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">' +
+        projectCards +
+        "</div></section>";
     }
-    
-    // Experience section with font support
+
+    // Experience section
     let experience = "";
     if (data.sections.experience && data.sections.experience.enabled) {
       let experienceItems = "";
       data.sections.experience.items.forEach((item) => {
-        experienceItems += '<div class="flex gap-4 items-start"><div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div><div><h3 class="' + primaryFontClass + ' text-lg mb-1">' + item.position + '</h3><div class="text-sm text-gray-500 mb-1">' + item.company + ' • ' + item.period + '</div><p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">' + item.description + '</p></div></div>';
+        experienceItems +=
+          '<div class="modern-card rounded-2xl p-6 flex gap-4 items-start"><div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div><div><h3 class="' +
+          primaryFontClass +
+          ' text-lg mb-1 primary-text">' +
+          item.position +
+          '</h3><div class="text-sm text-gray-500 mb-1">' +
+          item.company +
+          " • " +
+          item.period +
+          '</div><p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">' +
+          item.description +
+          "</p></div></div>";
       });
-      experience = '<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2">' + data.sections.experience.title + '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6 sm:gap-8">' + experienceItems + '</div></section>';
+      experience =
+        '<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' +
+        primaryFontClass +
+        ' text-2xl sm:text-3xl mb-2 primary-text">' +
+        data.sections.experience.title +
+        '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6 sm:gap-8">' +
+        experienceItems +
+        "</div></section>";
     }
-    
-    // Education section with font support
+
+    // Education section
     let education = "";
     if (data.sections.education && data.sections.education.enabled) {
       let educationItems = "";
       data.sections.education.items.forEach((item) => {
-        educationItems += '<div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col gap-1 shadow-sm w-full"><h3 class="' + primaryFontClass + ' text-lg mb-1">' + item.degree + '</h3><div class="text-sm text-gray-500 mb-1">' + item.institution + ' • ' + item.period + '</div></div>';
+        educationItems +=
+          '<div class="modern-card rounded-2xl p-6 flex flex-col gap-1"><h3 class="' +
+          primaryFontClass +
+          ' text-lg mb-1 primary-text">' +
+          item.degree +
+          '</h3><div class="text-sm text-gray-500 mb-1">' +
+          item.institution +
+          " • " +
+          item.period +
+          "</div></div>";
       });
-      education = '<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2">' + data.sections.education.title + '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6">' + educationItems + '</div></section>';
+      education =
+        '<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' +
+        primaryFontClass +
+        ' text-2xl sm:text-3xl mb-2 primary-text">' +
+        data.sections.education.title +
+        '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6">' +
+        educationItems +
+        "</div></section>";
     }
-    
-    // Contact section with font support
+
+    // Contact section
     let contact = "";
     if (data.sections.contact && data.sections.contact.enabled) {
       let contactCards = "";
       const contactInfo = [
-        { icon: getIconSVG("mail"), value: data.sections.contact.email },
-        { icon: getIconSVG("phone"), value: data.sections.contact.phone },
-        { icon: getIconSVG("map"), value: data.sections.contact.location }
+        {
+          icon: getIconSVG("mail"),
+          value: data.sections.contact.email,
+          link: "mailto:" + data.sections.contact.email,
+        },
+        {
+          icon: getIconSVG("phone"),
+          value: data.sections.contact.phone,
+          link: "tel:" + data.sections.contact.phone.replace(/[^\d+]/g, ""),
+        },
+        {
+          icon: getIconSVG("map"),
+          value: data.sections.contact.location,
+          link:
+            "https://www.google.com/maps/search/" +
+            encodeURIComponent(data.sections.contact.location),
+        },
       ];
       contactInfo.forEach((card) => {
-        contactCards += '<div class="w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center shadow-sm" style="font-size:14px;font-weight:500;">' + card.icon + '<span class="break-words">' + card.value + '</span></div>';
+        contactCards +=
+          '<a href="' +
+          card.link +
+          '" target="_blank" rel="noopener noreferrer" class="modern-card w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' +
+          secondaryFontClass +
+          ' text-gray-700 dark:text-gray-200 justify-center" style="font-size:14px;font-weight:500;">' +
+          card.icon +
+          '<span class="break-words">' +
+          card.value +
+          "</span></a>";
       });
-      contact = '<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4"><h2 class="' + primaryFontClass + ' text-3xl sm:text-4xl mb-3 sm:mb-4">' + data.sections.contact.title + '</h2><div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">' + contactCards + '</div></div></section>';
+      contact =
+        '<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4"><h2 class="' +
+        primaryFontClass +
+        ' text-3xl sm:text-4xl mb-3 sm:mb-4 primary-text">' +
+        data.sections.contact.title +
+        '</h2><div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">' +
+        contactCards +
+        "</div></div></section>";
     }
-    
-    // Social section with font support
+
+    // Social section
     let social = "";
     if (data.sections.social && data.sections.social.enabled) {
       let socialLinks = "";
       data.sections.social.items.forEach((item) => {
-        socialLinks += '<a href="' + item.url + '" class="flex items-center gap-2 px-4 py-3 rounded-xl glass-bg text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center shadow-sm hover:scale-105 transition-transform duration-300">' + getIconSVG(item.icon) + '<span>' + item.platform + '</span></a>';
+        socialLinks +=
+          '<a href="' +
+          item.url +
+          '" class="modern-card flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' +
+          secondaryFontClass +
+          ' text-gray-700 dark:text-gray-200 justify-center hover:scale-105 transition-transform duration-300">' +
+          getIconSVG(item.icon) +
+          "<span>" +
+          item.platform +
+          "</span></a>";
       });
-      social = '<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0"><h3 class="' + primaryFontClass + ' text-xl sm:text-2xl mb-3 sm:mb-4 mt-4">Social Media</h3><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">' + socialLinks + '</div></div></section>';
+      social =
+        '<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0"><h3 class="' +
+        primaryFontClass +
+        ' text-xl sm:text-2xl mb-3 sm:mb-4 mt-4 primary-text">Social Media</h3><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">' +
+        socialLinks +
+        "</div></div></section>";
     }
-    
+
     // Footer
     let footer = "";
     if (data.footer && data.footer.enabled) {
@@ -209,7 +429,7 @@ async function renderPortfolio() {
       footer = '<footer class="bg-white dark:bg-darkTheme py-4 mt-auto w-full"></footer>';
     }
     
-    // Combine all sections
+// Combine all sections
     const content = nav + '<div class="main-content">' + hero + about + projects + experience + education + contact + social + '</div>' + footer;
     document.getElementById("app").innerHTML = content;
     setThemeIcon();
@@ -230,7 +450,7 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio - ${portfolioData.settings.name}</title>
+    <title>${portfolioData.settings.name} - Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./tailwind.config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -251,200 +471,214 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
 
     const cssCode = `:root {
     --primary-color: ${portfolioData.settings.primaryColor};
-    --primary-color-light: rgba(22, 163, 74, 0.08);
-    --primary-color-rgb: 22, 163, 74;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  }
-  .dynamic-primary {
-    color: var(--primary-color) !important;
-  }
-  .bg-dynamic-primary {
-    background-color: var(--primary-color) !important;
-  }
-  .border-dynamic-primary {
-    border-color: var(--primary-color) !important;
-  }
-  .bg-primary-light {
-    background: var(--primary-color-light) !important;
-  }
-  .glass-bg {
-    background: var(--glass-bg) !important;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  .hero-bg {
-    background: linear-gradient(135deg, var(--primary-color-light) 0%, #fff 100%);
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-bg .smoke-effect {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background: radial-gradient(
-        circle at 60% 40%,
-        var(--primary-color-light) 0%,
-        transparent 70%
-      ),
-      radial-gradient(
-        circle at 20% 80%,
-        var(--primary-color-light) 0%,
-        transparent 80%
-      );
-  }
-  .hero-bg::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(
-      circle at 50% 50%,
-      rgba(255, 255, 255, 0.8) 0%,
-      transparent 50%
+  --primary-color-light: rgba(22, 163, 74, 0.08);
+  --primary-color-rgb: 22, 163, 74;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+.dynamic-primary {
+  color: var(--primary-color) !important;
+}
+.bg-dynamic-primary {
+  background-color: var(--primary-color) !important;
+}
+.border-dynamic-primary {
+  border-color: var(--primary-color) !important;
+}
+.bg-primary-light {
+  background: var(--primary-color-light) !important;
+}
+.glass-bg {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hero-bg {
+  background: linear-gradient(135deg, var(--primary-color-light) 0%, #fff 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg .smoke-effect {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+      circle at 60% 40%,
+      var(--primary-color-light) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      var(--primary-color-light) 0%,
+      transparent 80%
     );
-    opacity: 0.5;
+}
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.8) 0%,
+    transparent 50%
+  );
+  opacity: 0.5;
+}
+.dark .hero-bg {
+  background: linear-gradient(135deg, #000 0%, #111 100%) !important;
+}
+.dark .hero-bg::before {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
+}
+.footer-bg-smoke {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-color-rgb, 22, 163, 74), 0.06) 0%,
+    transparent 100%
+  );
+}
+.dark .footer-bg-smoke {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-color-rgb, 22, 163, 74), 0.1) 0%,
+    transparent 100%
+  ) !important;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.main-content {
+  flex: 1;
+}
+/* Modern Card Styles */
+.modern-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+.modern-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+.dark .modern-card {
+  background: rgba(17, 17, 17, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* Smooth Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-light);
+}
+/* Custom Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
   }
-  .dark .hero-bg {
-    background: linear-gradient(135deg, #000 0%, #111 100%) !important;
+  50% {
+    transform: translateY(-10px);
   }
-  .dark .hero-bg::before {
-    background: radial-gradient(
-      circle at 50% 50%,
-      rgba(255, 255, 255, 0.1) 0%,
-      transparent 50%
-    );
+  100% {
+    transform: translateY(0px);
   }
-  .footer-bg-smoke {
-    background: linear-gradient(
-      135deg,
-      rgba(var(--primary-color-rgb, 22, 163, 74), 0.06) 0%,
-      transparent 100%
-    );
-  }
-  .dark .footer-bg-smoke {
-    background: linear-gradient(
-      135deg,
-      rgba(var(--primary-color-rgb, 22, 163, 74), 0.1) 0%,
-      transparent 100%
-    ) !important;
-  }
-  html,
-  body {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-  }
-  #app {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  .main-content {
-    flex: 1;
-  }
-  /* Modern Card Styles */
-  .modern-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-  }
-  .modern-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--hover-shadow);
-  }
-  .dark .modern-card {
-    background: rgba(17, 17, 17, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  /* Smooth Scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-color-light);
-  }
-  /* Custom Animations */
-  @keyframes float {
-    0% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-    100% {
-      transform: translateY(0px);
-    }
-  }
-  .float-animation {
-    animation: float 3s ease-in-out infinite;
-  }
-  /* Gradient Text */
-  .gradient-text {
-    color: var(--primary-color) !important;
-    background: none !important;
-    -webkit-background-clip: unset !important;
-    -webkit-text-fill-color: unset !important;
-    background-clip: unset !important;
-  }
-  .primary-text {
-    color: var(--primary-color) !important;
-  }
+}
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+/* Gradient Text */
+.gradient-text {
+  color: var(--primary-color) !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+}
+.primary-text {
+  color: var(--primary-color) !important;
+}
 
-  .footer-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.7em;
-  }
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7em;
+}
 
-  .framecv-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3em;
-    background: rgba(0, 0, 0, 0.04);
-    border-radius: 999px;
-    padding: 0.18em 0.7em 0.18em 0.4em;
-    font-size: 0.93em;
-    color: #444;
-    font-weight: 500;
-    box-shadow: none;
-    transition: background 0.2s, color 0.2s;
-    text-decoration: none;
-    opacity: 0.85;
-  }
-  .framecv-badge:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: var(--primary-color);
-    opacity: 1;
-  }
-  .framecv-badge svg {
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    vertical-align: middle;
-  }
+.footer-badge-wrapper {
+  margin-top: 1.1em;
+  display: flex;
+  justify-content: center;
+}
+.framecv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  background: #fff;
+  border-radius: 1.7em;
+  padding: 0.32em 1.2em 0.32em 0.7em;
+  font-size: 1em;
+  color: var(--primary-color);
+  font-weight: 600;
+  border: 1.5px solid rgba(var(--primary-color-rgb, 22, 163, 74), 0.13);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.07);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
+  text-decoration: none;
+  opacity: 0.97;
+  letter-spacing: 0.01em;
+}
+.framecv-badge:hover {
+  background: linear-gradient(90deg, var(--primary-color) 0%, #fff 100%);
+  color: #fff;
+  border: 1.5px solid var(--primary-color);
+  box-shadow: 0 4px 18px 0 rgba(var(--primary-color-rgb, 22, 163, 74), 0.15);
+  opacity: 1;
+}
+.framecv-badge svg {
+  width: 1.2em;
+  height: 1.2em;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.22em;
+  border-radius: 0.3em;
+  background: #fff;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  padding: 0.09em;
+}
 
-  .hero-title-spaced {
-    line-height: 1.22;
-  }
+.hero-title-spaced {
+  line-height: 1.22;
+}
   `;
 
     const twConfigCode = `tailwind.config = {
@@ -522,21 +756,24 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
       { name: "styles.css", content: cssCode },
       { name: "script.js", content: jsCode },
       { name: "tailwind.config.js", content: twConfigCode },
-      { name: "portfolio-data.json", content: jsonCode }
+      { name: "portfolio-data.json", content: jsonCode },
     ];
 
-    import('jszip').then(JSZip => {
+    import("jszip").then((JSZip) => {
       const zip = new JSZip.default();
-      
-      files.forEach(file => {
+
+      files.forEach((file) => {
         zip.file(file.name, file.content);
       });
 
-      zip.generateAsync({ type: "blob" }).then(content => {
+      zip.generateAsync({ type: "blob" }).then((content) => {
         const url = URL.createObjectURL(content);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `${portfolioData.settings.name.replace(/\s+/g, '-')}-Portfolio-Code.zip`;
+        a.download = `${portfolioData.settings.name.replace(
+          /\s+/g,
+          "-"
+        )}-Portfolio-Code.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
