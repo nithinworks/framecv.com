@@ -40,7 +40,7 @@ const ContactEditor: React.FC = () => {
   const addSocialLink = () => {
     const currentItems = sections.social?.items || [];
     const newItem = {
-      platform: "LinkedIn",
+      platform: "linkedin",
       url: "https://linkedin.com/in/johndoe",
       icon: "linkedin"
     };
@@ -148,11 +148,11 @@ const ContactEditor: React.FC = () => {
                 <div>
                   <Label className="text-xs">Platform</Label>
                   <Select 
-                    value={social.platform.toLowerCase()} 
+                    value={social.platform} 
                     onValueChange={(value) => {
                       const platform = socialPlatforms.find(p => p.value === value);
                       if (platform) {
-                        updateSocialLink(index, "platform", platform.label);
+                        updateSocialLink(index, "platform", platform.value);
                         updateSocialLink(index, "icon", platform.icon);
                       }
                     }}
