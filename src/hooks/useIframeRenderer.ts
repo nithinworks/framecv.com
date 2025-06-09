@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 
 export const useIframeRenderer = (portfolioData: any, currentView: string) => {
@@ -394,8 +393,8 @@ body {
   `;
 };
 
-// Extract client-side script to separate function - now uses passed portfolioData
-const getClientSideScript = (): string => {
+// Extract client-side script to separate function - now properly accepts portfolioData parameter
+const getClientSideScript = (portfolioData: any): string => {
   return `
     // getIconSVG: Inline SVGs for all icons used in the portfolio
 function getIconSVG(name) {
@@ -482,11 +481,11 @@ if (
   document.documentElement.classList.remove("dark");
 }
 
-// Main rendering function - now uses the passed portfolioData directly
+// Main rendering function - now uses the portfolioData that was passed as parameter
  function renderPortfolio() {
   try {
-    // Use the portfolioData that was passed directly instead of fetching
-    const data = ${JSON.stringify(portfolioData)};;
+    // Use the portfolioData that was passed directly as a parameter
+    const data = ${JSON.stringify(portfolioData)};
 
     // Set CSS variables
     document.documentElement.style.setProperty(
