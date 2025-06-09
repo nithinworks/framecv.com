@@ -101,10 +101,7 @@ const generatePortfolioHTML = (portfolioData: any): string => {
     <div id="app"></div>
 
     <script>
-      // Pass portfolio data directly instead of fetching
-      const portfolioData = ${JSON.stringify(portfolioData)};
-      
-      ${getClientSideScript()}
+    ${getClientSideScript(portfolioData)}
     </script>
   </body>
 </html>
@@ -486,10 +483,10 @@ if (
 }
 
 // Main rendering function - now uses the passed portfolioData directly
-async function renderPortfolio() {
+ function renderPortfolio() {
   try {
     // Use the portfolioData that was passed directly instead of fetching
-    const data = portfolioData;
+    const data = ${JSON.stringify(portfolioData)};;
 
     // Set CSS variables
     document.documentElement.style.setProperty(
