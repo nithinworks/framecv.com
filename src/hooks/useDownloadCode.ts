@@ -5,6 +5,11 @@ export const useDownloadCode = () => {
 
   // Helper function to generate complete JavaScript code with font support
   const generateCompleteJavaScript = (data: any): string => {
+    // Helper function to escape quotes in strings
+    const escapeQuotes = (str: string): string => {
+      return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    };
+
     return `// getIconSVG: Inline SVGs for all icons used in the portfolio
 function getIconSVG(name) {
   switch (name) {
@@ -57,17 +62,14 @@ function getFontClass(fontName) {
   }
 }
 
-
 // Theme functions
 function setThemeIcon() {
   const iconSpan = document.getElementById("theme-toggle-icon");
   if (!iconSpan) return;
   if (document.documentElement.classList.contains("dark")) {
-    iconSpan.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>';
+    iconSpan.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>';
   } else {
-    iconSpan.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>';
+    iconSpan.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>';
   }
 }
 
@@ -159,29 +161,24 @@ async function renderPortfolio() {
     const logoName =
       nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
 
+    // Build navigation links
     let navLinks = "";
     (data.navigation.items || []).forEach((link) => {
-      navLinks +=
-        '<li><a href="' +
-        link.url +
-        '" class="hover:text-dynamic-primary transition-colors duration-300 relative after:content-[\'\'] after:absolute after:w-0 after:h-0.5 after:bg-dynamic-primary after:left-0 after:-bottom-1 after:transition-all hover:after:w-full">' +
-        link.name +
-        "</a></li>";
+      const linkClass = 'hover:text-dynamic-primary transition-colors duration-300 relative after:content-[\\\\\\'\\\\\\'] after:absolute after:w-0 after:h-0.5 after:bg-dynamic-primary after:left-0 after:-bottom-1 after:transition-all hover:after:w-full';
+      navLinks += '<li><a href="' + link.url + '" class="' + linkClass + '">' + link.name + '</a></li>';
     });
 
     // Navigation bar
-    let nav =
-      '<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50 border-b border-gray-200 dark:border-gray-800"><span class="' +
-      primaryFontClass +
-      ' text-xl font-bold tracking-tight primary-text">' +
-      logoName +
-      '<span class="dynamic-primary">.</span></span><ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 ' +
-      primaryFontClass +
-      ' text-lg">' +
-      navLinks +
-      '</ul><div class="flex items-center gap-4"><button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none hover:scale-110"><span id="theme-toggle-icon"></span></button><a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white ' +
-      primaryFontClass +
-      ' font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg">Connect</a></div></nav>';
+    const nav = '<nav class="w-full flex justify-between items-center px-4 sm:px-6 md:px-8 py-5 bg-white/80 dark:bg-black/90 backdrop-blur-md fixed top-0 left-0 z-50 border-b border-gray-200 dark:border-gray-800">' +
+      '<span class="' + primaryFontClass + ' text-xl font-bold tracking-tight primary-text">' + logoName + '<span class="dynamic-primary">.</span></span>' +
+      '<ul class="hidden md:flex gap-6 sm:gap-8 md:gap-10 ' + primaryFontClass + ' text-lg">' + navLinks + '</ul>' +
+      '<div class="flex items-center gap-4">' +
+        '<button id="theme-toggle" onclick="toggleTheme()" class="transition-colors duration-300 focus:outline-none hover:scale-110">' +
+          '<span id="theme-toggle-icon"></span>' +
+        '</button>' +
+        '<a href="#contact" class="px-6 py-2 rounded-full bg-dynamic-primary text-white ' + primaryFontClass + ' font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg">Connect</a>' +
+      '</div>' +
+    '</nav>';
 
     // Hero section
     let hero = "";
@@ -190,37 +187,23 @@ async function renderPortfolio() {
       (data.sections.hero.ctaButtons || []).forEach((btn) => {
         let iconName = btn.icon;
         if (btn.text.toLowerCase().includes("resume")) iconName = "document";
-        ctas +=
-          '<a href="' +
-          btn.url +
-          '" class="flex items-center gap-2 ' +
-          (btn.isPrimary
-            ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg"
-            : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300 hover:shadow-md") +
-          '">' +
-          (iconName ? getIconSVG(iconName) : "") +
-          "<span>" +
-          btn.text +
-          "</span></a>";
+        const buttonClass = btn.isPrimary
+          ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg"
+          : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300 hover:shadow-md";
+        ctas += '<a href="' + btn.url + '" class="flex items-center gap-2 ' + buttonClass + '">' +
+          (iconName ? getIconSVG(iconName) : "") + '<span>' + btn.text + '</span></a>';
       });
-      hero =
-        '<div class="hero-bg w-full min-h-[60vh] relative overflow-hidden"><div class="absolute inset-0 pointer-events-none z-0" style="background: radial-gradient(circle at 60% 40%, var(--primary-color-light) 0%, transparent 70%), radial-gradient(circle at 20% 80%, var(--primary-color-light) 0%, transparent 80%);"></div><header id="home" class="relative z-10 pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full"><img src="' +
-        data.settings.profileImage +
-        '" alt="Profile" class="rounded-full w-24 h-24 object-cover mb-8 border-4 border-white shadow-lg float-animation" /><h2 class="' +
-        primaryFontClass +
-        " text-2xl mb-3 animate-slide-up primary-text\">Hi! I'm " +
-        data.settings.name +
-        ' <span class="inline-block">👋</span></h2><h1 class="' +
-        primaryFontClass +
-        ' text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-slide-up hero-title-spaced">' +
-        data.settings.title +
-        "<br />based in " +
-        data.settings.location +
-        '.</h1><p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">' +
-        data.settings.summary +
-        '</p><div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">' +
-        ctas +
-        "</div></header></div>";
+      
+      hero = '<div class="hero-bg w-full min-h-[60vh] relative overflow-hidden">' +
+        '<div class="absolute inset-0 pointer-events-none z-0" style="background: radial-gradient(circle at 60% 40%, var(--primary-color-light) 0%, transparent 70%), radial-gradient(circle at 20% 80%, var(--primary-color-light) 0%, transparent 80%);"></div>' +
+        '<header id="home" class="relative z-10 pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full">' +
+          '<img src="' + data.settings.profileImage + '" alt="Profile" class="rounded-full w-24 h-24 object-cover mb-8 border-4 border-white shadow-lg float-animation" />' +
+          '<h2 class="' + primaryFontClass + ' text-2xl mb-3 animate-slide-up primary-text">Hi! I\\'m ' + data.settings.name + ' <span class="inline-block">👋</span></h2>' +
+          '<h1 class="' + primaryFontClass + ' text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-slide-up hero-title-spaced">' + data.settings.title + '<br />based in ' + data.settings.location + '.</h1>' +
+          '<p class="text-sm sm:text-[16px] text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 animate-fade-in leading-relaxed">' + data.settings.summary + '</p>' +
+          '<div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">' + ctas + '</div>' +
+        '</header>' +
+      '</div>';
     }
 
     // About section
@@ -230,30 +213,18 @@ async function renderPortfolio() {
       if (data.sections.about.skills && data.sections.about.skills.enabled) {
         let skillTags = "";
         data.sections.about.skills.items.forEach((skill) => {
-          skillTags +=
-            '<span class="px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md">' +
-            skill +
-            "</span>";
+          skillTags += '<span class="px-4 py-1 rounded-full border border-gray-300 text-sm bg-primary-light dark:bg-black dark:border-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md">' + skill + '</span>';
         });
-        skills =
-          '<h2 class="' +
-          primaryFontClass +
-          ' text-2xl mb-4 mt-8 primary-text">' +
-          data.sections.about.skills.title +
-          '</h2><div class="flex flex-wrap justify-center gap-3">' +
-          skillTags +
-          "</div>";
+        skills = '<h2 class="' + primaryFontClass + ' text-2xl mb-4 mt-8 primary-text">' + data.sections.about.skills.title + '</h2>' +
+          '<div class="flex flex-wrap justify-center gap-3">' + skillTags + '</div>';
       }
-      about =
-        '<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center"><h2 class="' +
-        primaryFontClass +
-        ' text-2xl sm:text-3xl mb-3 sm:mb-4 primary-text">' +
-        data.sections.about.title +
-        '</h2><p class="mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">' +
-        data.sections.about.content +
-        "</p>" +
-        skills +
-        "</div></section>";
+      about = '<section id="about" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">' +
+        '<div class="max-w-2xl mx-auto text-center">' +
+          '<h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-3 sm:mb-4 primary-text">' + data.sections.about.title + '</h2>' +
+          '<p class="mb-6 sm:mb-8 text-gray-700 dark:text-gray-300">' + data.sections.about.content + '</p>' +
+          skills +
+        '</div>' +
+      '</section>';
     }
 
     // Projects section
@@ -263,39 +234,26 @@ async function renderPortfolio() {
       data.sections.projects.items.forEach((project) => {
         let projectTags = "";
         project.tags.forEach((tag) => {
-          projectTags +=
-            '<span class="text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">' +
-            tag +
-            "</span>";
+          projectTags += '<span class="text-xs px-3 py-1 rounded-full bg-primary-light dark:bg-black border border-gray-200 dark:border-gray-700">' + tag + '</span>';
         });
         let projectLink = "";
         if (project.previewUrl && project.previewUrl !== "#") {
-          projectLink =
-            '<a href="' +
-            project.previewUrl +
-            '" class="dynamic-primary font-normal hover:underline text-base flex items-center gap-1 group"><span>View project</span> <span class="transform group-hover:translate-x-1 transition-transform">→</span></a>';
+          projectLink = '<a href="' + project.previewUrl + '" class="dynamic-primary font-normal hover:underline text-base flex items-center gap-1 group">' +
+            '<span>View project</span> <span class="transform group-hover:translate-x-1 transition-transform">→</span></a>';
         }
-        projectCards +=
-          '<div class="modern-card rounded-2xl p-7 flex flex-col gap-3 w-full max-w-md mx-auto"><h3 class="' +
-          primaryFontClass +
-          ' text-lg mb-1 primary-text">' +
-          project.title +
-          '</h3><p class="text-sm text-gray-600 dark:text-gray-400">' +
-          project.description +
-          '</p><div class="flex flex-wrap gap-2 mb-2">' +
-          projectTags +
-          "</div>" +
+        projectCards += '<div class="modern-card rounded-2xl p-7 flex flex-col gap-3 w-full max-w-md mx-auto">' +
+          '<h3 class="' + primaryFontClass + ' text-lg mb-1 primary-text">' + project.title + '</h3>' +
+          '<p class="text-sm text-gray-600 dark:text-gray-400">' + project.description + '</p>' +
+          '<div class="flex flex-wrap gap-2 mb-2">' + projectTags + '</div>' +
           projectLink +
-          "</div>";
+        '</div>';
       });
-      projects =
-        '<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' +
-        primaryFontClass +
-        ' text-2xl sm:text-3xl mb-2 primary-text">' +
-        data.sections.projects.title +
-        '</h2></div><div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">' +
-        projectCards +
-        "</div></section>";
+      projects = '<section id="projects" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-2 sm:px-4 md:px-8 w-full">' +
+        '<div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10">' +
+          '<h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2 primary-text">' + data.sections.projects.title + '</h2>' +
+        '</div>' +
+        '<div class="max-w-5xl mx-auto grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 justify-center">' + projectCards + '</div>' +
+      '</section>';
     }
 
     // Experience section
@@ -303,27 +261,21 @@ async function renderPortfolio() {
     if (data.sections.experience && data.sections.experience.enabled) {
       let experienceItems = "";
       data.sections.experience.items.forEach((item) => {
-        experienceItems +=
-          '<div class="modern-card rounded-2xl p-6 flex gap-4 items-start"><div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div><div><h3 class="' +
-          primaryFontClass +
-          ' text-lg mb-1 primary-text">' +
-          item.position +
-          '</h3><div class="text-sm text-gray-500 mb-1">' +
-          item.company +
-          " • " +
-          item.period +
-          '</div><p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">' +
-          item.description +
-          "</p></div></div>";
+        experienceItems += '<div class="modern-card rounded-2xl p-6 flex gap-4 items-start">' +
+          '<div class="w-3 h-3 mt-2 rounded-full bg-dynamic-primary"></div>' +
+          '<div>' +
+            '<h3 class="' + primaryFontClass + ' text-lg mb-1 primary-text">' + item.position + '</h3>' +
+            '<div class="text-sm text-gray-500 mb-1">' + item.company + ' • ' + item.period + '</div>' +
+            '<p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-2">' + item.description + '</p>' +
+          '</div>' +
+        '</div>';
       });
-      experience =
-        '<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' +
-        primaryFontClass +
-        ' text-2xl sm:text-3xl mb-2 primary-text">' +
-        data.sections.experience.title +
-        '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6 sm:gap-8">' +
-        experienceItems +
-        "</div></section>";
+      experience = '<section id="experience" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">' +
+        '<div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10">' +
+          '<h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2 primary-text">' + data.sections.experience.title + '</h2>' +
+        '</div>' +
+        '<div class="max-w-2xl mx-auto flex flex-col gap-6 sm:gap-8">' + experienceItems + '</div>' +
+      '</section>';
     }
 
     // Education section
@@ -331,25 +283,17 @@ async function renderPortfolio() {
     if (data.sections.education && data.sections.education.enabled) {
       let educationItems = "";
       data.sections.education.items.forEach((item) => {
-        educationItems +=
-          '<div class="modern-card rounded-2xl p-6 flex flex-col gap-1"><h3 class="' +
-          primaryFontClass +
-          ' text-lg mb-1 primary-text">' +
-          item.degree +
-          '</h3><div class="text-sm text-gray-500 mb-1">' +
-          item.institution +
-          " • " +
-          item.period +
-          "</div></div>";
+        educationItems += '<div class="modern-card rounded-2xl p-6 flex flex-col gap-1">' +
+          '<h3 class="' + primaryFontClass + ' text-lg mb-1 primary-text">' + item.degree + '</h3>' +
+          '<div class="text-sm text-gray-500 mb-1">' + item.institution + ' • ' + item.period + '</div>' +
+        '</div>';
       });
-      education =
-        '<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' +
-        primaryFontClass +
-        ' text-2xl sm:text-3xl mb-2 primary-text">' +
-        data.sections.education.title +
-        '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6">' +
-        educationItems +
-        "</div></section>";
+      education = '<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">' +
+        '<div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10">' +
+          '<h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2 primary-text">' + data.sections.education.title + '</h2>' +
+        '</div>' +
+        '<div class="max-w-2xl mx-auto flex flex-col gap-6">' + educationItems + '</div>' +
+      '</section>';
     }
 
     // Contact section
@@ -359,42 +303,32 @@ async function renderPortfolio() {
       const contactInfo = [
         {
           icon: getIconSVG("mail"),
-          value: data.sections.contact.email,
-          link: "mailto:" + data.sections.contact.email,
+          value: data.sections.contact.email || "",
+          link: "mailto:" + (data.sections.contact.email || ""),
         },
         {
           icon: getIconSVG("phone"),
-          value: data.sections.contact.phone,
-          link: "tel:" + data.sections.contact.phone.replace(/[^\d+]/g, ""),
+          value: data.sections.contact.phone || "",
+          link: "tel:" + (data.sections.contact.phone || "").replace(/[^\\d+]/g, ""),
         },
         {
           icon: getIconSVG("map"),
-          value: data.sections.contact.location,
-          link:
-            "https://www.google.com/maps/search/" +
-            encodeURIComponent(data.sections.contact.location),
+          value: data.sections.contact.location || "",
+          link: "https://www.google.com/maps/search/" + encodeURIComponent(data.sections.contact.location || ""),
         },
       ];
       contactInfo.forEach((card) => {
-        contactCards +=
-          '<a href="' +
-          card.link +
-          '" target="_blank" rel="noopener noreferrer" class="modern-card w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' +
-          secondaryFontClass +
-          ' text-gray-700 dark:text-gray-200 justify-center" style="font-size:14px;font-weight:500;">' +
-          card.icon +
-          '<span class="break-words">' +
-          card.value +
-          "</span></a>";
+        if (card.value) {
+          contactCards += '<a href="' + card.link + '" target="_blank" rel="noopener noreferrer" class="modern-card w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center" style="font-size:14px;font-weight:500;">' +
+            card.icon + '<span class="break-words">' + card.value + '</span></a>';
+        }
       });
-      contact =
-        '<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4"><h2 class="' +
-        primaryFontClass +
-        ' text-3xl sm:text-4xl mb-3 sm:mb-4 primary-text">' +
-        data.sections.contact.title +
-        '</h2><div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">' +
-        contactCards +
-        "</div></div></section>";
+      contact = '<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">' +
+        '<div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4">' +
+          '<h2 class="' + primaryFontClass + ' text-3xl sm:text-4xl mb-3 sm:mb-4 primary-text">' + data.sections.contact.title + '</h2>' +
+          '<div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">' + contactCards + '</div>' +
+        '</div>' +
+      '</section>';
     }
 
     // Social section
@@ -402,34 +336,28 @@ async function renderPortfolio() {
     if (data.sections.social && data.sections.social.enabled) {
       let socialLinks = "";
       data.sections.social.items.forEach((item) => {
-        socialLinks +=
-          '<a href="' +
-          item.url +
-          '" class="modern-card flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' +
-          secondaryFontClass +
-          ' text-gray-700 dark:text-gray-200 justify-center hover:scale-105 transition-transform duration-300">' +
-          getIconSVG(item.icon) +
-          "<span>" +
-          item.platform +
-          "</span></a>";
+        socialLinks += '<a href="' + item.url + '" class="modern-card flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center hover:scale-105 transition-transform duration-300">' +
+          getIconSVG(item.icon) + '<span>' + item.platform + '</span></a>';
       });
-      social =
-        '<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full"><div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0"><h3 class="' +
-        primaryFontClass +
-        ' text-xl sm:text-2xl mb-3 sm:mb-4 mt-4 primary-text">Social Media</h3><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">' +
-        socialLinks +
-        "</div></div></section>";
+      social = '<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full">' +
+        '<div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0">' +
+          '<h3 class="' + primaryFontClass + ' text-xl sm:text-2xl mb-3 sm:mb-4 mt-4 primary-text">Social Media</h3>' +
+          '<div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">' + socialLinks + '</div>' +
+        '</div>' +
+      '</section>';
     }
 
     // Footer
     let footer = "";
     if (data.footer && data.footer.enabled) {
-      footer = '<footer class="footer-bg-smoke py-8 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto w-full"><div class="max-w-2xl mx-auto px-4">' + data.footer.copyright + '</div></footer>';
+      footer = '<footer class="footer-bg-smoke py-8 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto w-full">' +
+        '<div class="max-w-2xl mx-auto px-4">' + data.footer.copyright + '</div>' +
+      '</footer>';
     } else {
       footer = '<footer class="bg-white dark:bg-darkTheme py-4 mt-auto w-full"></footer>';
     }
     
-// Combine all sections
+    // Combine all sections
     const content = nav + '<div class="main-content">' + hero + about + projects + experience + education + contact + social + '</div>' + footer;
     document.getElementById("app").innerHTML = content;
     setThemeIcon();
