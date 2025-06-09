@@ -1,6 +1,11 @@
-
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +13,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Github, ExternalLink, AlertCircle, Key, CheckCircle } from "lucide-react";
+import {
+  Loader2,
+  Github,
+  ExternalLink,
+  AlertCircle,
+  Key,
+  CheckCircle,
+  Info,
+} from "lucide-react";
 
 interface GitHubDeployProps {
   open: boolean;
@@ -17,8 +30,19 @@ interface GitHubDeployProps {
 
 const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   const { portfolioData } = usePortfolio();
-  const [repoName, setRepoName] = useState(`${portfolioData.settings.name.toLowerCase().replace(/\s+/g, '-')}-portfolio`);
-  const [description, setDescription] = useState(`Portfolio website for ${portfolioData.settings.name}`);
+  const [repoName, setRepoName] = useState(
+    `${portfolioData.settings.name
+      .toLowerCase()
+      .replace(/\s+/g, "-")}-portfolio`
+  );
+  const [description, setDescription] = useState(
+    `Professional portfolio for ${portfolioData.settings.name} — ${
+      portfolioData.settings.title
+    }.\n\n${
+      portfolioData.settings.summary ||
+      "Showcasing skills, experience, and projects."
+    }\n\nBuilt with FrameCV.com`
+  );
   const [githubToken, setGithubToken] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploymentResult, setDeploymentResult] = useState<{
@@ -40,32 +64,33 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     setIsDeploying(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('github-deploy', {
+      const { data, error } = await supabase.functions.invoke("github-deploy", {
         body: {
           portfolioData,
           repoName: repoName.trim(),
           description: description.trim(),
-          githubToken: githubToken.trim()
-        }
+          githubToken: githubToken.trim(),
+        },
       });
 
       if (error) {
-        console.error('Deploy error:', error);
-        toast.error("Deployment failed. Please check your GitHub token and try again.");
+        console.error("Deploy error:", error);
+        toast.error(
+          "Deployment failed. Please check your GitHub token and try again."
+        );
         return;
       }
 
       setDeploymentResult({
         repoUrl: data.repoUrl,
-        pagesUrl: data.pagesUrl
+        pagesUrl: data.pagesUrl,
       });
 
       toast.success("Portfolio deployed successfully!", {
-        description: "Your portfolio is now live on GitHub Pages"
+        description: "Your portfolio is now live on GitHub Pages",
       });
-
     } catch (error) {
-      console.error('Deploy error:', error);
+      console.error("Deploy error:", error);
       toast.error("Deployment failed. Please try again.");
     } finally {
       setIsDeploying(false);
@@ -85,6 +110,11 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
             <Github className="h-5 w-5" />
             {deploymentResult ? "Deployment Successful!" : "Deploy to GitHub"}
           </DialogTitle>
+          <DialogDescription>
+            {deploymentResult
+              ? "Your portfolio has been deployed to GitHub Pages. You can view your live site and repository below."
+              : "Deploy your portfolio to GitHub Pages by providing a GitHub token and repository details."}
+          </DialogDescription>
         </DialogHeader>
 
         {deploymentResult ? (
@@ -100,8 +130,14 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
             <div className="bg-orange-50/80 dark:bg-orange-900/30 backdrop-blur-sm border border-orange-200/50 dark:border-orange-700/50 rounded-lg p-3 flex items-start gap-2">
               <AlertCircle className="h-4 w-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-medium text-orange-900 dark:text-orange-100">First-time deployment may take a few minutes</p>
-                <p className="text-xs text-orange-800 dark:text-orange-200 mt-1">GitHub Pages needs time to build and deploy your site. If the live URL doesn't work immediately, please wait 2-5 minutes and try again.</p>
+                <p className="font-medium text-orange-900 dark:text-orange-100">
+                  First-time deployment may take a few minutes
+                </p>
+                <p className="text-xs text-orange-800 dark:text-orange-200 mt-1">
+                  GitHub Pages needs time to build and deploy your site. If the
+                  live URL doesn't work immediately, please wait 2-5 minutes and
+                  try again.
+                </p>
               </div>
             </div>
 
@@ -117,7 +153,9 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(deploymentResult.pagesUrl, '_blank')}
+                    onClick={() =>
+                      window.open(deploymentResult.pagesUrl, "_blank")
+                    }
                   >
                     <ExternalLink className="h-4 w-4" />
                   </Button>
@@ -135,7 +173,9 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(deploymentResult.repoUrl, '_blank')}
+                    onClick={() =>
+                      window.open(deploymentResult.repoUrl, "_blank")
+                    }
                   >
                     <ExternalLink className="h-4 w-4" />
                   </Button>
@@ -149,29 +189,64 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="repoName">Repository Name</Label>
-              <Input
-                id="repoName"
-                value={repoName}
-                onChange={(e) => setRepoName(e.target.value)}
-                placeholder="my-portfolio"
-                disabled={isDeploying}
-              />
+            {/* Create Token Button & Info */}
+            <div className="flex items-center justify-between bg-blue-50/80 dark:bg-blue-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-lg p-3 mb-2">
+              <div className="flex items-center gap-2">
+                <Key className="h-4 w-4 text-blue-600 dark:text-blue-300" />
+                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                  Need a GitHub token?&nbsp;
+                </span>
+              </div>
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="border-blue-500 text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900"
+              >
+                <a
+                  href="https://github.com/settings/tokens/new?type=classic&description=FrameCV%20Portfolio&scopes=repo,workflow"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Create Token
+                </a>
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground -mt-2 mb-2 flex items-center gap-1">
+              <Info className="h-3 w-3" />
+              You can generate a token directly on GitHub with this link.
+            </p>
+
+            {/* Token Instructions */}
+            <div className="bg-blue-100/70 dark:bg-blue-900/40 border border-blue-200/60 dark:border-blue-700/60 rounded-lg p-3 mb-2 text-xs text-blue-900 dark:text-blue-100 space-y-1">
+              <div className="font-semibold mb-1 flex items-center gap-1">
+                <Info className="h-3 w-3" />
+                Token Instructions
+              </div>
+              <div>
+                <b>Type:</b>{" "}
+                <span className="font-mono">
+                  Personal access token (classic)
+                </span>
+              </div>
+              <div>
+                <b>Permissions:</b> <span className="font-mono">repo</span>{" "}
+                (Full control of private repositories),{" "}
+                <span className="font-mono">workflow</span> (Update GitHub
+                Action workflows)
+              </div>
+              <div>
+                <b>Recommended Expiry:</b>{" "}
+                <span className="font-mono">7 days</span> or as short as
+                possible
+              </div>
+              <div>
+                <b>Note:</b> You can revoke this token anytime from your GitHub
+                settings.
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Portfolio website"
-                disabled={isDeploying}
-                rows={2}
-              />
-            </div>
-
+            {/* Token Input */}
             <div className="space-y-2">
               <Label htmlFor="githubToken" className="flex items-center gap-2">
                 <Key className="h-4 w-4" />
@@ -185,42 +260,32 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                 placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
                 disabled={isDeploying}
               />
-              
-              {/* Token creation guide - Updated with glassy look and better contrast */}
-              <div className="bg-blue-50/80 dark:bg-blue-900/30 backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50 rounded-lg p-3 space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-blue-900 dark:text-blue-100">
-                  <Key className="h-4 w-4" />
-                  How to create a GitHub token:
-                </div>
-                <ol className="text-xs text-blue-800 dark:text-blue-200 space-y-1 ml-6 list-decimal">
-                  <li>Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</li>
-                  <li>Click "Generate new token (classic)"</li>
-                  <li>Add a note like "Portfolio Deployment"</li>
-                  <li>Select these permissions:</li>
-                </ol>
-                <div className="ml-10 space-y-1">
-                  <div className="flex items-center gap-2 text-xs text-blue-800 dark:text-blue-200">
-                    <CheckCircle className="h-3 w-3" />
-                    <code className="bg-blue-100/50 dark:bg-blue-800/30 px-1 rounded">repo</code> - Full control of private repositories
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-blue-800 dark:text-blue-200">
-                    <CheckCircle className="h-3 w-3" />
-                    <code className="bg-blue-100/50 dark:bg-blue-800/30 px-1 rounded">workflow</code> - Update GitHub Action workflows
-                  </div>
-                </div>
-                <p className="text-xs text-blue-700 dark:text-blue-300">
-                  <a
-                    href="https://github.com/settings/tokens"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline font-medium"
-                  >
-                    Create token here →
-                  </a>
-                </p>
-              </div>
             </div>
 
+            {/* Repo Name & Description */}
+            <div className="space-y-2">
+              <Label htmlFor="repoName">Repository Name</Label>
+              <Input
+                id="repoName"
+                value={repoName}
+                onChange={(e) => setRepoName(e.target.value)}
+                placeholder="my-portfolio"
+                disabled={isDeploying}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description (Optional)</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Portfolio website"
+                disabled={isDeploying}
+                rows={2}
+              />
+            </div>
+
+            {/* Deploy Button */}
             <div className="flex justify-end gap-3">
               <Button
                 variant="outline"
@@ -231,7 +296,9 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               </Button>
               <Button
                 onClick={handleDeploy}
-                disabled={isDeploying || !githubToken.trim() || !repoName.trim()}
+                disabled={
+                  isDeploying || !githubToken.trim() || !repoName.trim()
+                }
               >
                 {isDeploying ? (
                   <>
