@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -75,9 +76,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
       if (error) {
         console.error("Deploy error:", error);
-        toast.error(
-          "Deployment failed. Please check your GitHub token and try again."
-        );
+        toast.error("Github Deployment Failed, Try downloading the source code and publishing on your own like that.");
         return;
       }
 
@@ -91,7 +90,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       });
     } catch (error) {
       console.error("Deploy error:", error);
-      toast.error("Deployment failed. Please try again.");
+      toast.error("Github Deployment Failed, Try downloading the source code and publishing on your own like that.");
     } finally {
       setIsDeploying(false);
     }
