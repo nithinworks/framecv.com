@@ -594,27 +594,39 @@ const getClientSideScript = (portfolioData: any): string => {
           education = '<section id="education" class="py-12 sm:py-16 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full"><div class="max-w-4xl mx-auto text-center mb-8 sm:mb-10"><h2 class="' + primaryFontClass + ' text-2xl sm:text-3xl mb-2 primary-text">' + data.sections.education.title + '</h2></div><div class="max-w-2xl mx-auto flex flex-col gap-6">' + educationItems + "</div></section>";
         }
 
-        // Contact section with clickable cards
+        // Contact section with clickable cards - FIXED NULL HANDLING
         let contact = "";
         if (data.sections.contact && data.sections.contact.enabled) {
           let contactCards = "";
-          const contactInfo = [
-            {
+          const contactInfo = [];
+          
+          // Only add email if it exists
+          if (data.sections.contact.email) {
+            contactInfo.push({
               icon: getIconSVG("mail"),
               value: data.sections.contact.email,
               link: "mailto:" + data.sections.contact.email,
-            },
-            {
+            });
+          }
+          
+          // Only add phone if it exists and is not null
+          if (data.sections.contact.phone && data.sections.contact.phone !== null) {
+            contactInfo.push({
               icon: getIconSVG("phone"),
               value: data.sections.contact.phone,
               link: "tel:" + data.sections.contact.phone.replace(/[^\\d+]/g, ""),
-            },
-            {
+            });
+          }
+          
+          // Only add location if it exists
+          if (data.sections.contact.location) {
+            contactInfo.push({
               icon: getIconSVG("map"),
               value: data.sections.contact.location,
               link: "https://www.google.com/maps/search/" + encodeURIComponent(data.sections.contact.location),
-            },
-          ];
+            });
+          }
+          
           contactInfo.forEach((card) => {
             contactCards += '<a href="' + card.link + '" target="_blank" rel="noopener noreferrer" class="modern-card w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center" style="font-size:14px;font-weight:500;">' + card.icon + '<span class="break-words">' + card.value + "</span></a>";
           });
