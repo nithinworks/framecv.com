@@ -1,4 +1,3 @@
-
 import React from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Input } from "@/components/ui/input";
@@ -273,6 +272,15 @@ const SettingsEditor: React.FC = () => {
               id="toggle-contact" 
               checked={safeSections.contact?.enabled || false}
               onCheckedChange={(enabled) => handleSectionToggle("contact", enabled)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="toggle-social" className="text-sm">Social Links</Label>
+            <Switch 
+              id="toggle-social" 
+              checked={safeSections.social?.enabled || false}
+              onCheckedChange={(enabled) => handleSectionToggle("social", enabled)}
             />
           </div>
         </div>

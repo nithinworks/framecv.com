@@ -5,12 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash } from "lucide-react";
 
 const SocialEditor: React.FC = () => {
   const { portfolioData, setPortfolioData } = usePortfolio();
   const { sections } = portfolioData;
   const { social } = sections;
+
+  const platformOptions = [
+    { value: "linkedin", label: "LinkedIn" },
+    { value: "github", label: "GitHub" },
+    { value: "twitter", label: "Twitter" },
+    { value: "facebook", label: "Facebook" },
+    { value: "instagram", label: "Instagram" },
+    { value: "youtube", label: "YouTube" },
+    { value: "dribbble", label: "Dribbble" },
+    { value: "behance", label: "Behance" },
+    { value: "website", label: "Website" },
+    { value: "portfolio", label: "Portfolio" }
+  ];
 
   const handleEnabledChange = (enabled: boolean) => {
     setPortfolioData({
@@ -35,7 +49,7 @@ const SocialEditor: React.FC = () => {
           items: [
             ...social.items,
             {
-              platform: "New Platform",
+              platform: "linkedin",
               url: "https://",
               icon: "globe"
             }
@@ -98,7 +112,7 @@ const SocialEditor: React.FC = () => {
           {social.items.map((item, index) => (
             <div key={index} className="mb-6 p-4 border rounded-md">
               <div className="flex justify-between items-center mb-3">
-                <h4 className="text-sm font-semibold">{item.platform || `Platform ${index + 1}`}</h4>
+                <h4 className="text-sm font-semibold">{platformOptions.find(p => p.value === item.platform)?.label || item.platform}</h4>
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -110,12 +124,22 @@ const SocialEditor: React.FC = () => {
               
               <div className="space-y-3">
                 <div>
-                  <Label htmlFor={`platform-${index}`}>Platform Name</Label>
-                  <Input 
-                    id={`platform-${index}`} 
+                  <Label htmlFor={`platform-${index}`}>Platform</Label>
+                  <Select 
                     value={item.platform} 
-                    onChange={(e) => updateSocialItem(index, "platform", e.target.value)}
-                  />
+                    onValueChange={(value) => updateSocialItem(index, "platform", value)}
+                  >
+                    <SelectTrigger className="w-full mt-1">
+                      <SelectValue placeholder="Select platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {platformOptions.map((platform) => (
+                        <SelectItem key={platform.value} value={platform.value}>
+                          {platform.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div>

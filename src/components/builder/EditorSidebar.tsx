@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Brain, Briefcase, FolderOpen, GraduationCap, Mail, Settings } from "lucide-react";
+import { User, Brain, Briefcase, FolderOpen, GraduationCap, Mail, Settings, Share } from "lucide-react";
 import SettingsEditor from "./editors/SettingsEditor";
 import HeroEditor from "./editors/HeroEditor";
 import AboutEditor from "./editors/AboutEditor";
@@ -11,6 +11,7 @@ import ExperienceEditor from "./editors/ExperienceEditor";
 import ProjectsEditor from "./editors/ProjectsEditor";
 import EducationEditor from "./editors/EducationEditor";
 import ContactEditor from "./editors/ContactEditor";
+import SocialEditor from "./editors/SocialEditor";
 
 const EditorSidebar: React.FC = () => {
   const { activeSection, setActiveSection, showEditor } = usePortfolio();
@@ -24,6 +25,7 @@ const EditorSidebar: React.FC = () => {
     { id: "projects", label: "Projects", component: <ProjectsEditor />, icon: FolderOpen },
     { id: "education", label: "Education", component: <EducationEditor />, icon: GraduationCap },
     { id: "contact", label: "Contact", component: <ContactEditor />, icon: Mail },
+    { id: "social", label: "Social Links", component: <SocialEditor />, icon: Share },
     { id: "settings", label: "Settings", component: <SettingsEditor />, icon: Settings }
   ];
 
