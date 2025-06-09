@@ -7,7 +7,6 @@ import Builder from "./pages/Builder";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsAndConditions";
 import DeployGuide from "./pages/DeployGuide";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import Contact from "./pages/Contact";
