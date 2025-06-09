@@ -50,6 +50,7 @@ const SocialEditor: React.FC = () => {
             ...social.items,
             {
               platform: "linkedin",
+              name: "LinkedIn",
               url: "https://",
               icon: "globe"
             }
@@ -65,6 +66,14 @@ const SocialEditor: React.FC = () => {
       ...updatedItems[index],
       [field]: value
     };
+
+    // If platform is being updated, also update the name
+    if (field === "platform") {
+      const platform = platformOptions.find(p => p.value === value);
+      if (platform) {
+        updatedItems[index].name = platform.label;
+      }
+    }
 
     setPortfolioData({
       ...portfolioData,
@@ -112,7 +121,7 @@ const SocialEditor: React.FC = () => {
           {social.items.map((item, index) => (
             <div key={index} className="mb-6 p-4 border rounded-md">
               <div className="flex justify-between items-center mb-3">
-                <h4 className="text-sm font-semibold">{platformOptions.find(p => p.value === item.platform)?.label || item.platform}</h4>
+                <h4 className="text-sm font-semibold">{item.name || platformOptions.find(p => p.value === item.platform)?.label || item.platform}</h4>
                 <Button 
                   variant="ghost" 
                   size="sm" 
