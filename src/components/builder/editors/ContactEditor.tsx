@@ -130,66 +130,59 @@ const ContactEditor: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          {(sections.social?.items || []).map((social, index) => {
-            // Ensure platform value is lowercase and valid
-            const currentPlatform = social.platform?.toLowerCase() || "linkedin";
-            const platformExists = socialPlatforms.some(p => p.value === currentPlatform);
-            const safePlatform = platformExists ? currentPlatform : "linkedin";
-            
-            return (
-              <div key={index} className="p-4 border rounded-lg space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Social Link {index + 1}</span>
-                  <Button 
-                    onClick={() => removeSocialLink(index)} 
-                    size="sm" 
-                    variant="ghost"
-                    className="text-red-500 hover:text-red-700"
+          {(sections.social?.items || []).map((social, index) => (
+            <div key={index} className="p-4 border rounded-lg space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Social Link {index + 1}</span>
+                <Button 
+                  onClick={() => removeSocialLink(index)} 
+                  size="sm" 
+                  variant="ghost"
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-3">
+                <div>
+                  <Label className="text-xs">Platform</Label>
+                  <Select 
+                    value={social.platform || "linkedin"}
+                    onValueChange={(value) => {
+                      const platform = socialPlatforms.find(p => p.value === value);
+                      if (platform) {
+                        updateSocialLink(index, "platform", platform.value);
+                        updateSocialLink(index, "icon", platform.icon);
+                      }
+                    }}
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select platform">
+                        {socialPlatforms.find(p => p.value === social.platform)?.label || "Select platform"}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {socialPlatforms.map((platform) => (
+                        <SelectItem key={platform.value} value={platform.value}>
+                          {platform.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                
-                <div className="grid grid-cols-1 gap-3">
-                  <div>
-                    <Label className="text-xs">Platform</Label>
-                    <Select 
-                      value={safePlatform}
-                      onValueChange={(value) => {
-                        const platform = socialPlatforms.find(p => p.value === value);
-                        if (platform) {
-                          updateSocialLink(index, "platform", platform.value);
-                          updateSocialLink(index, "icon", platform.icon);
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue>
-                          {socialPlatforms.find(p => p.value === safePlatform)?.label || "Select platform"}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {socialPlatforms.map((platform) => (
-                          <SelectItem key={platform.value} value={platform.value}>
-                            {platform.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-xs">URL</Label>
-                    <Input 
-                      value={social.url} 
-                      onChange={(e) => updateSocialLink(index, "url", e.target.value)}
-                      placeholder="https://linkedin.com/in/johndoe"
-                      className="mt-1"
-                    />
-                  </div>
+                <div>
+                  <Label className="text-xs">URL</Label>
+                  <Input 
+                    value={social.url} 
+                    onChange={(e) => updateSocialLink(index, "url", e.target.value)}
+                    placeholder="https://linkedin.com/in/johndoe"
+                    className="mt-1"
+                  />
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
         
         {(!sections.social?.items || sections.social.items.length === 0) && (
