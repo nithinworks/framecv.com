@@ -83,6 +83,7 @@ export interface PortfolioData {
       enabled: boolean;
       items: {
         platform: string;
+        name: string;
         url: string;
         icon?: string;
       }[];
@@ -202,7 +203,8 @@ export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
       enabled: true,
       items: [
         {
-          platform: "LinkedIn",
+          platform: "linkedin",
+          name: "LinkedIn",
           url: "https://linkedin.com/in/yourusername",
           icon: "globe"
         }

@@ -41,6 +41,7 @@ const ContactEditor: React.FC = () => {
     const currentItems = sections.social?.items || [];
     const newItem = {
       platform: "linkedin",
+      name: "LinkedIn",
       url: "https://linkedin.com/in/johndoe",
       icon: "linkedin"
     };
@@ -153,13 +154,14 @@ const ContactEditor: React.FC = () => {
                       const platform = socialPlatforms.find(p => p.value === value);
                       if (platform) {
                         updateSocialLink(index, "platform", platform.value);
+                        updateSocialLink(index, "name", platform.label);
                         updateSocialLink(index, "icon", platform.icon);
                       }
                     }}
                   >
                     <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select platform">
-                        {socialPlatforms.find(p => p.value === social.platform)?.label || "Select platform"}
+                      <SelectValue>
+                        {social.name || socialPlatforms.find(p => p.value === social.platform)?.label || "Select platform"}
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
