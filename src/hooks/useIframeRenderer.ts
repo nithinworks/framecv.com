@@ -101,7 +101,10 @@ const generatePortfolioHTML = (portfolioData: any): string => {
     <div id="app"></div>
 
     <script>
-      ${getClientSideScript(portfolioData)}
+      // Pass portfolio data directly instead of fetching
+      const portfolioData = ${JSON.stringify(portfolioData)};
+      
+      ${getClientSideScript()}
     </script>
   </body>
 </html>
@@ -394,8 +397,8 @@ body {
   `;
 };
 
-// Extract client-side script to separate function
-const getClientSideScript = (portfolioData: any): string => {
+// Extract client-side script to separate function - now uses passed portfolioData
+const getClientSideScript = (): string => {
   return `
     // getIconSVG: Inline SVGs for all icons used in the portfolio
 function getIconSVG(name) {
@@ -482,12 +485,11 @@ if (
   document.documentElement.classList.remove("dark");
 }
 
-// Main rendering function
+// Main rendering function - now uses the passed portfolioData directly
 async function renderPortfolio() {
   try {
-    const res = await fetch("portfolio-data.json");
-    if (!res.ok) throw new Error("Failed to fetch portfolio-data.json");
-    const data = await res.json();
+    // Use the portfolioData that was passed directly instead of fetching
+    const data = portfolioData;
 
     // Set CSS variables
     document.documentElement.style.setProperty(
