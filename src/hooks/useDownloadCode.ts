@@ -350,8 +350,9 @@ async function renderPortfolio() {
     // Footer
     let footer = "";
     if (data.footer && data.footer.enabled) {
+      const framecvBadge = '<div class="footer-badge-wrapper"><a href="https://framecv.com" class="framecv-badge" target="_blank" rel="noopener noreferrer" title="Built with FrameCV"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" zoomAndPan="magnify" viewBox="0 0 375 374.999991" height="24" preserveAspectRatio="xMidYMid meet" version="1.2"><defs><clipPath id="6219930390"><path d="M 4.1875 14.59375 L 371 14.59375 L 371 360.40625 L 4.1875 360.40625 Z M 4.1875 14.59375 "/></clipPath><clipPath id="a8f637eb54"><path d="M 45.4375 14.59375 L 329.5625 14.59375 C 352.34375 14.59375 370.8125 33.0625 370.8125 55.84375 L 370.8125 319.15625 C 370.8125 341.9375 352.34375 360.40625 329.5625 360.40625 L 45.4375 360.40625 C 22.65625 360.40625 4.1875 341.9375 4.1875 319.15625 L 4.1875 55.84375 C 4.1875 33.0625 22.65625 14.59375 45.4375 14.59375 Z M 45.4375 14.59375 "/></clipPath><clipPath id="1951409292"><path d="M 121 73.691406 L 296.957031 73.691406 L 296.957031 150 L 121 150 Z M 121 73.691406 "/></clipPath><clipPath id="702972dd2f"><path d="M 77.957031 149 L 210 149 L 210 226 L 77.957031 226 Z M 77.957031 149 "/></clipPath><clipPath id="32938a13ad"><path d="M 77.957031 225 L 166 225 L 166 300.941406 L 77.957031 300.941406 Z M 77.957031 225 "/></clipPath></defs><g id="dc681a35a4"><g clip-rule="nonzero" clip-path="url(#6219930390)"><g clip-rule="nonzero" clip-path="url(#a8f637eb54)"><path style=" stroke:none;fill-rule:nonzero;fill:#171717;fill-opacity:1;" d="M 4.1875 14.59375 L 370.261719 14.59375 L 370.261719 360.40625 L 4.1875 360.40625 Z M 4.1875 14.59375 "/></g></g><g clip-rule="nonzero" clip-path="url(#1951409292)"><path style=" stroke:none;fill-rule:nonzero;fill:#ffffff;fill-opacity:1;" d="M 141.574219 73.691406 L 121.722656 73.691406 L 165.457031 149.441406 L 252.929688 149.441406 L 296.664062 73.691406 Z M 141.574219 73.691406 "/></g><g clip-rule="nonzero" clip-path="url(#702972dd2f)"><path style=" stroke:none;fill-rule:nonzero;fill:#ffffff;fill-opacity:1;" d="M 121.71875 225.191406 L 209.191406 225.191406 L 165.453125 149.445312 L 77.984375 149.445312 Z M 121.71875 225.191406 "/></g><g clip-rule="nonzero" clip-path="url(#32938a13ad)"><path style=" stroke:none;fill-rule:nonzero;fill:#ffffff;fill-opacity:1;" d="M 165.453125 300.945312 L 121.71875 225.191406 L 77.984375 300.945312 Z M 165.453125 300.945312 "/></g></g></svg><span>Built with FrameCV</span></a></div>';
       footer = '<footer class="footer-bg-smoke py-8 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto w-full">' +
-        '<div class="max-w-2xl mx-auto px-4">' + data.footer.copyright + '</div>' +
+        '<div class="footer-content max-w-2xl mx-auto px-4">' + data.footer.copyright + framecvBadge + '</div>' +
       '</footer>';
     } else {
       footer = '<footer class="bg-white dark:bg-darkTheme py-4 mt-auto w-full"></footer>';
@@ -586,11 +587,11 @@ body {
   letter-spacing: 0.01em;
 }
 .framecv-badge:hover {
-  background: linear-gradient(90deg, var(--primary-color) 0%, #fff 100%);
-  color: #fff;
-  border: 1.5px solid var(--primary-color);
-  box-shadow: 0 4px 18px 0 rgba(var(--primary-color-rgb, 22, 163, 74), 0.15);
-  opacity: 1;
+      background: #f6f6f6;
+      color: var(--primary-color);
+      border: 1.5px solid var(--primary-color);
+      box-shadow: 0 4px 18px 0 rgba(var(--primary-color-rgb, 22, 163, 74), 0.1);
+      opacity: 1;
 }
 .framecv-badge svg {
   width: 1.2em;
