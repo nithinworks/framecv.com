@@ -12,7 +12,7 @@ const HeroContent: React.FC<HeroContentProps> = ({ isLoaded }) => {
         Your Journey Deserves More Than a Resume
       </h1>
       <h2 className="text-xs md:text-base lg:text-lg font-normal mb-8 md:mb-10 text-muted-foreground leading-[1.6] md:leading-[1.6] lg:leading-[1.6] max-w-2xl mx-auto px-2">
-        Let our AI turn your resume into a stunning personal portfolio — in seconds, for free.
+        Turn your resume into a stunning portfolio — in seconds, for free.
       </h2>
     </div>
   );
