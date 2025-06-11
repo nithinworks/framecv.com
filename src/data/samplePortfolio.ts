@@ -160,7 +160,7 @@ export const samplePortfolioData: PortfolioData = {
         {
           "platform": "linkedin",
           "url": "https://linkedin.com/in/sarahjohnson",
-          "icon": "globe"
+          "icon": "linkedin"
         }
       ]
     }
