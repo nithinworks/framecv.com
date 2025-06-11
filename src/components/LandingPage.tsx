@@ -5,6 +5,7 @@ import AnnouncementBar from "./landing/AnnouncementBar";
 import HeroContent from "./landing/HeroContent";
 import UploadSection from "./landing/UploadSection";
 import HowItWorksSection from "./landing/HowItWorksSection";
+import WhyPortfolioSection from "./landing/WhyPortfolioSection";
 import FeaturesSection from "./landing/FeaturesSection";
 import LandingFooter from "./landing/LandingFooter";
 
@@ -30,6 +31,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       <HowItWorksSection isLoaded={isLoaded} />
+      <WhyPortfolioSection isLoaded={isLoaded} />
       <FeaturesSection isLoaded={isLoaded} />
       <LandingFooter />
     </div>
