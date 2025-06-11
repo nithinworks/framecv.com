@@ -36,6 +36,24 @@ const BuilderPage: React.FC = () => {
       setShowEditorHint(false);
     }
   }, [showEditor]);
+
+  // Disable right-click context menu
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      toast.info("Right-click disabled", {
+        description: "Right-click functionality is disabled in the builder for security"
+      });
+    };
+
+    // Add event listener to the document
+    document.addEventListener('contextmenu', handleContextMenu);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+    };
+  }, []);
   
   if (isProcessing) {
     return (
