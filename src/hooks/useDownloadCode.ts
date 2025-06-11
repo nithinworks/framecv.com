@@ -569,42 +569,51 @@ body {
   display: flex;
   justify-content: center;
 }
-.framecv-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  background: #fff;
-  border-radius: 1.7em;
-  padding: 0.32em 1.2em 0.32em 0.7em;
-  font-size: 1em;
-  color: var(--primary-color);
-  font-weight: 600;
-  border: 1.5px solid rgba(var(--primary-color-rgb, 22, 163, 74), 0.13);
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.07);
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
-  text-decoration: none;
-  opacity: 0.97;
-  letter-spacing: 0.01em;
-}
-.framecv-badge:hover {
-      background: #f6f6f6;
+    .framecv-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      background: transparent;
+      border-radius: 1.2em;
+      padding: 0.25em 0.8em 0.25em 0.5em;
+      font-size: 0.85em;
       color: var(--primary-color);
-      border: 1.5px solid var(--primary-color);
-      box-shadow: 0 4px 18px 0 rgba(var(--primary-color-rgb, 22, 163, 74), 0.1);
+      font-weight: 500;
+      border: 1px solid rgba(var(--primary-color-rgb, 22, 163, 74), 0.2);
+      box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+      text-decoration: none;
+      opacity: 0.9;
+      letter-spacing: 0.01em;
+    }
+    .framecv-badge:hover {
+      background: rgba(var(--primary-color-rgb, 22, 163, 74), 0.05);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      box-shadow: 0 2px 8px 0 rgba(var(--primary-color-rgb, 22, 163, 74), 0.1);
       opacity: 1;
-}
-.framecv-badge svg {
-  width: 1.2em;
-  height: 1.2em;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 0.22em;
-  border-radius: 0.3em;
-  background: #fff;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
-  padding: 0.09em;
-}
-
+    }
+    .framecv-badge svg {
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.15em;
+      border-radius: 0.25em;
+      background: transparent;
+      box-shadow: none;
+      padding: 0.05em;
+    }    
+    .dark .framecv-badge {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .dark .framecv-badge:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
 .hero-title-spaced {
   line-height: 1.22;
 }
