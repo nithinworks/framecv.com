@@ -37,7 +37,7 @@ const BuilderPage: React.FC = () => {
     }
   }, [showEditor]);
 
-  // Disable right-click context menu
+  // Disable right-click context menu globally on the builder page
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -49,9 +49,41 @@ const BuilderPage: React.FC = () => {
     // Add event listener to the document
     document.addEventListener('contextmenu', handleContextMenu);
 
-    // Cleanup event listener on component unmount
+    // Also check for iframes and add the same protection
+    const checkForIframes = () => {
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach((iframe) => {
+        try {
+          if (iframe.contentDocument) {
+            iframe.contentDocument.addEventListener('contextmenu', handleContextMenu);
+          }
+        } catch (error) {
+          // Cross-origin iframe, can't access content
+          console.log('Cannot access iframe content for right-click protection');
+        }
+      });
+    };
+
+    // Check for iframes initially and then periodically
+    checkForIframes();
+    const intervalId = setInterval(checkForIframes, 1000);
+
+    // Cleanup event listeners on component unmount
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
+      clearInterval(intervalId);
+      
+      // Clean up iframe listeners
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach((iframe) => {
+        try {
+          if (iframe.contentDocument) {
+            iframe.contentDocument.removeEventListener('contextmenu', handleContextMenu);
+          }
+        } catch (error) {
+          // Cross-origin iframe, can't access content
+        }
+      });
     };
   }, []);
   

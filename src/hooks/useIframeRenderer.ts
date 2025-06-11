@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from "react";
 
 export const useIframeRenderer = (portfolioData: any, currentView: string) => {
@@ -100,6 +101,12 @@ const generatePortfolioHTML = (portfolioData: any): string => {
     <div id="app"></div>
 
     <script>
+      // Disable right-click in iframe
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      
       ${getClientSideScript(portfolioData)}
     </script>
   </body>
