@@ -22,7 +22,7 @@ const LandingPage: React.FC = () => {
       <LandingHeader isLoaded={isLoaded} />
 
       {/* Hero Section with Upload */}
-      <section className="flex-grow flex items-center justify-center min-h-[85vh] px-4 md:px-8 pt-12 md:pt-16">
+      <section className="flex-grow flex items-center justify-center min-h-[85vh] px-4 md:px-8 pt-4 md:pt-16">
         <div className="container mx-auto text-center max-w-4xl">
           <AnnouncementBar isLoaded={isLoaded} />
           <HeroContent isLoaded={isLoaded} />
