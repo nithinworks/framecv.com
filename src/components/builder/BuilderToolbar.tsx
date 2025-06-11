@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -6,7 +5,8 @@ import {
   Download, 
   ChevronLeft,
   Github,
-  ChevronDown
+  ChevronDown,
+  Eye
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,6 +21,7 @@ import { useState } from "react";
 import GitHubDeploy from "@/components/builder/GitHubDeploy";
 import UserDetailsModal from "@/components/builder/UserDetailsModal";
 import DeviceToggle from "@/components/builder/DeviceToggle";
+import BackNavigationModal from "@/components/builder/BackNavigationModal";
 import { useDownloadCode } from "@/hooks/useDownloadCode";
 
 interface BuilderToolbarProps {
@@ -37,11 +38,21 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   const isMobile = useIsMobile();
   const [showGitHubDeploy, setShowGitHubDeploy] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
+  const [showBackModal, setShowBackModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<"download" | "deploy" | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   // Use the download code hook
   const { downloadSourceCode } = useDownloadCode();
+
+  const handleBackClick = () => {
+    setShowBackModal(true);
+  };
+
+  const handleBackConfirm = () => {
+    setShowBackModal(false);
+    navigate('/');
+  };
 
   const handleDownloadSourceCode = async () => {
     setIsDownloading(true);
@@ -94,7 +105,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate('/')}
+            onClick={handleBackClick}
             className="text-gray-400 hover:text-white hover:bg-gray-800 px-3 py-2 h-8 text-sm transition-all duration-300"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
@@ -115,8 +126,17 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
                   : undefined
               }}
             >
-              <PanelLeft className="h-4 w-4 mr-2" />
-              Editor
+              {showEditor ? (
+                <>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview
+                </>
+              ) : (
+                <>
+                  <PanelLeft className="h-4 w-4 mr-2" />
+                  Editor
+                </>
+              )}
             </Button>
             
             {showEditorHint && !showEditor && !isMobile && (
@@ -183,6 +203,12 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
           </DropdownMenu>
         </div>
       </div>
+
+      <BackNavigationModal 
+        open={showBackModal}
+        onOpenChange={setShowBackModal}
+        onConfirm={handleBackConfirm}
+      />
 
       <UserDetailsModal 
         open={showUserDetails}
