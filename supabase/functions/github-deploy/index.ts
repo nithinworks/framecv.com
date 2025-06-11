@@ -28,6 +28,17 @@ Deno.serve(async (req) => {
 
     console.log("Creating GitHub repository:", repoName);
 
+    // Clean and sanitize description to prevent API issues
+    const sanitizedDescription = description 
+      ? description
+          .replace(/[\r\n]+/g, ' ') // Replace line breaks with spaces
+          .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+          .trim() // Remove leading/trailing whitespace
+          .substring(0, 350) // GitHub has a 350 character limit for descriptions
+      : "Portfolio website deployed via FrameCV";
+
+    console.log("Sanitized description:", sanitizedDescription);
+
     // Get authenticated user info
     const userResponse = await fetch("https://api.github.com/user", {
       headers: {
@@ -67,8 +78,7 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           name: repoName,
-          description:
-            description || "Portfolio website deployed via Portfolio Creator",
+          description: sanitizedDescription,
           auto_init: true,
           private: false,
         }),
@@ -116,6 +126,22 @@ Deno.serve(async (req) => {
       repo = await createRepoResponse.json();
       console.log("Repository created:", repo.name);
     }
+
+    // Helper function to safely encode content for GitHub API
+    const safeBase64Encode = (content) => {
+      try {
+        // Ensure content is a string
+        const stringContent = typeof content === 'string' ? content : JSON.stringify(content);
+        // Use TextEncoder for proper UTF-8 encoding
+        const encoder = new TextEncoder();
+        const data = encoder.encode(stringContent);
+        return btoa(String.fromCharCode(...data));
+      } catch (error) {
+        console.error("Base64 encoding failed:", error);
+        // Fallback to simple btoa
+        return btoa(unescape(encodeURIComponent(content)));
+      }
+    };
 
     // Helper function to generate complete JavaScript code with font support
     const generateCompleteJavaScript = (data) => {
@@ -821,10 +847,10 @@ body {
         existingFileSha = existingFile.sha;
       }
 
-      // Create or update file
+      // Create or update file using the safe encoding function
       const fileData = {
         message: "Deploy portfolio: " + file.name,
-        content: btoa(unescape(encodeURIComponent(file.content))), // Base64 encode with UTF-8 support
+        content: safeBase64Encode(file.content),
         ...(existingFileSha && { sha: existingFileSha }),
       };
 
