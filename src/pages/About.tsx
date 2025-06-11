@@ -31,20 +31,8 @@ const About = () => {
               This isn’t some VC-funded startup. It’s a passion project. A tool I wish existed when I started out. And as long as it helps even a few people feel more confident in how they present themselves, it’s done its job.
             </p>
             <p>
-              Let FrameCV tell your story. Because you’re more than a resume. You’re a journey in motion—and it’s time people saw it.
+              <strong>About Me:</strong> I’m Naga Nithin—a developer, builder, and someone who knows what it feels like to be overlooked in a stack of resumes. I created FrameCV not as a business, but as a tool I genuinely wish I had earlier in my journey. If it helps you feel seen, if it opens even one door for you—it’s worth it.
             </p>
-          </div>
-          <div className="w-full flex flex-col items-end mt-10">
-            <img
-              src="/signature-placeholder.png"
-              alt="Signature"
-              className="h-12 mb-2 opacity-80"
-              style={{ maxWidth: "180px" }}
-            />
-            <div className="text-right">
-              <div className="font-medium text-foreground">Naga Nithin</div>
-              <div className="text-sm text-muted-foreground">Creator, FrameCV</div>
-            </div>
           </div>
         </div>
       </main>
