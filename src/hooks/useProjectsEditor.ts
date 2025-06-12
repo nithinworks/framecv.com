@@ -6,20 +6,6 @@ export const useProjectsEditor = () => {
   const { sections } = portfolioData;
   const { projects } = sections;
 
-  // Toggle section enabled
-  const handleEnabledChange = (enabled: boolean) => {
-    setPortfolioData({
-      ...portfolioData,
-      sections: {
-        ...sections,
-        projects: {
-          ...projects,
-          enabled
-        }
-      }
-    });
-  };
-
   // Update section title
   const handleTitleChange = (title: string) => {
     setPortfolioData({
@@ -161,7 +147,6 @@ export const useProjectsEditor = () => {
 
   return {
     projects,
-    handleEnabledChange,
     handleTitleChange,
     addProject,
     updateProject,
