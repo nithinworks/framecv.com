@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -35,14 +34,6 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     `${portfolioData.settings.name
       .toLowerCase()
       .replace(/\s+/g, "-")}-portfolio`
-  );
-  const [description, setDescription] = useState(
-    `Professional portfolio for ${portfolioData.settings.name} — ${
-      portfolioData.settings.title
-    }.\n\n${
-      portfolioData.settings.summary ||
-      "Showcasing skills, experience, and projects."
-    }\n\nBuilt with FrameCV.com`
   );
   const [githubToken, setGithubToken] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
@@ -69,7 +60,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         body: {
           portfolioData,
           repoName: repoName.trim(),
-          description: description.trim(),
+          description: `Portfolio website for ${portfolioData.settings.name}`,
           githubToken: githubToken.trim(),
         },
       });
@@ -103,7 +94,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Github className="h-5 w-5" />
@@ -140,7 +131,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Live Website</Label>
                 <div className="flex items-center gap-2">
@@ -188,87 +179,84 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Video Player at the top */}
-            <div className="bg-gray-50/80 dark:bg-gray-900/30 border border-gray-200/50 dark:border-gray-700/50 rounded-lg p-3">
-              <div className="aspect-video w-full">
-                <iframe
-                  src="https://player.cloudinary.com/embed/?cloud_name=naganithin&public_id=zkkueerlu9gokxngcp1a&profile=cld-default"
-                  width="100%"
-                  height="100%"
-                  style={{ border: "none" }}
-                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                  allowFullScreen
-                  title="GitHub Token Tutorial"
-                  className="rounded"
+            {/* Video Player and Token Creation in a grid layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Video Player */}
+              <div className="bg-gray-50/80 dark:bg-gray-900/30 border border-gray-200/50 dark:border-gray-700/50 rounded-lg p-3">
+                <div className="aspect-video w-full">
+                  <iframe
+                    src="https://player.cloudinary.com/embed/?cloud_name=naganithin&public_id=zkkueerlu9gokxngcp1a&profile=cld-default"
+                    width="100%"
+                    height="100%"
+                    style={{ border: "none" }}
+                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                    allowFullScreen
+                    title="GitHub Token Tutorial"
+                    className="rounded"
+                  />
+                </div>
+              </div>
+
+              {/* Token Creation Info */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between bg-blue-50/80 dark:bg-blue-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <Key className="h-4 w-4 text-blue-600 dark:text-blue-300" />
+                    <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                      Need a GitHub token?
+                    </span>
+                  </div>
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="outline"
+                    className="border-blue-500 text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900"
+                  >
+                    <a
+                      href="https://github.com/settings/tokens/new?type=classic&description=FrameCV%20Portfolio&scopes=repo,workflow"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Create Token
+                    </a>
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Info className="h-3 w-3" />
+                  You can generate a token directly on GitHub with this link.
+                </p>
+              </div>
+            </div>
+
+            {/* Form Fields in a grid layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Token Input */}
+              <div className="space-y-2">
+                <Label htmlFor="githubToken" className="flex items-center gap-2">
+                  <Key className="h-4 w-4" />
+                  GitHub Personal Access Token
+                </Label>
+                <Input
+                  id="githubToken"
+                  type="password"
+                  value={githubToken}
+                  onChange={(e) => setGithubToken(e.target.value)}
+                  placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                  disabled={isDeploying}
                 />
               </div>
-            </div>
 
-            {/* Create Token Button & Info */}
-            <div className="flex items-center justify-between bg-blue-50/80 dark:bg-blue-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-lg p-3 mb-2">
-              <div className="flex items-center gap-2">
-                <Key className="h-4 w-4 text-blue-600 dark:text-blue-300" />
-                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                  Need a GitHub token?&nbsp;
-                </span>
+              {/* Repo Name */}
+              <div className="space-y-2">
+                <Label htmlFor="repoName">Repository Name</Label>
+                <Input
+                  id="repoName"
+                  value={repoName}
+                  onChange={(e) => setRepoName(e.target.value)}
+                  placeholder="my-portfolio"
+                  disabled={isDeploying}
+                />
               </div>
-              <Button
-                asChild
-                size="sm"
-                variant="outline"
-                className="border-blue-500 text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900"
-              >
-                <a
-                  href="https://github.com/settings/tokens/new?type=classic&description=FrameCV%20Portfolio&scopes=repo,workflow"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Create Token
-                </a>
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground -mt-2 mb-2 flex items-center gap-1">
-              <Info className="h-3 w-3" />
-              You can generate a token directly on GitHub with this link.
-            </p>
-
-            {/* Token Input */}
-            <div className="space-y-2">
-              <Label htmlFor="githubToken" className="flex items-center gap-2">
-                <Key className="h-4 w-4" />
-                GitHub Personal Access Token
-              </Label>
-              <Input
-                id="githubToken"
-                type="password"
-                value={githubToken}
-                onChange={(e) => setGithubToken(e.target.value)}
-                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                disabled={isDeploying}
-              />
-            </div>
-
-            {/* Repo Name & Description */}
-            <div className="space-y-2">
-              <Label htmlFor="repoName">Repository Name</Label>
-              <Input
-                id="repoName"
-                value={repoName}
-                onChange={(e) => setRepoName(e.target.value)}
-                placeholder="my-portfolio"
-                disabled={isDeploying}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Portfolio website"
-                disabled={isDeploying}
-                rows={2}
-              />
             </div>
 
             {/* Publish Button */}
