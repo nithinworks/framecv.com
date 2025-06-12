@@ -1,6 +1,7 @@
 
 import { PortfolioProvider } from "@/context/PortfolioContext";
 import BuilderPage from "@/components/BuilderPage";
+import { Toaster } from "@/components/ui/toaster";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { PortfolioData } from "@/types/portfolio";
@@ -28,7 +29,7 @@ const Builder = () => {
   return (
     <PortfolioProvider initialData={portfolioData}>
       <BuilderPage />
-      <div id="toaster-container" className="fixed bottom-4 right-4 z-50" />
+      <Toaster />
     </PortfolioProvider>
   );
 };

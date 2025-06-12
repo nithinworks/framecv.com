@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import {
   Loader2,
   Github,
@@ -30,6 +30,7 @@ interface GitHubDeployProps {
 
 const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   const { portfolioData } = usePortfolio();
+  const { toast } = useToast();
   const [repoName, setRepoName] = useState(
     `${portfolioData.settings.name
       .toLowerCase()
@@ -44,12 +45,20 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
   const handleDeploy = async () => {
     if (!githubToken.trim()) {
-      toast.error("Please enter your GitHub token");
+      toast({
+        title: "Error",
+        description: "Please enter your GitHub token",
+        variant: "destructive",
+      });
       return;
     }
 
     if (!repoName.trim()) {
-      toast.error("Please enter a repository name");
+      toast({
+        title: "Error", 
+        description: "Please enter a repository name",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -67,7 +76,11 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
       if (error) {
         console.error("Publish error:", error);
-        toast.error("Github Publishing Failed, Try downloading the source code and publishing on your own like that.");
+        toast({
+          title: "GitHub Publishing Failed",
+          description: "Try downloading the source code and publishing on your own like that.",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -76,12 +89,17 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         pagesUrl: data.pagesUrl,
       });
 
-      toast.success("Portfolio published successfully!", {
+      toast({
+        title: "Portfolio published successfully!",
         description: "Your portfolio is now live on GitHub Pages",
       });
     } catch (error) {
       console.error("Publish error:", error);
-      toast.error("Github Publishing Failed, Try downloading the source code and publishing on your own like that.");
+      toast({
+        title: "GitHub Publishing Failed",
+        description: "Try downloading the source code and publishing on your own like that.",
+        variant: "destructive",
+      });
     } finally {
       setIsDeploying(false);
     }

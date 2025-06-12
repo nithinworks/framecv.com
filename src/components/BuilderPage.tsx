@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
@@ -19,16 +19,18 @@ const BuilderPage: React.FC = () => {
   
   const [showEditorHint, setShowEditorHint] = useState(true);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   
   // Set initial view to desktop on load
   useEffect(() => {
     setCurrentView("desktop");
     
     // Show a welcome message to guide the user
-    toast.success("Portfolio builder loaded", {
+    toast({
+      title: "Portfolio builder loaded",
       description: "Click the Editor button to start customizing your portfolio"
     });
-  }, [setCurrentView]);
+  }, [setCurrentView, toast]);
 
   // Hide editor hint when editor is opened
   useEffect(() => {
@@ -41,7 +43,8 @@ const BuilderPage: React.FC = () => {
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
-      toast.info("Right-click disabled", {
+      toast({
+        title: "Right-click disabled",
         description: "Right-click functionality is disabled in the builder for security"
       });
     };
@@ -85,7 +88,7 @@ const BuilderPage: React.FC = () => {
         }
       });
     };
-  }, []);
+  }, [toast]);
   
   if (isProcessing) {
     return (
