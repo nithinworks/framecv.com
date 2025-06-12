@@ -26,25 +26,23 @@ const SettingsEditor: React.FC = () => {
   };
 
   const predefinedColors = [
-  "#d65822", "#0067C7", "#7C3AED", "#059669", "#DC2626", 
-  "#EA580C", "#9333EA", "#0891B2", "#16A34A", "#DB2777",
-  "#3B82F6", // blue-500
-  "#F59E0B", // amber-500
-  "#10B981", // emerald-500
-  "#F43F5E", // rose-500
-  "#6366F1", // indigo-500
-  "#14B8A6", // teal-500
-  "#8B5CF6", // violet-500
-  "#EC4899", // pink-500
-  "#22C55E", // green-500
-  "#0EA5E9", // sky-500
-  "#F97316", // orange-500
-  "#EAB308", // yellow-500 (high contrast)
-  "#6B7280", // neutral-500 (grey accent)
-  "#4ADE80", // lime green - bright
-  "#38BDF8", // light blue - crisp
-  "#BE123C", // crimson deep
+  "#D65822", // Burnt Orange - bold and energetic
+  "#0067C7", // Deep Blue - tech/professional
+  "#7C3AED", // Purple - creative/futuristic
+  "#10B981", // Emerald - fresh/trustworthy
+  "#DC2626", // Strong Red - standout action
+  "#F59E0B", // Amber - bright/friendly
+  "#0891B2", // Cyan - cool modern
+  "#9333EA", // Violet - elegant and powerful
+  "#3F3F46", // Charcoal - neutral/dark fallback
+  "#22C55E", // Lime Green - bright/high-energy
+  "#8B5CF6", // Lavender - soft and appealing
+  "#BE123C", // Crimson - rich and intense
+  "#A16207", // Brown/Goldenrod - earthy, grounded
+  "#0EA5E9", // Sky Blue - light and refreshing
+  "#EC4899", // Rose Pink - vibrant and bold
   ];
+
 
 
   const primaryFontOptions = [
