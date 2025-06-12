@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -35,14 +34,6 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     `${portfolioData.settings.name
       .toLowerCase()
       .replace(/\s+/g, "-")}-portfolio`
-  );
-  const [description, setDescription] = useState(
-    `Professional portfolio for ${portfolioData.settings.name} — ${
-      portfolioData.settings.title
-    }.\n\n${
-      portfolioData.settings.summary ||
-      "Showcasing skills, experience, and projects."
-    }\n\nBuilt with FrameCV.com`
   );
   const [githubToken, setGithubToken] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
@@ -69,7 +60,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         body: {
           portfolioData,
           repoName: repoName.trim(),
-          description: description.trim(),
+          description: `Portfolio website for ${portfolioData.settings.name}`,
           githubToken: githubToken.trim(),
         },
       });
@@ -103,7 +94,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Github className="h-5 w-5" />
@@ -248,7 +239,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               />
             </div>
 
-            {/* Repo Name & Description */}
+            {/* Repo Name */}
             <div className="space-y-2">
               <Label htmlFor="repoName">Repository Name</Label>
               <Input
@@ -257,17 +248,6 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                 onChange={(e) => setRepoName(e.target.value)}
                 placeholder="my-portfolio"
                 disabled={isDeploying}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Portfolio website"
-                disabled={isDeploying}
-                rows={2}
               />
             </div>
 

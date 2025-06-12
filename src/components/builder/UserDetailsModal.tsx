@@ -107,12 +107,12 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
           <DialogTitle className="text-lg font-semibold">
             {actionType === "download"
               ? "Download Portfolio"
-              : "Deploy to GitHub"}
+              : "Publish to GitHub"}
           </DialogTitle>
           <DialogDescription>
             {actionType === "download"
               ? "Enter your details to download your portfolio."
-              : "Enter your details to deploy your portfolio to GitHub."}
+              : "Enter your details to publish your portfolio to GitHub."}
           </DialogDescription>
         </DialogHeader>
 
@@ -176,7 +176,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
             ) : actionType === "download" ? (
               "Download"
             ) : (
-              "Deploy"
+              "Publish"
             )}
           </Button>
         </div>
