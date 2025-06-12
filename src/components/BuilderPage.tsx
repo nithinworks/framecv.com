@@ -26,10 +26,10 @@ const BuilderPage: React.FC = () => {
     setCurrentView("desktop");
     
     // Show a welcome message to guide the user
-    toast({
+    {/*toast({
       title: "Portfolio builder loaded",
       description: "Click the Editor button to start customizing your portfolio"
-    });
+    });*/}
   }, [setCurrentView, toast]);
 
   // Hide editor hint when editor is opened
