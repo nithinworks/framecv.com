@@ -90,12 +90,12 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
           >
             About
           </Link>
-          <Link
+          {/* <Link
             to="/deploy-guide"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             Deploy Guide
-          </Link>
+          </Link> */}
         </nav>
 
         {/* Mobile Menu Button */}
