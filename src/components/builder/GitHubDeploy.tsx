@@ -75,8 +75,8 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       });
 
       if (error) {
-        console.error("Deploy error:", error);
-        toast.error("Github Deployment Failed, Try downloading the source code and publishing on your own like that.");
+        console.error("Publish error:", error);
+        toast.error("Github Publishing Failed, Try downloading the source code and publishing on your own like that.");
         return;
       }
 
@@ -85,12 +85,12 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         pagesUrl: data.pagesUrl,
       });
 
-      toast.success("Portfolio deployed successfully!", {
+      toast.success("Portfolio published successfully!", {
         description: "Your portfolio is now live on GitHub Pages",
       });
     } catch (error) {
-      console.error("Deploy error:", error);
-      toast.error("Github Deployment Failed, Try downloading the source code and publishing on your own like that.");
+      console.error("Publish error:", error);
+      toast.error("Github Publishing Failed, Try downloading the source code and publishing on your own like that.");
     } finally {
       setIsDeploying(false);
     }
@@ -107,12 +107,12 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Github className="h-5 w-5" />
-            {deploymentResult ? "Deployment Successful!" : "Deploy to GitHub"}
+            {deploymentResult ? "Publishing Successful!" : "Publish to GitHub"}
           </DialogTitle>
           <DialogDescription>
             {deploymentResult
-              ? "Your portfolio has been deployed to GitHub Pages. You can view your live site and repository below."
-              : "Deploy your portfolio to GitHub Pages by providing a GitHub token and repository details."}
+              ? "Your portfolio has been published to GitHub Pages. You can view your live site and repository below."
+              : "Publish your portfolio to GitHub Pages by providing a GitHub token and repository details."}
           </DialogDescription>
         </DialogHeader>
 
@@ -188,6 +188,22 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           </div>
         ) : (
           <div className="space-y-4">
+            {/* Video Player at the top */}
+            <div className="bg-gray-50/80 dark:bg-gray-900/30 border border-gray-200/50 dark:border-gray-700/50 rounded-lg p-3">
+              <div className="aspect-video w-full">
+                <iframe
+                  src="https://player.cloudinary.com/embed/?cloud_name=naganithin&public_id=zkkueerlu9gokxngcp1a&profile=cld-default"
+                  width="100%"
+                  height="100%"
+                  style={{ border: "none" }}
+                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  title="GitHub Token Tutorial"
+                  className="rounded"
+                />
+              </div>
+            </div>
+
             {/* Create Token Button & Info */}
             <div className="flex items-center justify-between bg-blue-50/80 dark:bg-blue-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-lg p-3 mb-2">
               <div className="flex items-center gap-2">
@@ -215,35 +231,6 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               <Info className="h-3 w-3" />
               You can generate a token directly on GitHub with this link.
             </p>
-
-            {/* Token Instructions */}
-            <div className="bg-blue-100/70 dark:bg-blue-900/40 border border-blue-200/60 dark:border-blue-700/60 rounded-lg p-3 mb-2 text-xs text-blue-900 dark:text-blue-100 space-y-1">
-              <div className="font-semibold mb-1 flex items-center gap-1">
-                <Info className="h-3 w-3" />
-                Token Instructions
-              </div>
-              <div>
-                <b>Type:</b>{" "}
-                <span className="font-mono">
-                  Personal access token (classic)
-                </span>
-              </div>
-              <div>
-                <b>Permissions:</b> <span className="font-mono">repo</span>{" "}
-                (Full control of private repositories),{" "}
-                <span className="font-mono">workflow</span> (Update GitHub
-                Action workflows)
-              </div>
-              <div>
-                <b>Recommended Expiry:</b>{" "}
-                <span className="font-mono">7 days</span> or as short as
-                possible
-              </div>
-              <div>
-                <b>Note:</b> You can revoke this token anytime from your GitHub
-                settings.
-              </div>
-            </div>
 
             {/* Token Input */}
             <div className="space-y-2">
@@ -284,7 +271,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               />
             </div>
 
-            {/* Deploy Button */}
+            {/* Publish Button */}
             <div className="flex justify-end gap-3">
               <Button
                 variant="outline"
@@ -302,12 +289,12 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                 {isDeploying ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Deploying...
+                    Publishing...
                   </>
                 ) : (
                   <>
                     <Github className="h-4 w-4 mr-2" />
-                    Deploy
+                    Publish
                   </>
                 )}
               </Button>

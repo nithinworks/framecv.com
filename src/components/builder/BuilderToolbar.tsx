@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -73,7 +74,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
     URL.revokeObjectURL(url);
   };
 
-  const handleDeployClick = () => {
+  const handlePublishClick = () => {
     setPendingAction("deploy");
     setShowUserDetails(true);
   };
@@ -161,11 +162,11 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleDeployClick}
+            onClick={handlePublishClick}
             className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
           >
             <Github className="h-4 w-4 mr-2" />
-            {!isMobile && "Deploy"}
+            {!isMobile && "Publish"}
           </Button>
           
           <DropdownMenu>
