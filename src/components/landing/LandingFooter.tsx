@@ -80,14 +80,14 @@ const LandingFooter = () => {
                 About
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link
                 to="/deploy-guide"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Deploy Guide
-              </Link>
-            </li>
+              </Link> 
+            </li> */}
             <li>
               <Link
                 to="/privacy-policy"
