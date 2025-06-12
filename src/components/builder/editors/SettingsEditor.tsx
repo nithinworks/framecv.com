@@ -26,9 +26,26 @@ const SettingsEditor: React.FC = () => {
   };
 
   const predefinedColors = [
-    "#d65822", "#0067C7", "#7C3AED", "#059669", "#DC2626", 
-    "#EA580C", "#9333EA", "#0891B2", "#16A34A", "#DB2777"
+  "#d65822", "#0067C7", "#7C3AED", "#059669", "#DC2626", 
+  "#EA580C", "#9333EA", "#0891B2", "#16A34A", "#DB2777",
+  "#3B82F6", // blue-500
+  "#F59E0B", // amber-500
+  "#10B981", // emerald-500
+  "#F43F5E", // rose-500
+  "#6366F1", // indigo-500
+  "#14B8A6", // teal-500
+  "#8B5CF6", // violet-500
+  "#EC4899", // pink-500
+  "#22C55E", // green-500
+  "#0EA5E9", // sky-500
+  "#F97316", // orange-500
+  "#EAB308", // yellow-500 (high contrast)
+  "#6B7280", // neutral-500 (grey accent)
+  "#4ADE80", // lime green - bright
+  "#38BDF8", // light blue - crisp
+  "#BE123C", // crimson deep
   ];
+
 
   const primaryFontOptions = [
     { value: "ovo", label: "Ovo (Serif)" },
