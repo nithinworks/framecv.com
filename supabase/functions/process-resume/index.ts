@@ -406,7 +406,7 @@ Return ONLY valid JSON:
   },
   "footer": {
     "enabled": true,
-    "copyright": "© 2024 [Name]. All rights reserved."
+    "copyright": "© 2025 [Name]. All rights reserved."
   }
 }`;
 
