@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      feature_flags: {
+        Row: {
+          created_at: string
+          github_deploy_status: boolean
+          id: string
+          process_resume_status: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          github_deploy_status?: boolean
+          id?: string
+          process_resume_status?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          github_deploy_status?: boolean
+          id?: string
+          process_resume_status?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_submissions: {
         Row: {
           action_type: string
@@ -41,7 +65,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_feature_flag: {
+        Args: { flag_name: string; flag_value: boolean }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

@@ -5,10 +5,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { PortfolioData } from "@/types/portfolio";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const Builder = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { featureFlags } = useFeatureFlags();
   
   // Get the portfolio data from navigation state (passed from landing page)
   const portfolioData = location.state?.portfolioData as PortfolioData;

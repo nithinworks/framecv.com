@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { samplePortfolioData } from "@/data/samplePortfolio";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 interface ResumeProcessorProps {
   file: File | null;
@@ -15,8 +16,31 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setIsProcessing: setGlobalProcessing } = usePortfolio();
+  const { featureFlags } = useFeatureFlags();
 
   const processResume = useCallback(async () => {
+    // Check if resume processing is enabled
+    if (!featureFlags.process_resume_status) {
+      toast({
+        title: "Feature temporarily unavailable",
+        description: "Resume processing is currently disabled. Please try again later or create your portfolio manually.",
+        variant: "destructive",
+        action: (
+          <button
+            onClick={() => {
+              navigate("/builder", { 
+                state: { portfolioData: samplePortfolioData }
+              });
+            }}
+            className="ml-2 bg-white text-black border border-gray-600 hover:bg-gray-100 px-3 py-1 rounded text-sm"
+          >
+            Create Manually
+          </button>
+        ),
+      });
+      return;
+    }
+
     if (!file) {
       toast({
         title: "No file selected",
@@ -113,7 +137,7 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
       onProcessingChange(false);
       setGlobalProcessing(false);
     }
-  }, [file, navigate, setGlobalProcessing, toast, onProcessingChange]);
+  }, [file, navigate, setGlobalProcessing, toast, onProcessingChange, featureFlags.process_resume_status]);
 
   return { processResume };
 };

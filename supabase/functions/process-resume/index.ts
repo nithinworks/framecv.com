@@ -1,6 +1,6 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Simple in-memory store for rate limiting (resets on function restart)
 const ipRequestCounts = new Map<string, { count: number; lastReset: number }>();
@@ -38,6 +38,27 @@ function getClientIP(req: Request): string {
          req.headers.get('x-real-ip') || 
          req.headers.get('cf-connecting-ip') || 
          'unknown';
+}
+
+// Check if resume processing is enabled via feature flags
+async function checkFeatureFlag(supabase: any): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('feature_flags')
+      .select('process_resume_status')
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking feature flag:', error);
+      return false; // Default to disabled if we can't check
+    }
+
+    return data?.process_resume_status || false;
+  } catch (error) {
+    console.error('Feature flag check error:', error);
+    return false; // Default to disabled if we can't check
+  }
 }
 
 // Improved PDF validation with efficient page counting
@@ -233,6 +254,24 @@ const handler = async (req: Request) => {
   }
 
   try {
+    // Initialize Supabase client for feature flag checking
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Check if resume processing feature is enabled
+    const isFeatureEnabled = await checkFeatureFlag(supabase);
+    if (!isFeatureEnabled) {
+      logRequest(clientIP, "FEATURE_DISABLED");
+      return new Response(JSON.stringify({
+        error: 'Feature temporarily unavailable',
+        message: 'Resume processing is currently disabled. Please try again later.'
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 503
+      });
+    }
+
     // Rate limiting check
     if (!checkRateLimit(clientIP)) {
       logRequest(clientIP, "RATE_LIMITED", { limit: RATE_LIMIT_PER_DAY });

@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import {
   Loader2,
   Github,
@@ -31,6 +32,7 @@ interface GitHubDeployProps {
 const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   const { portfolioData } = usePortfolio();
   const { toast } = useToast();
+  const { featureFlags } = useFeatureFlags();
   const [repoName, setRepoName] = useState(
     `${portfolioData.settings.name
       .toLowerCase()
@@ -44,6 +46,16 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   } | null>(null);
 
   const handleDeploy = async () => {
+    // Check if GitHub deployment is enabled
+    if (!featureFlags.github_deploy_status) {
+      toast({
+        title: "Feature temporarily unavailable",
+        description: "GitHub publishing is currently disabled. Please try again later or download your portfolio files.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!githubToken.trim()) {
       toast({
         title: "Error",
@@ -109,6 +121,43 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     setDeploymentResult(null);
     onOpenChange(false);
   };
+
+  // If GitHub deployment is disabled, show a disabled state
+  if (!featureFlags.github_deploy_status) {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Github className="h-5 w-5" />
+              Publish to GitHub
+            </DialogTitle>
+            <DialogDescription>
+              GitHub publishing is currently unavailable.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                <Github className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                Feature Temporarily Unavailable
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                GitHub publishing is currently disabled. Please try again later or download your portfolio files to publish manually.
+              </p>
+            </div>
+
+            <Button onClick={handleClose} className="w-full">
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
@@ -20,6 +21,9 @@ const BuilderPage: React.FC = () => {
   const [showEditorHint, setShowEditorHint] = useState(true);
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  
+  // Initialize feature flags
+  const { featureFlags, isLoading: flagsLoading } = useFeatureFlags();
   
   // Set initial view to desktop on load
   useEffect(() => {
