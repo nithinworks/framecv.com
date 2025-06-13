@@ -7,7 +7,8 @@ import {
   ChevronLeft,
   Github,
   ChevronDown,
-  Eye
+  Eye,
+  Lock
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -15,6 +16,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -24,6 +31,7 @@ import UserDetailsModal from "@/components/builder/UserDetailsModal";
 import DeviceToggle from "@/components/builder/DeviceToggle";
 import BackNavigationModal from "@/components/builder/BackNavigationModal";
 import { useDownloadCode } from "@/hooks/useDownloadCode";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
@@ -37,6 +45,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   } = usePortfolio();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { featureFlags } = useFeatureFlags();
   const [showGitHubDeploy, setShowGitHubDeploy] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [showBackModal, setShowBackModal] = useState(false);
@@ -75,6 +84,9 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
   };
 
   const handlePublishClick = () => {
+    if (!featureFlags.github_deploy_status) {
+      return; // Do nothing if disabled
+    }
     setPendingAction("deploy");
     setShowUserDetails(true);
   };
@@ -159,15 +171,38 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
         )}
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handlePublishClick}
-            className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
-          >
-            <Github className="h-4 w-4 mr-2" />
-            {!isMobile && "Publish"}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handlePublishClick}
+                    disabled={!featureFlags.github_deploy_status}
+                    className={`px-3 py-2 h-8 text-sm transition-all duration-300 ${
+                      featureFlags.github_deploy_status 
+                        ? "text-gray-400 hover:text-white hover:bg-gray-800" 
+                        : "text-gray-600 cursor-not-allowed"
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      {!featureFlags.github_deploy_status && (
+                        <Lock className="h-3 w-3 mr-1" />
+                      )}
+                      <Github className="h-4 w-4 mr-2" />
+                      {!isMobile && "Publish"}
+                    </div>
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              {!featureFlags.github_deploy_status && (
+                <TooltipContent side="bottom">
+                  <p className="text-sm">Feature temporarily disabled due to high usage</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

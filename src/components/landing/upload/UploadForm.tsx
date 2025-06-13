@@ -9,28 +9,36 @@ interface UploadFormProps {
   onFileSelect: (file: File | null) => void;
   onSubmit: (e: React.FormEvent) => void;
   isProcessing: boolean;
+  isUploadDisabled?: boolean;
 }
 
 const UploadForm: React.FC<UploadFormProps> = ({
   file,
   onFileSelect,
   onSubmit,
-  isProcessing
+  isProcessing,
+  isUploadDisabled = false
 }) => {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <FileUploadZone file={file} onFileSelect={onFileSelect} />
+      <FileUploadZone 
+        file={file} 
+        onFileSelect={onFileSelect} 
+        isDisabled={isUploadDisabled}
+      />
       
       <Button 
         type="submit" 
         className="w-full bg-foreground hover:bg-muted-foreground text-background font-medium py-4 px-8 rounded-xl transition-all duration-300" 
-        disabled={!file || isProcessing}
+        disabled={!file || isProcessing || isUploadDisabled}
       >
         {isProcessing ? (
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin"></div>
             Processing your resume...
           </div>
+        ) : isUploadDisabled ? (
+          "Feature Temporarily Disabled"
         ) : (
           <>
             Create My Portfolio Now

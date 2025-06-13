@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import UploadForm from "./upload/UploadForm";
 import ManualCreationLink from "./upload/ManualCreationLink";
 import { useResumeProcessor } from "./upload/ResumeProcessor";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 interface UploadSectionProps {
   isLoaded: boolean;
@@ -11,6 +12,7 @@ interface UploadSectionProps {
 const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const { featureFlags } = useFeatureFlags();
   
   const { processResume } = useResumeProcessor({ 
     file, 
@@ -30,6 +32,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ isLoaded }) => {
           onFileSelect={setFile}
           onSubmit={handleSubmit}
           isProcessing={isProcessing}
+          isUploadDisabled={!featureFlags.process_resume_status}
         />
         <ManualCreationLink />
       </div>
