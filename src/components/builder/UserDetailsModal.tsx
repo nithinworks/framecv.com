@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -13,6 +14,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useUserDetailsStorage } from "@/hooks/useUserDetailsStorage";
 import { useUserSubmission } from "@/hooks/useUserSubmission";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UserDetailsModalProps {
   open: boolean;
@@ -36,7 +38,13 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   const { isLoading, submitUserDetails } = useUserSubmission({
     actionType,
     portfolioName,
-    onSuccess,
+    onSuccess: () => {
+      // Track download if this is a download action
+      if (actionType === "download") {
+        supabase.rpc('increment_portfolio_stat', { stat_type: 'download' }).catch(console.error);
+      }
+      onSuccess();
+    },
     onClose: () => onOpenChange(false),
   });
 

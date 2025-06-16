@@ -33,6 +33,36 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_stats: {
+        Row: {
+          created_at: string
+          downloads: number
+          github_deployments: number
+          id: string
+          portfolios_via_manual: number
+          portfolios_via_resume: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          downloads?: number
+          github_deployments?: number
+          id?: string
+          portfolios_via_manual?: number
+          portfolios_via_resume?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          downloads?: number
+          github_deployments?: number
+          id?: string
+          portfolios_via_manual?: number
+          portfolios_via_resume?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_submissions: {
         Row: {
           action_type: string
@@ -65,6 +95,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_portfolio_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          portfolios_via_resume: number
+          portfolios_via_manual: number
+          github_deployments: number
+          downloads: number
+          last_updated: string
+        }[]
+      }
+      increment_portfolio_stat: {
+        Args: { stat_type: string }
+        Returns: boolean
+      }
       update_feature_flag: {
         Args: { flag_name: string; flag_value: boolean }
         Returns: boolean

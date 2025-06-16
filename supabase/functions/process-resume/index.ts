@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -497,6 +498,15 @@ Return ONLY valid JSON:
     } catch (parseError) {
       logRequest(clientIP, "JSON_PARSE_ERROR", { error: parseError.message });
       throw new Error(`JSON parsing failed: ${parseError.message}`);
+    }
+    
+    // Track successful resume portfolio creation
+    try {
+      await supabase.rpc('increment_portfolio_stat', { stat_type: 'resume' });
+      logRequest(clientIP, "PORTFOLIO_STAT_TRACKED");
+    } catch (statError) {
+      // Don't fail the request if stat tracking fails
+      logRequest(clientIP, "PORTFOLIO_STAT_ERROR", { error: statError.message });
     }
     
     logRequest(clientIP, "SUCCESS", { 

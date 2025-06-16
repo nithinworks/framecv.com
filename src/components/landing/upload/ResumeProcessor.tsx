@@ -28,6 +28,8 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
         action: (
           <button
             onClick={() => {
+              // Track manual portfolio creation
+              supabase.rpc('increment_portfolio_stat', { stat_type: 'manual' }).catch(console.error);
               navigate("/builder", { 
                 state: { portfolioData: samplePortfolioData }
               });
@@ -104,6 +106,9 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
         throw new Error('No portfolio data received');
       }
       
+      // Track successful portfolio creation via resume
+      supabase.rpc('increment_portfolio_stat', { stat_type: 'resume' }).catch(console.error);
+      
       toast({
         title: "Resume processed successfully!",
         description: "Your portfolio has been generated.",
@@ -123,6 +128,8 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
         action: (
           <button
             onClick={() => {
+              // Track manual portfolio creation
+              supabase.rpc('increment_portfolio_stat', { stat_type: 'manual' }).catch(console.error);
               navigate("/builder", { 
                 state: { portfolioData: samplePortfolioData }
               });
