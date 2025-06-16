@@ -113,12 +113,8 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
         throw new Error('No portfolio data received');
       }
       
-      // Track successful portfolio creation via resume
-      try {
-        await supabase.rpc('increment_portfolio_stat', { stat_type: 'resume' });
-      } catch (error) {
-        console.error('Failed to track portfolio stat:', error);
-      }
+      // Note: Portfolio stat tracking is now handled in the edge function
+      // to avoid double counting
       
       toast({
         title: "Resume processed successfully!",
