@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +11,17 @@ const WaitlistPage: React.FC = () => {
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email.trim() || !name.trim()) {
       toast({
         title: "Missing information",
@@ -27,16 +32,14 @@ const WaitlistPage: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      const { error } = await supabase
-        .from('user_submissions')
-        .insert({
-          name: name.trim(),
-          email: email.trim(),
-          action_type: 'waitlist',
-          portfolio_name: 'Waitlist Signup'
-        });
+      const { error } = await supabase.from("user_submissions").insert({
+        name: name.trim(),
+        email: email.trim(),
+        action_type: "waitlist",
+        portfolio_name: "Waitlist Signup",
+      });
 
       if (error) {
         throw error;
@@ -48,7 +51,7 @@ const WaitlistPage: React.FC = () => {
         description: "We'll notify you when FrameCV is ready.",
       });
     } catch (error: any) {
-      console.error('Waitlist signup error:', error);
+      console.error("Waitlist signup error:", error);
       toast({
         title: "Signup failed",
         description: "Please try again later.",
@@ -62,164 +65,148 @@ const WaitlistPage: React.FC = () => {
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center space-y-6">
-          <div className="space-y-4">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
-            <h1 className="text-3xl font-bold">You're In!</h1>
-            <p className="text-muted-foreground">
-              Thanks for joining the FrameCV waitlist. We'll notify you as soon as we're ready to launch!
-            </p>
-          </div>
-          
-          <div className="bg-muted/50 border border-border rounded-xl p-6">
-            <p className="text-sm text-muted-foreground">
-              In the meantime, follow us on social media for updates and tips on creating amazing portfolios.
-            </p>
-          </div>
+        <div
+          className={`max-w-sm w-full text-center space-y-6 transition-all duration-1000 ${
+            isLoaded ? "animate-fade-up" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <CheckCircle className="w-12 h-12 text-green-400 mx-auto" />
+          <h1 className="text-2xl font-medium">You're In!</h1>
+          <p className="text-muted-foreground">
+            Thanks for joining the waitlist. We'll notify you when we launch.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="border-b border-border/40 bg-background/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-foreground rounded-md flex items-center justify-center">
-                <span className="text-background font-bold text-sm">F</span>
-              </div>
-              <span className="font-bold text-xl">FrameCV</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-grow flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-16">
-        <div className="container mx-auto text-center max-w-4xl space-y-12">
-          
-          {/* Hero Section */}
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 bg-muted/80 text-muted-foreground px-4 py-2 rounded-full text-sm font-medium border border-border/50">
-              <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
-              Coming Soon
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight">
-              Turn Your Resume Into a
-              <span className="bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent block mt-2">
-                Stunning Portfolio
-              </span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              FrameCV uses AI to transform your resume into a beautiful, customizable portfolio website. 
-              No coding required, just upload and deploy.
-            </p>
-          </div>
-
-          {/* Waitlist Form */}
-          <div className="max-w-md mx-auto">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="waitlist-name" className="sr-only">Name</Label>
-                <Input
-                  id="waitlist-name"
-                  type="text"
-                  placeholder="Your full name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="h-12 text-center"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="waitlist-email" className="sr-only">Email</Label>
-                <Input
-                  id="waitlist-email"
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 text-center"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full h-12 bg-foreground hover:bg-muted-foreground text-background font-medium rounded-xl transition-all duration-300" 
-                disabled={isSubmitting}
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
+      <div
+        className={`max-w-sm w-full space-y-8 transition-all duration-1000 ${
+          isLoaded ? "animate-fade-up" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center space-x-2 mb-8">
+            <div className="w-6 h-6 flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={24}
+                height={24}
+                viewBox="0 0 375 375"
+                aria-label="FrameCV logo"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin"></div>
-                    Joining waitlist...
-                  </div>
-                ) : (
-                  <>
-                    <Mail className="w-4 h-4 mr-2" />
-                    Join the Waitlist
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </>
-                )}
-              </Button>
-            </form>
-            
-            <p className="text-xs text-muted-foreground mt-4">
-              Be among the first to access FrameCV when we launch. No spam, ever.
-            </p>
+                <defs>
+                  <clipPath id="e6f8c5b9f5">
+                    <path d="M 12.816406 22.734375 L 362 22.734375 L 362 352.265625 L 12.816406 352.265625 Z M 12.816406 22.734375 " />
+                  </clipPath>
+                  <clipPath id="b699a39509">
+                    <path d="M 84.816406 22.734375 L 290.183594 22.734375 C 329.949219 22.734375 362.183594 54.96875 362.183594 94.734375 L 362.183594 280.265625 C 362.183594 320.03125 329.949219 352.265625 290.183594 352.265625 L 84.816406 352.265625 C 45.050781 352.265625 12.816406 320.03125 12.816406 280.265625 L 12.816406 94.734375 C 12.816406 54.96875 45.050781 22.734375 84.816406 22.734375 Z M 84.816406 22.734375 " />
+                  </clipPath>
+                  <clipPath id="da08487004">
+                    <path d="M 124 79.046875 L 291.613281 79.046875 L 291.613281 152 L 124 152 Z M 124 79.046875 " />
+                  </clipPath>
+                  <clipPath id="96136f3b18">
+                    <path d="M 83.113281 151 L 209 151 L 209 224 L 83.113281 224 Z M 83.113281 151 " />
+                  </clipPath>
+                  <clipPath id="77591e5658">
+                    <path d="M 83.113281 223 L 167 223 L 167 295.796875 L 83.113281 295.796875 Z M 83.113281 223 " />
+                  </clipPath>
+                </defs>
+                <g id="884ab43dfc">
+                  <g clipPath="url(#e6f8c5b9f5)">
+                    <g clipPath="url(#b699a39509)">
+                      <path
+                        style={{ fill: "#fafafa" }}
+                        d="M 12.816406 22.734375 L 361.660156 22.734375 L 361.660156 352.265625 L 12.816406 352.265625 Z M 12.816406 22.734375 "
+                      />
+                    </g>
+                  </g>
+                  <g clipPath="url(#da08487004)">
+                    <path
+                      style={{ fill: "#171717" }}
+                      d="M 143.753906 79.046875 L 124.828125 79.046875 L 166.519531 151.253906 L 249.898438 151.253906 L 291.589844 79.046875 Z M 143.753906 79.046875 "
+                    />
+                  </g>
+                  <g clipPath="url(#96136f3b18)">
+                    <path
+                      style={{ fill: "#171717" }}
+                      d="M 124.828125 223.464844 L 208.210938 223.464844 L 166.515625 151.257812 L 83.136719 151.257812 Z M 124.828125 223.464844 "
+                    />
+                  </g>
+                  <g clipPath="url(#77591e5658)">
+                    <path
+                      style={{ fill: "#171717" }}
+                      d="M 166.515625 295.675781 L 124.828125 223.464844 L 83.136719 295.675781 Z M 166.515625 295.675781 "
+                    />
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <span className="font-medium text-lg">FrameCV</span>
           </div>
 
-          {/* Features Preview */}
-          <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto mt-16">
-            <div className="bg-muted/30 border border-border/50 rounded-xl p-6 text-center">
-              <div className="w-12 h-12 bg-foreground/10 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                <span className="text-2xl">🤖</span>
-              </div>
-              <h3 className="font-semibold mb-2">AI-Powered</h3>
-              <p className="text-sm text-muted-foreground">
-                Smart extraction and beautiful formatting
-              </p>
-            </div>
-            
-            <div className="bg-muted/30 border border-border/50 rounded-xl p-6 text-center">
-              <div className="w-12 h-12 bg-foreground/10 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                <span className="text-2xl">⚡</span>
-              </div>
-              <h3 className="font-semibold mb-2">One-Click Deploy</h3>
-              <p className="text-sm text-muted-foreground">
-                Publish to GitHub Pages instantly
-              </p>
-            </div>
-            
-            <div className="bg-muted/30 border border-border/50 rounded-xl p-6 text-center">
-              <div className="w-12 h-12 bg-foreground/10 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                <span className="text-2xl">🎨</span>
-              </div>
-              <h3 className="font-semibold mb-2">Fully Customizable</h3>
-              <p className="text-sm text-muted-foreground">
-                Personalize every detail to match your style
-              </p>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border/40 py-8">
-        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-2xl font-medium">Join the Waitlist</h1>
           <p className="text-sm text-muted-foreground">
-            © 2025 FrameCV. All rights reserved.
+            Turn your resume into a stunning portfolio website in seconds.
+            AI-powered, developer-friendly, completely free.
           </p>
         </div>
-      </footer>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-name" className="sr-only">
+              Name
+            </Label>
+            <Input
+              id="waitlist-name"
+              type="text"
+              placeholder="Your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-10 text-center bg-white/5 border-white/10 focus:border-white/20"
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-email" className="sr-only">
+              Email
+            </Label>
+            <Input
+              id="waitlist-email"
+              type="email"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-10 text-center bg-white/5 border-white/10 focus:border-white/20"
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-10 bg-foreground hover:bg-muted-foreground text-background font-medium rounded-lg transition-all duration-300"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin"></div>
+                Joining...
+              </div>
+            ) : (
+              <>
+                <Mail className="w-4 h-4 mr-2" />
+                Join Waitlist
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 };

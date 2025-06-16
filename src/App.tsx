@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import WaitlistPage from "./components/WaitlistPage";
 // import Index from "./pages/Index";
 // import Builder from "./pages/Builder";
-// import NotFound from "./pages/NotFound";
+   import NotFound from "./pages/NotFound";
 // import About from "./pages/About";
 // import PrivacyPolicy from "./pages/PrivacyPolicy";
 // import DeployGuide from "./pages/DeployGuide";
@@ -30,7 +30,7 @@ const App = () => (
           {/* <Route path="/terms" element={<TermsAndConditions />} /> */}
           {/* <Route path="/deploy-guide" element={<DeployGuide />} /> */}
           {/* <Route path="/contact" element={<Contact />} /> */}
-          {/* <Route path="*" element={<NotFound />} /> */}
+          <Route path="*" element={<NotFound />} /> 
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
