@@ -90,11 +90,36 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      add_to_waitlist: {
+        Args: { user_name: string; user_email: string }
+        Returns: boolean
+      }
       get_portfolio_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -104,6 +129,10 @@ export type Database = {
           downloads: number
           last_updated: string
         }[]
+      }
+      get_waitlist_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       increment_portfolio_stat: {
         Args: { stat_type: string }

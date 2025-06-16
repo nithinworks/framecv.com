@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,11 +35,9 @@ const WaitlistPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.from("user_submissions").insert({
-        name: name.trim(),
-        email: email.trim(),
-        action_type: "waitlist",
-        portfolio_name: "Waitlist Signup",
+      const { error } = await supabase.rpc('add_to_waitlist', {
+        user_name: name.trim(),
+        user_email: email.trim()
       });
 
       if (error) {
@@ -52,11 +51,33 @@ const WaitlistPage: React.FC = () => {
       });
     } catch (error: any) {
       console.error("Waitlist signup error:", error);
-      toast({
-        title: "Signup failed",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
+      
+      // Handle specific error messages from the database function
+      if (error.message.includes("already on the waitlist")) {
+        toast({
+          title: "Already registered",
+          description: "This email is already on our waitlist.",
+          variant: "destructive",
+        });
+      } else if (error.message.includes("Invalid email format")) {
+        toast({
+          title: "Invalid email",
+          description: "Please enter a valid email address.",
+          variant: "destructive",
+        });
+      } else if (error.message.includes("Name must be")) {
+        toast({
+          title: "Invalid name",
+          description: "Name must be between 1 and 100 characters.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Signup failed",
+          description: "Please try again later.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
