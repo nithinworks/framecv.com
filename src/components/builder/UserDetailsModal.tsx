@@ -38,10 +38,14 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   const { isLoading, submitUserDetails } = useUserSubmission({
     actionType,
     portfolioName,
-    onSuccess: () => {
+    onSuccess: async () => {
       // Track download if this is a download action
       if (actionType === "download") {
-        supabase.rpc('increment_portfolio_stat', { stat_type: 'download' }).catch(console.error);
+        try {
+          await supabase.rpc('increment_portfolio_stat', { stat_type: 'download' });
+        } catch (error) {
+          console.error('Failed to track portfolio stat:', error);
+        }
       }
       onSuccess();
     },

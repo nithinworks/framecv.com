@@ -97,7 +97,11 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       }
 
       // Track successful GitHub deployment
-      supabase.rpc('increment_portfolio_stat', { stat_type: 'github_deploy' }).catch(console.error);
+      try {
+        await supabase.rpc('increment_portfolio_stat', { stat_type: 'github_deploy' });
+      } catch (error) {
+        console.error('Failed to track portfolio stat:', error);
+      }
 
       setDeploymentResult({
         repoUrl: data.repoUrl,

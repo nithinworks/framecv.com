@@ -18,6 +18,14 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
   const { setIsProcessing: setGlobalProcessing } = usePortfolio();
   const { featureFlags } = useFeatureFlags();
 
+  const trackManualCreation = async () => {
+    try {
+      await supabase.rpc('increment_portfolio_stat', { stat_type: 'manual' });
+    } catch (error) {
+      console.error('Failed to track portfolio stat:', error);
+    }
+  };
+
   const processResume = useCallback(async () => {
     // Check if resume processing is enabled
     if (!featureFlags.process_resume_status) {
@@ -27,9 +35,8 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
         variant: "destructive",
         action: (
           <button
-            onClick={() => {
-              // Track manual portfolio creation
-              supabase.rpc('increment_portfolio_stat', { stat_type: 'manual' }).catch(console.error);
+            onClick={async () => {
+              await trackManualCreation();
               navigate("/builder", { 
                 state: { portfolioData: samplePortfolioData }
               });
@@ -107,7 +114,11 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
       }
       
       // Track successful portfolio creation via resume
-      supabase.rpc('increment_portfolio_stat', { stat_type: 'resume' }).catch(console.error);
+      try {
+        await supabase.rpc('increment_portfolio_stat', { stat_type: 'resume' });
+      } catch (error) {
+        console.error('Failed to track portfolio stat:', error);
+      }
       
       toast({
         title: "Resume processed successfully!",
@@ -127,9 +138,8 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
         variant: "destructive",
         action: (
           <button
-            onClick={() => {
-              // Track manual portfolio creation
-              supabase.rpc('increment_portfolio_stat', { stat_type: 'manual' }).catch(console.error);
+            onClick={async () => {
+              await trackManualCreation();
               navigate("/builder", { 
                 state: { portfolioData: samplePortfolioData }
               });

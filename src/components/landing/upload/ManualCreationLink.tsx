@@ -7,9 +7,13 @@ import { supabase } from "@/integrations/supabase/client";
 const ManualCreationLink: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleManualCreation = () => {
+  const handleManualCreation = async () => {
     // Track manual portfolio creation
-    supabase.rpc('increment_portfolio_stat', { stat_type: 'manual' }).catch(console.error);
+    try {
+      await supabase.rpc('increment_portfolio_stat', { stat_type: 'manual' });
+    } catch (error) {
+      console.error('Failed to track portfolio stat:', error);
+    }
     
     navigate("/builder", { 
       state: { portfolioData: samplePortfolioData }
