@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -38,28 +38,88 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       .toLowerCase()
       .replace(/\s+/g, "-")}-portfolio`
   );
-  const [githubToken, setGithubToken] = useState("");
+  const [githubToken, setGithubToken] = useState<string | null>(null);
   const [isDeploying, setIsDeploying] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [deploymentResult, setDeploymentResult] = useState<{
     repoUrl: string;
     pagesUrl: string;
   } | null>(null);
+
+  useEffect(() => {
+    // This effect runs when the component mounts to check for a token in the URL hash
+    const handleTokenFromUrl = () => {
+      const hash = window.location.hash;
+      if (hash.includes("github_token=")) {
+        const token = hash.split("github_token=")[1].split("&")[0]; // Handle potential additional hash params
+        setGithubToken(token);
+        toast({
+          title: "GitHub Connected",
+          description: "You can now publish your portfolio.",
+        });
+        // Clean the URL by removing the hash
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+    };
+
+    // Check for error in URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("error") === "github_oauth_failed") {
+      toast({
+        title: "GitHub Connection Failed",
+        description: "There was an error connecting to GitHub. Please try again.",
+        variant: "destructive",
+      });
+      // Clean the URL
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+
+    if (open) {
+      handleTokenFromUrl();
+    }
+  }, [open, toast]);
+
+  const handleConnect = async () => {
+    if (!featureFlags.github_deploy_status) {
+      toast({
+        title: "Feature temporarily unavailable",
+        description: "GitHub publishing is currently disabled. Please try again later.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsConnecting(true);
+    try {
+      // Redirect to the 'github-auth-start' edge function
+      const supabaseUrl = "https://rlnlbdrlruuoffnyaltc.supabase.co";
+      window.location.href = `${supabaseUrl}/functions/v1/github-auth-start`;
+    } catch (error) {
+      console.error("Connection error:", error);
+      toast({
+        title: "Connection Failed",
+        description: "Failed to connect to GitHub. Please try again.",
+        variant: "destructive",
+      });
+      setIsConnecting(false);
+    }
+  };
 
   const handleDeploy = async () => {
     // Check if GitHub deployment is enabled
     if (!featureFlags.github_deploy_status) {
       toast({
         title: "Feature temporarily unavailable",
-        description: "GitHub publishing is currently disabled. Please try again later or download your portfolio files.",
+        description: "GitHub publishing is currently disabled. Please try again later.",
         variant: "destructive",
       });
       return;
     }
 
-    if (!githubToken.trim()) {
+    if (!githubToken) {
       toast({
         title: "Error",
-        description: "Please enter your GitHub token",
+        description: "Please connect your GitHub account first.",
         variant: "destructive",
       });
       return;
@@ -68,7 +128,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     if (!repoName.trim()) {
       toast({
         title: "Error", 
-        description: "Please enter a repository name",
+        description: "Please enter a repository name.",
         variant: "destructive",
       });
       return;
@@ -90,7 +150,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         console.error("Publish error:", error);
         toast({
           title: "GitHub Publishing Failed",
-          description: "Try downloading the source code and publishing on your own like that.",
+          description: "Failed to publish your portfolio. Please try again.",
           variant: "destructive",
         });
         return;
@@ -116,7 +176,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       console.error("Publish error:", error);
       toast({
         title: "GitHub Publishing Failed",
-        description: "Try downloading the source code and publishing on your own like that.",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -126,6 +186,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
   const handleClose = () => {
     setDeploymentResult(null);
+    setGithubToken(null); // Reset connection state when closing
     onOpenChange(false);
   };
 
@@ -153,7 +214,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                 Feature Temporarily Unavailable
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                GitHub publishing is currently disabled. Please try again later or download your portfolio files to publish manually.
+                GitHub publishing is currently disabled. Please try again later.
               </p>
             </div>
 
@@ -177,7 +238,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           <DialogDescription>
             {deploymentResult
               ? "Your portfolio has been published to GitHub Pages. You can view your live site and repository below."
-              : "Publish your portfolio to GitHub Pages by providing a GitHub token and repository details."}
+              : "Connect your GitHub account to publish your portfolio directly to GitHub Pages."}
           </DialogDescription>
         </DialogHeader>
 
@@ -185,12 +246,12 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           <div className="space-y-4">
             <div className="text-center text-green-600 dark:text-green-400">
               <div className="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-                <Github className="h-8 w-8" />
+                <CheckCircle className="h-8 w-8" />
               </div>
               <p className="text-lg font-medium">Your portfolio is live!</p>
             </div>
 
-            {/* Deployment timing warning - Updated with glassy look and better contrast */}
+            {/* Deployment timing warning */}
             <div className="bg-orange-50/80 dark:bg-orange-900/30 backdrop-blur-sm border border-orange-200/50 dark:border-orange-700/50 rounded-lg p-3 flex items-start gap-2">
               <AlertCircle className="h-4 w-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm">
@@ -253,106 +314,84 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Video Player at the top */}
-            <div className="bg-gray-50/80 dark:bg-gray-900/30 border border-gray-200/50 dark:border-gray-700/50 rounded-lg p-3">
-              <div className="aspect-video w-full">
-                <iframe
-                  src="https://player.cloudinary.com/embed/?cloud_name=naganithin&public_id=zkkueerlu9gokxngcp1a&profile=cld-default"
-                  width="100%"
-                  height="100%"
-                  style={{ border: "none" }}
-                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                  allowFullScreen
-                  title="GitHub Token Tutorial"
-                  className="rounded"
-                />
-              </div>
-            </div>
-
-            {/* Create Token Button & Info */}
-            <div className="flex items-center justify-between bg-blue-50/80 dark:bg-blue-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-lg p-3 mb-2">
-              <div className="flex items-center gap-2">
-                <Key className="h-4 w-4 text-blue-600 dark:text-blue-300" />
-                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                  Need a GitHub token?&nbsp;
-                </span>
-              </div>
-              <Button
-                asChild
-                size="sm"
-                variant="outline"
-                className="border-blue-500 text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900"
-              >
-                <a
-                  href="https://github.com/settings/tokens/new?type=classic&description=FrameCV%20Portfolio&scopes=repo,workflow"
-                  target="_blank"
-                  rel="noopener noreferrer"
+            {!githubToken ? (
+              <div className="text-center py-6">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                  <Key className="h-8 w-8 text-gray-500" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  Connect to GitHub
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-sm mx-auto">
+                  To publish your portfolio, you need to connect your GitHub account. 
+                  This grants temporary permission to create a repository for you.
+                </p>
+                <Button 
+                  onClick={handleConnect} 
+                  disabled={isConnecting}
+                  className="min-w-[140px]"
                 >
-                  Create Token
-                </a>
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground -mt-2 mb-2 flex items-center gap-1">
-              <Info className="h-3 w-3" />
-              You can generate a token directly on GitHub with this link.
-            </p>
-
-            {/* Token Input */}
-            <div className="space-y-2">
-              <Label htmlFor="githubToken" className="flex items-center gap-2">
-                <Key className="h-4 w-4" />
-                GitHub Personal Access Token
-              </Label>
-              <Input
-                id="githubToken"
-                type="password"
-                value={githubToken}
-                onChange={(e) => setGithubToken(e.target.value)}
-                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                disabled={isDeploying}
-              />
-            </div>
-
-            {/* Repo Name */}
-            <div className="space-y-2">
-              <Label htmlFor="repoName">Repository Name</Label>
-              <Input
-                id="repoName"
-                value={repoName}
-                onChange={(e) => setRepoName(e.target.value)}
-                placeholder="my-portfolio"
-                disabled={isDeploying}
-              />
-            </div>
-
-            {/* Publish Button */}
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={handleClose}
-                disabled={isDeploying}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDeploy}
-                disabled={
-                  isDeploying || !githubToken.trim() || !repoName.trim()
-                }
-              >
-                {isDeploying ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Publishing...
-                  </>
-                ) : (
-                  <>
-                    <Github className="h-4 w-4 mr-2" />
-                    Publish
-                  </>
-                )}
-              </Button>
-            </div>
+                  {isConnecting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <Github className="h-4 w-4 mr-2" />
+                      Connect to GitHub
+                    </>
+                  )}
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="p-3 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700/50 flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400"/>
+                  <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                    GitHub account connected successfully!
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="repoName">Repository Name</Label>
+                  <Input 
+                    id="repoName" 
+                    value={repoName} 
+                    onChange={(e) => setRepoName(e.target.value)} 
+                    placeholder="e.g., my-awesome-portfolio"
+                    disabled={isDeploying}
+                  />
+                </div>
+                
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleClose}
+                    disabled={isDeploying}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleDeploy} 
+                    disabled={isDeploying || !repoName.trim()}
+                    className="min-w-[120px]"
+                  >
+                    {isDeploying ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Publishing...
+                      </>
+                    ) : (
+                      <>
+                        <Github className="h-4 w-4 mr-2" />
+                        Publish
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </DialogContent>
