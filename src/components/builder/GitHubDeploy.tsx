@@ -94,6 +94,10 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
     setIsConnecting(true);
     try {
+      console.log("Storing portfolio data before GitHub OAuth...");
+      // Store portfolio data in sessionStorage before redirecting
+      sessionStorage.setItem('github_oauth_portfolio_data', JSON.stringify(portfolioData));
+      
       console.log("Redirecting to GitHub OAuth...");
       // Redirect to the 'github-auth-start' edge function
       const supabaseUrl = "https://rlnlbdrlruuoffnyaltc.supabase.co";
