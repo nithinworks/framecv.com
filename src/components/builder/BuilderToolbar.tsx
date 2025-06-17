@@ -1,14 +1,13 @@
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  PanelLeft, 
-  Download, 
+import {
+  PanelLeft,
+  Download,
   ChevronLeft,
   Github,
   ChevronDown,
   Eye,
-  Lock
+  Lock,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -25,7 +24,7 @@ import {
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import GitHubDeploy from "@/components/builder/GitHubDeploy";
 import UserDetailsModal from "@/components/builder/UserDetailsModal";
 import DeviceToggle from "@/components/builder/DeviceToggle";
@@ -37,20 +36,45 @@ interface BuilderToolbarProps {
   showEditorHint?: boolean;
 }
 
-const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false }) => {
-  const { 
-    showEditor, 
-    setShowEditor,
-    portfolioData
-  } = usePortfolio();
+const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
+  showEditorHint = false,
+}) => {
+  const { showEditor, setShowEditor, portfolioData } = usePortfolio();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { featureFlags } = useFeatureFlags();
+  const { toast } = useToast();
   const [showGitHubDeploy, setShowGitHubDeploy] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [showBackModal, setShowBackModal] = useState(false);
-  const [pendingAction, setPendingAction] = useState<"download" | "deploy" | null>(null);
+  const [pendingAction, setPendingAction] = useState<
+    "download" | "deploy" | null
+  >(null);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  useEffect(() => {
+    // Check for GitHub connection completion
+    const connectionComplete = sessionStorage.getItem(
+      "github_connection_complete"
+    );
+    if (connectionComplete) {
+      setShowGitHubDeploy(true);
+      sessionStorage.removeItem("github_connection_complete");
+    }
+
+    // Check for connection errors in URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("error") === "github_oauth_failed") {
+      toast({
+        title: "GitHub Connection Failed",
+        description:
+          "Unable to connect to GitHub. You can download your portfolio and deploy it manually instead.",
+        variant: "destructive",
+      });
+      // Clean the URL
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, [toast]);
 
   // Use the download code hook
   const { downloadSourceCode } = useDownloadCode();
@@ -61,7 +85,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
 
   const handleBackConfirm = () => {
     setShowBackModal(false);
-    navigate('/');
+    navigate("/");
   };
 
   const handleDownloadSourceCode = async () => {
@@ -72,11 +96,11 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
 
   const handleDownloadJSON = () => {
     const dataStr = JSON.stringify(portfolioData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = 'portfolio-data.json';
+    link.download = "portfolio-data.json";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -132,11 +156,20 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
               variant={showEditor ? "default" : "ghost"}
               size="sm"
               onClick={() => setShowEditor(!showEditor)}
-              className={`px-3 py-2 h-8 text-sm transition-all duration-300 relative overflow-hidden ${showEditor ? "bg-white text-black hover:bg-gray-200" : "text-gray-400 hover:text-white hover:bg-gray-800"} ${showEditorHint && !showEditor ? "before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:from-transparent before:via-gray-600 before:to-transparent before:animate-[shimmer_2s_ease-in-out_infinite] before:-translate-x-full" : ""}`}
+              className={`px-3 py-2 h-8 text-sm transition-all duration-300 relative overflow-hidden ${
+                showEditor
+                  ? "bg-white text-black hover:bg-gray-200"
+                  : "text-gray-400 hover:text-white hover:bg-gray-800"
+              } ${
+                showEditorHint && !showEditor
+                  ? "before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:from-transparent before:via-gray-600 before:to-transparent before:animate-[shimmer_2s_ease-in-out_infinite] before:-translate-x-full"
+                  : ""
+              }`}
               style={{
-                background: showEditorHint && !showEditor 
-                  ? 'linear-gradient(90deg, transparent, rgba(156, 163, 175, 0.1), transparent)'
-                  : undefined
+                background:
+                  showEditorHint && !showEditor
+                    ? "linear-gradient(90deg, transparent, rgba(156, 163, 175, 0.1), transparent)"
+                    : undefined,
               }}
             >
               {showEditor ? (
@@ -151,7 +184,7 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
                 </>
               )}
             </Button>
-            
+
             {showEditorHint && !showEditor && !isMobile && (
               <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 z-50 animate-fade-in">
                 <div className="bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-xs font-medium relative whitespace-nowrap">
@@ -181,8 +214,8 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
                     onClick={handlePublishClick}
                     disabled={!featureFlags.github_deploy_status}
                     className={`px-3 py-2 h-8 text-sm transition-all duration-300 ${
-                      featureFlags.github_deploy_status 
-                        ? "text-gray-400 hover:text-white hover:bg-gray-800" 
+                      featureFlags.github_deploy_status
+                        ? "text-gray-400 hover:text-white hover:bg-gray-800"
                         : "text-gray-600 cursor-not-allowed"
                     }`}
                   >
@@ -198,12 +231,14 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
               </TooltipTrigger>
               {!featureFlags.github_deploy_status && (
                 <TooltipContent side="bottom">
-                  <p className="text-sm">Feature temporarily disabled due to high usage</p>
+                  <p className="text-sm">
+                    Feature temporarily disabled due to high usage
+                  </p>
                 </TooltipContent>
               )}
             </Tooltip>
           </TooltipProvider>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -240,13 +275,13 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
         </div>
       </div>
 
-      <BackNavigationModal 
+      <BackNavigationModal
         open={showBackModal}
         onOpenChange={setShowBackModal}
         onConfirm={handleBackConfirm}
       />
 
-      <UserDetailsModal 
+      <UserDetailsModal
         open={showUserDetails}
         onOpenChange={(open) => {
           setShowUserDetails(open);
@@ -259,9 +294,9 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({ showEditorHint = false 
         onSuccess={handleUserDetailsSuccess}
       />
 
-      <GitHubDeploy 
-        open={showGitHubDeploy} 
-        onOpenChange={setShowGitHubDeploy} 
+      <GitHubDeploy
+        open={showGitHubDeploy}
+        onOpenChange={setShowGitHubDeploy}
       />
     </>
   );

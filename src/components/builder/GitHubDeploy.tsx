@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -52,7 +51,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       console.log("Checking for GitHub token in URL...");
       const hash = window.location.hash;
       console.log("Current URL hash:", hash);
-      
+
       if (hash.includes("github_token=")) {
         const token = hash.split("github_token=")[1].split("&")[0];
         console.log("Found GitHub token:", token ? "Yes" : "No");
@@ -62,21 +61,13 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           description: "You can now publish your portfolio to GitHub Pages.",
         });
         // Clean the URL by removing the hash
-        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search
+        );
       }
     };
-
-    // Check for connection errors in URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("error") === "github_oauth_failed") {
-      toast({
-        title: "GitHub Connection Failed",
-        description: "Unable to connect to GitHub. You can download your portfolio and deploy it manually instead.",
-        variant: "destructive",
-      });
-      // Clean the URL
-      window.history.replaceState(null, "", window.location.pathname);
-    }
 
     // Always check for token when dialog opens or component mounts
     if (open) {
@@ -88,7 +79,8 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     if (!featureFlags.github_deploy_status) {
       toast({
         title: "Feature temporarily unavailable",
-        description: "GitHub publishing is currently disabled. Please try again later.",
+        description:
+          "GitHub publishing is currently disabled. Please try again later.",
         variant: "destructive",
       });
       return;
@@ -98,8 +90,11 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     try {
       console.log("Storing portfolio data before GitHub OAuth...");
       // Store portfolio data in sessionStorage before redirecting
-      sessionStorage.setItem('github_oauth_portfolio_data', JSON.stringify(portfolioData));
-      
+      sessionStorage.setItem(
+        "github_oauth_portfolio_data",
+        JSON.stringify(portfolioData)
+      );
+
       console.log("Redirecting to GitHub OAuth...");
       // Redirect to the 'github-auth-start' edge function
       const supabaseUrl = "https://rlnlbdrlruuoffnyaltc.supabase.co";
@@ -108,7 +103,8 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       console.error("Connection error:", error);
       toast({
         title: "Connection Failed",
-        description: "Failed to connect to GitHub. You can download your portfolio and deploy it manually instead.",
+        description:
+          "Failed to connect to GitHub. You can download your portfolio and deploy it manually instead.",
         variant: "destructive",
       });
       setIsConnecting(false);
@@ -119,12 +115,13 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     console.log("Starting deployment...");
     console.log("GitHub token present:", githubToken ? "Yes" : "No");
     console.log("Repo name:", repoName);
-    
+
     // Check if GitHub deployment is enabled
     if (!featureFlags.github_deploy_status) {
       toast({
         title: "Feature temporarily unavailable",
-        description: "GitHub publishing is currently disabled. Please try again later.",
+        description:
+          "GitHub publishing is currently disabled. Please try again later.",
         variant: "destructive",
       });
       return;
@@ -141,7 +138,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
     if (!repoName.trim()) {
       toast({
-        title: "Error", 
+        title: "Error",
         description: "Please enter a repository name.",
         variant: "destructive",
       });
@@ -153,18 +150,21 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     try {
       console.log("Calling github-deploy function...");
       // Call the github-deploy function without authentication
-      const response = await fetch(`https://rlnlbdrlruuoffnyaltc.supabase.co/functions/v1/github-deploy`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          portfolioData,
-          repoName: repoName.trim(),
-          description: `Portfolio website for ${portfolioData.settings.name}`,
-          githubToken: githubToken.trim(),
-        }),
-      });
+      const response = await fetch(
+        `https://rlnlbdrlruuoffnyaltc.supabase.co/functions/v1/github-deploy`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            portfolioData,
+            repoName: repoName.trim(),
+            description: `Portfolio website for ${portfolioData.settings.name}`,
+            githubToken: githubToken.trim(),
+          }),
+        }
+      );
 
       console.log("Deploy response status:", response.status);
 
@@ -179,9 +179,11 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
       // Track successful GitHub deployment
       try {
-        await supabase.rpc('increment_portfolio_stat', { stat_type: 'github_deploy' });
+        await supabase.rpc("increment_portfolio_stat", {
+          stat_type: "github_deploy",
+        });
       } catch (error) {
-        console.error('Failed to track portfolio stat:', error);
+        console.error("Failed to track portfolio stat:", error);
       }
 
       setDeploymentResult({
@@ -197,7 +199,8 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       console.error("Publish error:", error);
       toast({
         title: "GitHub Publishing Failed",
-        description: "Unable to publish to GitHub. You can download your portfolio and deploy it manually instead.",
+        description:
+          "Unable to publish to GitHub. You can download your portfolio and deploy it manually instead.",
         variant: "destructive",
       });
     } finally {
@@ -344,11 +347,12 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               Connect to GitHub
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-sm mx-auto">
-              To publish your portfolio, you need to connect your GitHub account. 
-              This grants temporary permission to create a repository for you.
+              To publish your portfolio, you need to connect your GitHub
+              account. This grants temporary permission to create a repository
+              for you.
             </p>
-            <Button 
-              onClick={handleConnect} 
+            <Button
+              onClick={handleConnect}
               disabled={isConnecting}
               className="min-w-[140px]"
             >
@@ -368,23 +372,23 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         ) : (
           <>
             <div className="p-3 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700/50 flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400"/>
+              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
               <p className="text-sm font-medium text-green-800 dark:text-green-200">
                 GitHub account connected successfully!
               </p>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="repoName">Repository Name</Label>
-              <Input 
-                id="repoName" 
-                value={repoName} 
-                onChange={(e) => setRepoName(e.target.value)} 
+              <Input
+                id="repoName"
+                value={repoName}
+                onChange={(e) => setRepoName(e.target.value)}
                 placeholder="e.g., my-awesome-portfolio"
                 disabled={isDeploying}
               />
             </div>
-            
+
             <div className="flex justify-end gap-3">
               <Button
                 variant="outline"
@@ -393,8 +397,8 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               >
                 Cancel
               </Button>
-              <Button 
-                onClick={handleDeploy} 
+              <Button
+                onClick={handleDeploy}
                 disabled={isDeploying || !repoName.trim()}
                 className="min-w-[120px]"
               >
