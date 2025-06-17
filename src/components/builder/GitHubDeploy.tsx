@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -45,12 +46,16 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     pagesUrl: string;
   } | null>(null);
 
+  // Check for token in URL hash immediately when component mounts and whenever dialog opens
   useEffect(() => {
-    // This effect runs when the component mounts to check for a token in the URL hash
     const handleTokenFromUrl = () => {
+      console.log("Checking for GitHub token in URL...");
       const hash = window.location.hash;
+      console.log("Current URL hash:", hash);
+      
       if (hash.includes("github_token=")) {
-        const token = hash.split("github_token=")[1].split("&")[0]; // Handle potential additional hash params
+        const token = hash.split("github_token=")[1].split("&")[0];
+        console.log("Found GitHub token:", token ? "Yes" : "No");
         setGithubToken(token);
         toast({
           title: "GitHub Connected",
@@ -73,10 +78,9 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       window.history.replaceState(null, "", window.location.pathname);
     }
 
-    if (open) {
-      handleTokenFromUrl();
-    }
-  }, [open, toast]);
+    // Always check for token, regardless of dialog state
+    handleTokenFromUrl();
+  }, [open, toast]); // Run when dialog opens AND when component mounts
 
   const handleConnect = async () => {
     if (!featureFlags.github_deploy_status) {
@@ -90,6 +94,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
     setIsConnecting(true);
     try {
+      console.log("Redirecting to GitHub OAuth...");
       // Redirect to the 'github-auth-start' edge function
       const supabaseUrl = "https://rlnlbdrlruuoffnyaltc.supabase.co";
       window.location.href = `${supabaseUrl}/functions/v1/github-auth-start`;
@@ -105,6 +110,10 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   };
 
   const handleDeploy = async () => {
+    console.log("Starting deployment...");
+    console.log("GitHub token present:", githubToken ? "Yes" : "No");
+    console.log("Repo name:", repoName);
+    
     // Check if GitHub deployment is enabled
     if (!featureFlags.github_deploy_status) {
       toast({
@@ -136,6 +145,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     setIsDeploying(true);
 
     try {
+      console.log("Calling github-deploy function...");
       // Call the github-deploy function without authentication
       const response = await fetch(`https://rlnlbdrlruuoffnyaltc.supabase.co/functions/v1/github-deploy`, {
         method: 'POST',
@@ -150,11 +160,16 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         }),
       });
 
+      console.log("Deploy response status:", response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Deploy response error:", errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log("Deploy response data:", data);
 
       // Track successful GitHub deployment
       try {
