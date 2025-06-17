@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -137,24 +136,25 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     setIsDeploying(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("github-deploy", {
-        body: {
+      // Call the github-deploy function without authentication
+      const response = await fetch(`https://rlnlbdrlruuoffnyaltc.supabase.co/functions/v1/github-deploy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           portfolioData,
           repoName: repoName.trim(),
           description: `Portfolio website for ${portfolioData.settings.name}`,
           githubToken: githubToken.trim(),
-        },
+        }),
       });
 
-      if (error) {
-        console.error("Publish error:", error);
-        toast({
-          title: "GitHub Publishing Failed",
-          description: "Failed to publish your portfolio. Please try again.",
-          variant: "destructive",
-        });
-        return;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
 
       // Track successful GitHub deployment
       try {
