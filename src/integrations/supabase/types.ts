@@ -12,22 +12,31 @@ export type Database = {
       feature_flags: {
         Row: {
           created_at: string
+          daily_limit: number
+          daily_used_count: number
           github_deploy_status: boolean
           id: string
+          last_reset_date: string
           process_resume_status: boolean
           updated_at: string
         }
         Insert: {
           created_at?: string
+          daily_limit?: number
+          daily_used_count?: number
           github_deploy_status?: boolean
           id?: string
+          last_reset_date?: string
           process_resume_status?: boolean
           updated_at?: string
         }
         Update: {
           created_at?: string
+          daily_limit?: number
+          daily_used_count?: number
           github_deploy_status?: boolean
           id?: string
+          last_reset_date?: string
           process_resume_status?: boolean
           updated_at?: string
         }
@@ -119,6 +128,18 @@ export type Database = {
       add_to_waitlist: {
         Args: { user_name: string; user_email: string }
         Returns: boolean
+      }
+      check_and_increment_daily_usage: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      get_daily_usage_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          daily_limit: number
+          daily_used_count: number
+          remaining_count: number
+        }[]
       }
       get_portfolio_stats: {
         Args: Record<PropertyKey, never>

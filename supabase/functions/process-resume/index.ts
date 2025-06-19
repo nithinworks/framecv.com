@@ -62,6 +62,23 @@ async function checkFeatureFlag(supabase: any): Promise<boolean> {
   }
 }
 
+// Check and increment daily usage limit
+async function checkDailyLimit(supabase: any): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc('check_and_increment_daily_usage');
+
+    if (error) {
+      console.error('Error checking daily limit:', error);
+      return false; // Default to limit reached if we can't check
+    }
+
+    return data === true;
+  } catch (error) {
+    console.error('Daily limit check error:', error);
+    return false; // Default to limit reached if we can't check
+  }
+}
+
 // Improved PDF validation with efficient page counting
 async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; error?: string }> {
   try {
@@ -273,7 +290,20 @@ const handler = async (req: Request) => {
       });
     }
 
-    // Rate limiting check
+    // Check daily limit before processing
+    const withinDailyLimit = await checkDailyLimit(supabase);
+    if (!withinDailyLimit) {
+      logRequest(clientIP, "DAILY_LIMIT_REACHED");
+      return new Response(JSON.stringify({
+        error: 'Daily limit reached',
+        message: 'The daily processing limit has been reached. Please try again tomorrow.'
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 429
+      });
+    }
+
+    // Rate limiting check (per IP)
     if (!checkRateLimit(clientIP)) {
       logRequest(clientIP, "RATE_LIMITED", { limit: RATE_LIMIT_PER_DAY });
       return new Response(JSON.stringify({
