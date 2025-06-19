@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useOptimizedFeatureFlags } from "@/hooks/useOptimizedFeatureFlags";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
@@ -23,8 +22,8 @@ const BuilderPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  // Initialize feature flags with optimized hook
-  const { featureFlags, isLoading: flagsLoading } = useOptimizedFeatureFlags();
+  // Use the simple feature flags hook without caching
+  const { featureFlags, isLoading: flagsLoading } = useFeatureFlags();
   
   // Set initial view to desktop on load
   useEffect(() => {

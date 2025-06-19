@@ -1,11 +1,10 @@
-
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { samplePortfolioData } from "@/data/samplePortfolio";
-import { useOptimizedFeatureFlags } from "@/hooks/useOptimizedFeatureFlags";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 interface ResumeProcessorProps {
   file: File | null;
@@ -16,7 +15,7 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setIsProcessing: setGlobalProcessing } = usePortfolio();
-  const { featureFlags } = useOptimizedFeatureFlags();
+  const { featureFlags } = useFeatureFlags();
 
   const trackManualCreation = async () => {
     try {

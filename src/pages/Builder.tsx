@@ -5,13 +5,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { PortfolioData } from "@/types/portfolio";
-import { useOptimizedFeatureFlags } from "@/hooks/useOptimizedFeatureFlags";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import { PageLoader } from "@/components/ui/branded-loader";
 
 const Builder = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { featureFlags, isLoading: flagsLoading } = useOptimizedFeatureFlags();
+  const { featureFlags, isLoading: flagsLoading } = useFeatureFlags();
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
