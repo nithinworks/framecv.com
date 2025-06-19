@@ -21,10 +21,10 @@ const App = () => (
       <Toaster />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<WaitlistPage />} /> 
+          {/* <Route path="/" element={<WaitlistPage />} />  */}
           {/* Commented out routes for later activation */}
-          {/* <Route path="/" element={<Index />} />*/}
-          {/*<Route path="/builder" element={<Builder />} />*/}
+           <Route path="/" element={<Index />} />
+         <Route path="/builder" element={<Builder />} />
           {/* <Route path="/about" element={<About />} /> */}
           {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
           {/* <Route path="/terms" element={<TermsAndConditions />} /> */}
