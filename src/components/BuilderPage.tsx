@@ -3,12 +3,13 @@ import React, { useEffect, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { useOptimizedFeatureFlags } from "@/hooks/useOptimizedFeatureFlags";
 
 import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
 import PortfolioPreview from "./builder/PortfolioPreview";
 import CodeView from "./builder/CodeView";
+import { BrandedLoader } from "./ui/branded-loader";
 
 const BuilderPage: React.FC = () => {
   const { 
@@ -22,19 +23,13 @@ const BuilderPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  // Initialize feature flags
-  const { featureFlags, isLoading: flagsLoading } = useFeatureFlags();
+  // Initialize feature flags with optimized hook
+  const { featureFlags, isLoading: flagsLoading } = useOptimizedFeatureFlags();
   
   // Set initial view to desktop on load
   useEffect(() => {
     setCurrentView("desktop");
-    
-    // Show a welcome message to guide the user
-    {/*toast({
-      title: "Portfolio builder loaded",
-      description: "Click the Editor button to start customizing your portfolio"
-    });*/}
-  }, [setCurrentView, toast]);
+  }, [setCurrentView]);
 
   // Hide editor hint when editor is opened
   useEffect(() => {
@@ -53,10 +48,8 @@ const BuilderPage: React.FC = () => {
       });
     };
 
-    // Add event listener to the document
     document.addEventListener('contextmenu', handleContextMenu);
 
-    // Also check for iframes and add the same protection
     const checkForIframes = () => {
       const iframes = document.querySelectorAll('iframe');
       iframes.forEach((iframe) => {
@@ -65,22 +58,18 @@ const BuilderPage: React.FC = () => {
             iframe.contentDocument.addEventListener('contextmenu', handleContextMenu);
           }
         } catch (error) {
-          // Cross-origin iframe, can't access content
           console.log('Cannot access iframe content for right-click protection');
         }
       });
     };
 
-    // Check for iframes initially and then periodically
     checkForIframes();
     const intervalId = setInterval(checkForIframes, 1000);
 
-    // Cleanup event listeners on component unmount
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
       clearInterval(intervalId);
       
-      // Clean up iframe listeners
       const iframes = document.querySelectorAll('iframe');
       iframes.forEach((iframe) => {
         try {
@@ -98,9 +87,8 @@ const BuilderPage: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#171717] px-4">
         <div className="text-center animate-blur-in">
-          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-          <h2 className="text-xl font-medium mb-3 text-white">Processing Your Resume</h2>
-          <p className="text-gray-400 text-sm">Please wait while our AI analyzes your resume...</p>
+          <BrandedLoader message="Processing Your Resume..." size="lg" />
+          <p className="text-gray-400 text-sm mt-4">Please wait while our AI analyzes your resume...</p>
         </div>
       </div>
     );

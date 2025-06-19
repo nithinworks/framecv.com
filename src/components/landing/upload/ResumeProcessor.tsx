@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { samplePortfolioData } from "@/data/samplePortfolio";
-import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { useOptimizedFeatureFlags } from "@/hooks/useOptimizedFeatureFlags";
 
 interface ResumeProcessorProps {
   file: File | null;
@@ -16,7 +16,7 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setIsProcessing: setGlobalProcessing } = usePortfolio();
-  const { featureFlags } = useFeatureFlags();
+  const { featureFlags } = useOptimizedFeatureFlags();
 
   const trackManualCreation = async () => {
     try {
@@ -112,9 +112,6 @@ export const useResumeProcessor = ({ file, onProcessingChange }: ResumeProcessor
       if (!data?.portfolioData) {
         throw new Error('No portfolio data received');
       }
-      
-      // Note: Portfolio stat tracking is now handled in the edge function
-      // to avoid double counting
       
       toast({
         title: "Resume processed successfully!",
