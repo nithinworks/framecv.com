@@ -147,7 +147,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     try {
       console.log("Storing portfolio data before GitHub OAuth...");
       // Store portfolio data in sessionStorage before redirecting
-      sessionStorage.setItem(
+      localStorage.setItem(
         "github_oauth_portfolio_data",
         JSON.stringify(portfolioData)
       );
