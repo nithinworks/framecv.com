@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,10 +28,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import GitHubDeploy from "@/components/builder/GitHubDeploy";
 import UserDetailsModal from "@/components/builder/UserDetailsModal";
+import DownloadLoadingModal from "@/components/builder/DownloadLoadingModal";
+import DownloadSuccessModal from "@/components/builder/DownloadSuccessModal";
 import DeviceToggle from "@/components/builder/DeviceToggle";
 import BackNavigationModal from "@/components/builder/BackNavigationModal";
-import { useDownloadCode } from "@/hooks/useDownloadCode";
+import { useDownloadWithLoading } from "@/hooks/useDownloadWithLoading";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { useUserDetailsStorage } from "@/hooks/useUserDetailsStorage";
 
 interface BuilderToolbarProps {
   showEditorHint?: boolean;
@@ -44,13 +48,23 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
   const isMobile = useIsMobile();
   const { featureFlags } = useFeatureFlags();
   const { toast } = useToast();
+  const { loadStoredUserData } = useUserDetailsStorage();
   const [showGitHubDeploy, setShowGitHubDeploy] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [showBackModal, setShowBackModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<
-    "download" | "deploy" | null
+    "download" | "deploy" | "json" | null
   >(null);
-  const [isDownloading, setIsDownloading] = useState(false);
+
+  const {
+    isLoading: isDownloadLoading,
+    showSuccess: showDownloadSuccess,
+    downloadType,
+    fileName,
+    setShowSuccess: setShowDownloadSuccess,
+    handleDownloadSourceCode,
+    handleDownloadJSON,
+  } = useDownloadWithLoading();
 
   useEffect(() => {
     // Check for GitHub connection completion
@@ -76,9 +90,6 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
     }
   }, [toast]);
 
-  // Use the download code hook
-  const { downloadSourceCode } = useDownloadCode();
-
   const handleBackClick = () => {
     setShowBackModal(true);
   };
@@ -88,23 +99,28 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
     navigate("/");
   };
 
-  const handleDownloadSourceCode = async () => {
-    setIsDownloading(true);
-    setPendingAction("download");
-    setShowUserDetails(true);
+  const checkUserDetailsAndProceed = (action: "download" | "json") => {
+    const storedData = loadStoredUserData();
+    if (storedData) {
+      // User has stored details, proceed directly
+      if (action === "download") {
+        handleDownloadSourceCode();
+      } else {
+        handleDownloadJSON();
+      }
+    } else {
+      // No stored details, show modal
+      setPendingAction(action);
+      setShowUserDetails(true);
+    }
   };
 
-  const handleDownloadJSON = () => {
-    const dataStr = JSON.stringify(portfolioData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "portfolio-data.json";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleDownloadSourceCodeClick = () => {
+    checkUserDetailsAndProceed("download");
+  };
+
+  const handleDownloadJSONClick = () => {
+    checkUserDetailsAndProceed("json");
   };
 
   const handlePublishClick = () => {
@@ -117,11 +133,9 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
 
   const handleUserDetailsSuccess = async () => {
     if (pendingAction === "download") {
-      try {
-        await downloadSourceCode();
-      } finally {
-        setIsDownloading(false);
-      }
+      await handleDownloadSourceCode();
+    } else if (pendingAction === "json") {
+      handleDownloadJSON();
     } else if (pendingAction === "deploy") {
       setShowGitHubDeploy(true);
     }
@@ -129,9 +143,6 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
   };
 
   const handleUserDetailsClose = () => {
-    if (pendingAction === "download") {
-      setIsDownloading(false);
-    }
     setPendingAction(null);
   };
 
@@ -244,10 +255,10 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                disabled={isDownloading}
+                disabled={isDownloadLoading}
                 className="px-3 py-2 h-8 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300"
               >
-                {isDownloading ? (
+                {isDownloadLoading ? (
                   <>
                     <div className="h-4 w-4 mr-2 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
                     {!isMobile && "Processing..."}
@@ -262,11 +273,11 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={handleDownloadSourceCode}>
+              <DropdownMenuItem onClick={handleDownloadSourceCodeClick}>
                 <Download className="h-4 w-4 mr-2" />
                 Download Source Code
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDownloadJSON}>
+              <DropdownMenuItem onClick={handleDownloadJSONClick}>
                 <Download className="h-4 w-4 mr-2" />
                 Download JSON
               </DropdownMenuItem>
@@ -289,9 +300,21 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
             handleUserDetailsClose();
           }
         }}
-        actionType={pendingAction || "download"}
+        actionType={pendingAction === "json" ? "download" : (pendingAction || "download")}
         portfolioName={portfolioData.settings.name}
         onSuccess={handleUserDetailsSuccess}
+      />
+
+      <DownloadLoadingModal
+        open={isDownloadLoading}
+        downloadType={downloadType}
+      />
+
+      <DownloadSuccessModal
+        open={showDownloadSuccess}
+        onOpenChange={setShowDownloadSuccess}
+        downloadType={downloadType}
+        fileName={fileName}
       />
 
       <GitHubDeploy

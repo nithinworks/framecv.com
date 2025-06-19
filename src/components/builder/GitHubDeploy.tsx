@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -21,7 +22,10 @@ import {
   Key,
   CheckCircle,
   Info,
+  Sparkles,
+  Globe,
 } from "lucide-react";
+import confetti from "canvas-confetti";
 
 interface GitHubDeployProps {
   open: boolean;
@@ -74,6 +78,59 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       handleTokenFromUrl();
     }
   }, [open, toast]);
+
+  // Trigger confetti when deployment is successful
+  useEffect(() => {
+    if (deploymentResult) {
+      // Multiple confetti bursts for celebration
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+
+      const randomInRange = (min: number, max: number) => {
+        return Math.random() * (max - min) + min;
+      };
+
+      const interval = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+
+        confetti({
+          ...{
+            particleCount,
+            startVelocity: 30,
+            spread: 360,
+            ticks: 60,
+            zIndex: 1000,
+          },
+          origin: {
+            x: randomInRange(0.1, 0.3),
+            y: Math.random() - 0.2,
+          },
+          colors: ['#10B981', '#059669', '#047857', '#34D399', '#6EE7B7'],
+        });
+
+        confetti({
+          ...{
+            particleCount,
+            startVelocity: 30,
+            spread: 360,
+            ticks: 60,
+            zIndex: 1000,
+          },
+          origin: {
+            x: randomInRange(0.7, 0.9),
+            y: Math.random() - 0.2,
+          },
+          colors: ['#10B981', '#059669', '#047857', '#34D399', '#6EE7B7'],
+        });
+      }, 250);
+    }
+  }, [deploymentResult]);
 
   const handleConnect = async () => {
     if (!featureFlags.github_deploy_status) {
@@ -256,12 +313,21 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Github className="h-5 w-5" />
-            {deploymentResult ? "Publishing Successful!" : "Publish to GitHub"}
+            {deploymentResult ? (
+              <>
+                <Sparkles className="h-5 w-5 text-green-500" />
+                🎉 Portfolio Published Successfully!
+              </>
+            ) : (
+              <>
+                <Github className="h-5 w-5" />
+                Publish to GitHub
+              </>
+            )}
           </DialogTitle>
           <DialogDescription>
             {deploymentResult
-              ? "Your portfolio has been published to GitHub Pages. You can view your live site and repository below."
+              ? "Congratulations! Your portfolio is now live on GitHub Pages. Share it with the world!"
               : githubToken
               ? "Your GitHub account is connected. Enter a repository name to publish your portfolio."
               : "Connect your GitHub account to publish your portfolio directly to GitHub Pages."}
@@ -269,22 +335,27 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         </DialogHeader>
 
         {deploymentResult ? (
-          <div className="space-y-4">
-            <div className="text-center text-green-600 dark:text-green-400">
-              <div className="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-8 w-8" />
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                <CheckCircle className="h-10 w-10 text-white" />
               </div>
-              <p className="text-lg font-medium">Your portfolio is live!</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Your portfolio is live! 🚀
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Your beautiful portfolio is now accessible to anyone on the internet.
+              </p>
             </div>
 
             {/* Deployment timing warning */}
-            <div className="bg-orange-50/80 dark:bg-orange-900/30 backdrop-blur-sm border border-orange-200/50 dark:border-orange-700/50 rounded-lg p-3 flex items-start gap-2">
-              <AlertCircle className="h-4 w-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/30 dark:to-yellow-900/30 backdrop-blur-sm border border-orange-200/50 dark:border-orange-700/50 rounded-xl p-4 flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-medium text-orange-900 dark:text-orange-100">
+                <p className="font-medium text-orange-900 dark:text-orange-100 mb-1">
                   First-time deployment may take a few minutes
                 </p>
-                <p className="text-xs text-orange-800 dark:text-orange-200 mt-1">
+                <p className="text-xs text-orange-800 dark:text-orange-200">
                   GitHub Pages needs time to build and deploy your site. If the
                   live URL doesn't work immediately, please wait 2-5 minutes and
                   try again.
@@ -292,14 +363,17 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="space-y-2">
-                <Label>Live Website</Label>
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2 text-base font-medium">
+                  <Globe className="h-4 w-4 text-green-600" />
+                  Live Website
+                </Label>
                 <div className="flex items-center gap-2">
                   <Input
                     value={deploymentResult.pagesUrl}
                     readOnly
-                    className="text-sm"
+                    className="text-sm bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700"
                   />
                   <Button
                     variant="outline"
@@ -307,19 +381,23 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                     onClick={() =>
                       window.open(deploymentResult.pagesUrl, "_blank")
                     }
+                    className="border-green-200 hover:bg-green-50 dark:border-green-700 dark:hover:bg-green-900/20"
                   >
                     <ExternalLink className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Repository</Label>
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2 text-base font-medium">
+                  <Github className="h-4 w-4 text-gray-600" />
+                  Repository
+                </Label>
                 <div className="flex items-center gap-2">
                   <Input
                     value={deploymentResult.repoUrl}
                     readOnly
-                    className="text-sm"
+                    className="text-sm bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700"
                   />
                   <Button
                     variant="outline"
@@ -327,6 +405,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
                     onClick={() =>
                       window.open(deploymentResult.repoUrl, "_blank")
                     }
+                    className="border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900/20"
                   >
                     <ExternalLink className="h-4 w-4" />
                   </Button>
@@ -334,8 +413,8 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
               </div>
             </div>
 
-            <Button onClick={handleClose} className="w-full">
-              Close
+            <Button onClick={handleClose} className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700">
+              Awesome! Close
             </Button>
           </div>
         ) : !githubToken ? (
