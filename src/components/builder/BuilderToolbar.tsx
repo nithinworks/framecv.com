@@ -67,6 +67,14 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
   } = useDownloadWithLoading();
 
   useEffect(() => {
+    // Check for GitHub token in URL hash (after OAuth redirect)
+    const hash = window.location.hash;
+    if (hash.includes("github_token=")) {
+      console.log("GitHub token detected in URL, automatically opening deploy modal");
+      setShowGitHubDeploy(true);
+      return;
+    }
+
     // Check for connection errors in URL params
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("error") === "github_oauth_failed") {
