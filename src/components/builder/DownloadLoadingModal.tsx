@@ -20,7 +20,7 @@ const DownloadLoadingModal: React.FC<DownloadLoadingModalProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md" hideCloseButton>
+      <DialogContent className="sm:max-w-md [&>button]:hidden">
         <DialogHeader>
           <DialogTitle className="text-center">
             Your Download is Getting Ready
