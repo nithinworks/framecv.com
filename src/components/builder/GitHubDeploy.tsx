@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -60,10 +59,15 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         const token = hash.split("github_token=")[1].split("&")[0];
         console.log("Found GitHub token:", token ? "Yes" : "No");
         setGithubToken(token);
+        
+        // Clear localStorage after successful OAuth
+        localStorage.removeItem("github_oauth_portfolio_data");
+        
         toast({
           title: "GitHub Connected Successfully",
           description: "You can now publish your portfolio to GitHub Pages.",
         });
+        
         // Clean the URL by removing the hash
         window.history.replaceState(
           null,
@@ -73,7 +77,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
       }
     };
 
-    // Always check for token when dialog opens or component mounts
+    // Check for token when dialog opens
     if (open) {
       handleTokenFromUrl();
     }
@@ -146,7 +150,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     setIsConnecting(true);
     try {
       console.log("Storing portfolio data before GitHub OAuth...");
-      // Store portfolio data in sessionStorage before redirecting
+      // Store portfolio data in localStorage before redirecting
       localStorage.setItem(
         "github_oauth_portfolio_data",
         JSON.stringify(portfolioData)

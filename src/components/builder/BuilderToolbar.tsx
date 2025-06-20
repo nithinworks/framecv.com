@@ -67,15 +67,6 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
   } = useDownloadWithLoading();
 
   useEffect(() => {
-    // Check for GitHub connection completion
-    const connectionComplete = sessionStorage.getItem(
-      "github_connection_complete"
-    );
-    if (connectionComplete) {
-      setShowGitHubDeploy(true);
-      sessionStorage.removeItem("github_connection_complete");
-    }
-
     // Check for connection errors in URL params
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("error") === "github_oauth_failed") {

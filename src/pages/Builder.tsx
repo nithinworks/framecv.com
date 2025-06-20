@@ -24,17 +24,15 @@ const Builder = () => {
       let data = location.state?.portfolioData as PortfolioData;
       console.log("Portfolio data from navigation state:", data ? "Found" : "Not found");
 
-      // If not found in navigation state, check sessionStorage (for GitHub OAuth flow)
+      // If not found in navigation state, check localStorage (for GitHub OAuth flow)
       if (!data) {
         const storedData = localStorage.getItem("github_oauth_portfolio_data");
         if (storedData) {
           console.log("Found portfolio data in localStorage, restoring...");
           try {
             data = JSON.parse(storedData);
-            // Clear the stored data after using it
-            localStorage.removeItem("github_oauth_portfolio_data");
-            // Flag that GitHub connection is complete
-            localStorage.setItem("github_connection_complete", "true");
+            // Don't clear the stored data yet - we need it for the GitHub flow
+            console.log("Portfolio data restored from localStorage");
           } catch (error) {
             console.error("Failed to parse stored portfolio data:", error);
           }

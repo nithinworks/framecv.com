@@ -4,8 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import WaitlistPage from "./components/WaitlistPage";
-//import Index from "./pages/Index";
-//import Builder from "./pages/Builder";
+import Index from "./pages/Index";
+import Builder from "./pages/Builder";
 import NotFound from "./pages/NotFound";
 import PageTransitionLoader from "./components/ui/page-transition";
 
@@ -27,10 +27,9 @@ const App = () => (
       <BrowserRouter>
         <PageTransitionLoader>
           <Routes>
-             <Route path="/" element={<WaitlistPage />} />
-            {/* Commented out routes for later activation */}
-           {/* <Route path="/" element={<Index />} />*/}
-           {/* <Route path="/builder" element={<Builder />} />*/}
+            <Route path="/waitlist" element={<WaitlistPage />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/builder" element={<Builder />} />
             {/* <Route path="/about" element={<About />} /> */}
             {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
             {/* <Route path="/terms" element={<TermsAndConditions />} /> */}
