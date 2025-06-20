@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -145,6 +144,24 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
     setPendingAction(null);
   };
 
+  // Test functions for modal testing
+  const handleTestGitHubSuccess = () => {
+    setShowGitHubDeploy(true);
+    // Simulate successful deployment
+    setTimeout(() => {
+      const mockDeploymentResult = {
+        repoUrl: "https://github.com/testuser/test-portfolio",
+        pagesUrl: "https://testuser.github.io/test-portfolio"
+      };
+      // We need to access the GitHubDeploy component's state directly
+      // For now, we'll just open the modal - you can manually test the success state
+    }, 100);
+  };
+
+  const handleTestDownloadSuccess = () => {
+    setShowDownloadSuccess(true);
+  };
+
   return (
     <>
       <div className="fixed top-0 left-0 right-0 h-14 bg-[#171717] border-b border-gray-800 z-40 flex justify-between items-center px-4 animate-blur-in">
@@ -203,6 +220,26 @@ const BuilderToolbar: React.FC<BuilderToolbarProps> = ({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Test buttons for modal testing - will be removed later */}
+          <div className="flex items-center gap-2 ml-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleTestGitHubSuccess}
+              className="px-2 py-1 h-6 text-xs text-red-400 hover:text-red-300 hover:bg-gray-800"
+            >
+              Test GitHub
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleTestDownloadSuccess}
+              className="px-2 py-1 h-6 text-xs text-red-400 hover:text-red-300 hover:bg-gray-800"
+            >
+              Test Download
+            </Button>
           </div>
         </div>
 
