@@ -1,6 +1,5 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import { getCorsHeaders, securityHeaders } from "../_shared/cors.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Simple in-memory store for rate limiting (resets on function restart)
@@ -8,16 +7,33 @@ const ipRequestCounts = new Map<string, { count: number; lastReset: number }>();
 const RATE_LIMIT_PER_DAY = 5;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
-// Enhanced logging function
+// Enhanced logging function with security context
 function logRequest(ip: string, status: string, details: any = {}) {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] IP: ${ip} | Status: ${status} | Details:`, JSON.stringify(details));
+  // Sanitize sensitive information from logs
+  const sanitizedDetails = {
+    ...details,
+    // Remove any potential PII from logs
+    fileName: details.fileName ? `[FILE_${details.fileName?.length || 0}_CHARS]` : undefined,
+  };
+  console.log(`[${timestamp}] IP: ${ip} | Status: ${status} | Details:`, JSON.stringify(sanitizedDetails));
 }
 
-// IP-based rate limiting
-function checkRateLimit(ip: string): boolean {
+// Enhanced IP-based rate limiting with additional security checks
+function checkRateLimit(ip: string, userAgent?: string): boolean {
   const now = Date.now();
   const record = ipRequestCounts.get(ip);
+  
+  // Additional security: block suspicious user agents
+  if (userAgent && (
+    userAgent.includes('bot') || 
+    userAgent.includes('crawler') || 
+    userAgent.includes('spider') ||
+    userAgent.length < 10
+  )) {
+    logRequest(ip, "BLOCKED_SUSPICIOUS_USER_AGENT", { userAgent });
+    return false;
+  }
   
   if (!record || (now - record.lastReset) > DAY_IN_MS) {
     // Reset or create new record
@@ -33,12 +49,34 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-// Get client IP from headers
+// Enhanced client IP detection with security validation
 function getClientIP(req: Request): string {
-  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
-         req.headers.get('x-real-ip') || 
-         req.headers.get('cf-connecting-ip') || 
-         'unknown';
+  const xForwardedFor = req.headers.get('x-forwarded-for');
+  const xRealIp = req.headers.get('x-real-ip');
+  const cfConnectingIp = req.headers.get('cf-connecting-ip');
+  
+  // Validate and sanitize IP addresses
+  const validateIP = (ip: string): string | null => {
+    if (!ip) return null;
+    // Basic IP validation (IPv4 and IPv6)
+    const ipPattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+    return ipPattern.test(ip.trim()) ? ip.trim() : null;
+  };
+  
+  let clientIP = 'unknown';
+  
+  if (xForwardedFor) {
+    const firstIP = validateIP(xForwardedFor.split(',')[0]);
+    if (firstIP) clientIP = firstIP;
+  } else if (xRealIp) {
+    const validatedIP = validateIP(xRealIp);
+    if (validatedIP) clientIP = validatedIP;
+  } else if (cfConnectingIp) {
+    const validatedIP = validateIP(cfConnectingIp);
+    if (validatedIP) clientIP = validatedIP;
+  }
+  
+  return clientIP;
 }
 
 // Check if resume processing is enabled via feature flags
@@ -79,35 +117,66 @@ async function checkDailyLimit(supabase: any): Promise<boolean> {
   }
 }
 
-// Improved PDF validation with efficient page counting
+// Enhanced PDF validation with security improvements
 async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; error?: string }> {
   try {
-    // Basic file checks
-    if (file.type !== "application/pdf") {
-      logRequest(ip, "INVALID_FILE_TYPE", { fileType: file.type, fileName: file.name });
+    // Enhanced file type validation
+    const allowedMimeTypes = ['application/pdf'];
+    if (!allowedMimeTypes.includes(file.type)) {
+      logRequest(ip, "INVALID_FILE_TYPE", { fileType: file.type });
       return { valid: false, error: "File must be a PDF" };
     }
 
+    // Stricter size limits for security
     const maxSize = 2 * 1024 * 1024; // 2MB
+    const minSize = 1000; // 1KB minimum
+    
     if (file.size > maxSize) {
-      logRequest(ip, "FILE_TOO_LARGE", { fileSize: file.size, fileName: file.name });
+      logRequest(ip, "FILE_TOO_LARGE", { fileSize: file.size });
       return { valid: false, error: "File size must be under 2MB" };
     }
 
-    if (file.size < 1000) { // Less than 1KB is suspicious
-      logRequest(ip, "FILE_TOO_SMALL", { fileSize: file.size, fileName: file.name });
+    if (file.size < minSize) {
+      logRequest(ip, "FILE_TOO_SMALL", { fileSize: file.size });
       return { valid: false, error: "File appears to be corrupted or empty" };
+    }
+
+    // Enhanced filename validation
+    if (file.name.length > 255) {
+      logRequest(ip, "FILENAME_TOO_LONG", { nameLength: file.name.length });
+      return { valid: false, error: "Filename is too long" };
+    }
+
+    // Check for suspicious filename patterns
+    const suspiciousPatterns = ['.exe', '.bat', '.cmd', '.scr', '.js', '.vbs'];
+    const hasEmbeddedExecutable = suspiciousPatterns.some(pattern => 
+      file.name.toLowerCase().includes(pattern)
+    );
+    
+    if (hasEmbeddedExecutable) {
+      logRequest(ip, "SUSPICIOUS_FILENAME", { fileName: file.name });
+      return { valid: false, error: "Invalid file format" };
     }
 
     // Read file content for validation
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     
-    // Check PDF header
-    const pdfHeader = String.fromCharCode(...uint8Array.slice(0, 4));
-    if (pdfHeader !== "%PDF") {
-      logRequest(ip, "INVALID_PDF_HEADER", { fileName: file.name });
+    // Enhanced PDF header validation
+    const pdfHeader = String.fromCharCode(...uint8Array.slice(0, 5));
+    if (!pdfHeader.startsWith("%PDF-")) {
+      logRequest(ip, "INVALID_PDF_HEADER", { header: pdfHeader });
       return { valid: false, error: "Invalid PDF file format" };
+    }
+
+    // Check PDF version (should be reasonable)
+    const versionMatch = pdfHeader.match(/%PDF-(\d+\.\d+)/);
+    if (versionMatch) {
+      const version = parseFloat(versionMatch[1]);
+      if (version < 1.0 || version > 2.0) {
+        logRequest(ip, "UNSUPPORTED_PDF_VERSION", { version });
+        return { valid: false, error: "Unsupported PDF version" };
+      }
     }
 
     // Efficient page counting using binary search for PDF objects
@@ -156,7 +225,6 @@ async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; er
     } catch (conversionError) {
       logRequest(ip, "PDF_PARSING_ERROR", { 
         error: conversionError.message, 
-        fileName: file.name,
         fileSize: file.size 
       });
       // If we can't parse the PDF structure reliably, reject it as potentially problematic
@@ -166,7 +234,6 @@ async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; er
     // Log the analysis results
     if (pageCount === 0) {
       logRequest(ip, "PAGE_COUNT_UNDETERMINED", { 
-        fileName: file.name, 
         fileSize: file.size,
         note: "Could not determine page count - will proceed with caution"
       });
@@ -174,21 +241,18 @@ async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; er
       // but the AI validation step will catch non-resume documents
     } else if (pageCount > 1) {
       logRequest(ip, "MULTI_PAGE_PDF_DETECTED", { 
-        fileName: file.name, 
         pageCount,
         fileSize: file.size 
       });
       return { valid: false, error: "Only single-page PDF resumes are supported" };
     } else {
       logRequest(ip, "SINGLE_PAGE_PDF_VALIDATED", { 
-        fileName: file.name, 
         pageCount,
         fileSize: file.size 
       });
     }
 
     logRequest(ip, "FILE_VALIDATED", { 
-      fileName: file.name, 
       fileSize: file.size, 
       pageCount: pageCount || "undetermined" 
     });
@@ -197,7 +261,6 @@ async function validatePDF(file: File, ip: string): Promise<{ valid: boolean; er
   } catch (error) {
     logRequest(ip, "VALIDATION_ERROR", { 
       error: error.message, 
-      fileName: file.name,
       fileSize: file.size 
     });
     return { valid: false, error: "Failed to validate PDF file" };
@@ -264,18 +327,22 @@ async function callGeminiWithRetry(apiKeys: string[], requestBody: any, model = 
 }
 
 const handler = async (req: Request) => {
-  // Get client IP
+  // Get enhanced CORS headers based on request origin
+  const corsHeaders = getCorsHeaders(req);
+  
+  // Get client IP and user agent for security
   const clientIP = getClientIP(req);
+  const userAgent = req.headers.get('user-agent') || '';
   
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: { ...corsHeaders, ...securityHeaders } });
   }
 
   try {
-    // Initialize Supabase client for feature flag checking
+    // Initialize Supabase client with service role for feature flag checking
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Check if resume processing feature is enabled
     const isFeatureEnabled = await checkFeatureFlag(supabase);
@@ -285,7 +352,7 @@ const handler = async (req: Request) => {
         error: 'Feature temporarily unavailable',
         message: 'Resume processing is currently disabled. Please try again later.'
       }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, ...securityHeaders, 'Content-Type': 'application/json' },
         status: 503
       });
     }
@@ -298,19 +365,19 @@ const handler = async (req: Request) => {
         error: 'Daily limit reached',
         message: 'The daily processing limit has been reached. Please try again tomorrow.'
       }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, ...securityHeaders, 'Content-Type': 'application/json' },
         status: 429
       });
     }
 
-    // Rate limiting check (per IP)
-    if (!checkRateLimit(clientIP)) {
+    // Enhanced rate limiting check (per IP)
+    if (!checkRateLimit(clientIP, userAgent)) {
       logRequest(clientIP, "RATE_LIMITED", { limit: RATE_LIMIT_PER_DAY });
       return new Response(JSON.stringify({
         error: 'Rate limit exceeded',
         message: `Maximum ${RATE_LIMIT_PER_DAY} requests per day allowed. Please try again tomorrow.`
       }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, ...securityHeaders, 'Content-Type': 'application/json' },
         status: 429
       });
     }
@@ -325,22 +392,23 @@ const handler = async (req: Request) => {
       return new Response(JSON.stringify({
         error: 'No file provided'
       }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, ...securityHeaders, 'Content-Type': 'application/json' },
         status: 400
       });
     }
 
-    // Enhanced file validation
+    // Enhanced file validation with security checks
     const validation = await validatePDF(file, clientIP);
     if (!validation.valid) {
       return new Response(JSON.stringify({
         error: validation.error
       }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, ...securityHeaders, 'Content-Type': 'application/json' },
         status: 400
       });
     }
 
+    // ... keep existing code (Gemini API processing)
     const geminiApiKeys = getGeminiApiKeys();
     if (geminiApiKeys.length === 0) {
       logRequest(clientIP, "NO_API_KEYS");
@@ -540,13 +608,12 @@ Return ONLY valid JSON:
     }
     
     logRequest(clientIP, "SUCCESS", { 
-      fileName: file.name, 
       fileSize: file.size,
       processingTime: "completed"
     });
     
     return new Response(JSON.stringify({ portfolioData }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, ...securityHeaders, 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
@@ -555,7 +622,7 @@ Return ONLY valid JSON:
       error: 'Failed to process resume',
       details: error.message
     }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, ...securityHeaders, 'Content-Type': 'application/json' },
       status: 500
     });
   }

@@ -17,10 +17,11 @@ export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClos
     setIsLoading(true);
 
     try {
-      // Validate inputs before submission
+      // Enhanced input validation and sanitization
       const trimmedName = name.trim();
-      const trimmedEmail = email.trim();
+      const trimmedEmail = email.trim().toLowerCase();
 
+      // Validate name length and content
       if (trimmedName.length === 0 || trimmedName.length > 100) {
         if (!isAutoSubmit) {
           toast.error("Name must be between 1 and 100 characters");
@@ -29,6 +30,17 @@ export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClos
         return false;
       }
 
+      // Check for potentially malicious content in name
+      const namePattern = /^[a-zA-Z\s\-\.\']+$/;
+      if (!namePattern.test(trimmedName)) {
+        if (!isAutoSubmit) {
+          toast.error("Name contains invalid characters");
+        }
+        setIsLoading(false);
+        return false;
+      }
+
+      // Enhanced email validation
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(trimmedEmail)) {
         if (!isAutoSubmit) {
@@ -38,14 +50,26 @@ export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClos
         return false;
       }
 
-      // Use upsert to update existing record or create new one based on email
+      // Additional email security checks
+      if (trimmedEmail.length > 254) { // RFC 5321 limit
+        if (!isAutoSubmit) {
+          toast.error("Email address is too long");
+        }
+        setIsLoading(false);
+        return false;
+      }
+
+      // Validate portfolio name if provided
+      const sanitizedPortfolioName = portfolioName?.trim().substring(0, 100) || null;
+
+      // Submit using upsert with enhanced error handling
       const { error } = await supabase
         .from('user_submissions')
         .upsert({
           name: trimmedName,
           email: trimmedEmail,
           action_type: actionType,
-          portfolio_name: portfolioName
+          portfolio_name: sanitizedPortfolioName
         }, {
           onConflict: 'email',
           ignoreDuplicates: false
@@ -54,8 +78,13 @@ export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClos
       if (error) {
         console.error('Error saving user details:', error);
         
-        if (error.message.includes('Rate limit exceeded')) {
-          const errorMsg = "You've reached the hourly limit of 10 submissions. Please try again later.";
+        // Enhanced error handling with specific messages
+        if (error.message.includes('Rate limit exceeded') || 
+            error.message.includes('submissions per email per hour') ||
+            error.message.includes('Daily rate limit exceeded')) {
+          const errorMsg = error.message.includes('Daily') 
+            ? "You've reached the daily limit of 50 submissions. Please try again tomorrow."
+            : "You've reached the hourly limit of 10 submissions. Please try again later.";
           if (!isAutoSubmit) {
             toast.error(errorMsg);
           }
@@ -63,9 +92,14 @@ export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClos
           if (!isAutoSubmit) {
             toast.error("Please enter a valid email address");
           }
-        } else if (error.message.includes('Name must be')) {
+        } else if (error.message.includes('Name must be') || 
+                   error.message.includes('invalid characters')) {
           if (!isAutoSubmit) {
-            toast.error("Name must be between 1 and 100 characters");
+            toast.error("Name must be between 1 and 100 characters and contain only letters, spaces, hyphens, periods, and apostrophes");
+          }
+        } else if (error.message.includes('Invalid action type')) {
+          if (!isAutoSubmit) {
+            toast.error("Invalid request type. Please try again.");
           }
         } else {
           if (!isAutoSubmit) {
