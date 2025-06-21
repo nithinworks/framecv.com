@@ -21,11 +21,8 @@ import {
   AlertCircle,
   Key,
   CheckCircle,
-  Info,
-  Sparkles,
   Globe,
 } from "lucide-react";
-import confetti from "canvas-confetti";
 
 interface GitHubDeployProps {
   open: boolean;
@@ -52,13 +49,10 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   // Check for token in URL hash and handle connection state
   useEffect(() => {
     const handleTokenFromUrl = () => {
-      console.log("Checking for GitHub token in URL...");
       const hash = window.location.hash;
-      console.log("Current URL hash:", hash);
 
       if (hash.includes("github_token=")) {
         const token = hash.split("github_token=")[1].split("&")[0];
-        console.log("Found GitHub token:", token ? "Yes" : "No");
         setGithubToken(token);
         
         // Clear localStorage after successful OAuth
@@ -84,25 +78,6 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     }
   }, [open, toast]);
 
-  // Trigger minimal confetti when deployment is successful
-  useEffect(() => {
-    if (deploymentResult) {
-      // Minimal confetti burst
-      confetti({
-        particleCount: 30,
-        startVelocity: 20,
-        spread: 50,
-        ticks: 40,
-        zIndex: 1000,
-        origin: {
-          x: 0.5,
-          y: 0.3,
-        },
-        colors: ['#ffffff', '#a3a3a3', '#737373'],
-      });
-    }
-  }, [deploymentResult]);
-
   const handleConnect = async () => {
     if (!featureFlags.github_deploy_status) {
       toast({
@@ -116,19 +91,16 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
     setIsConnecting(true);
     try {
-      console.log("Storing portfolio data before GitHub OAuth...");
       // Store portfolio data in localStorage before redirecting
       localStorage.setItem(
         "github_oauth_portfolio_data",
         JSON.stringify(portfolioData)
       );
 
-      console.log("Redirecting to GitHub OAuth...");
       // Redirect to the 'github-auth-start' edge function
       const supabaseUrl = "https://rlnlbdrlruuoffnyaltc.supabase.co";
       window.location.href = `${supabaseUrl}/functions/v1/github-auth-start`;
     } catch (error) {
-      console.error("Connection error:", error);
       toast({
         title: "Connection Failed",
         description:
@@ -140,10 +112,6 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   };
 
   const handleDeploy = async () => {
-    console.log("Starting deployment...");
-    console.log("GitHub token present:", githubToken ? "Yes" : "No");
-    console.log("Repo name:", repoName);
-
     // Check if GitHub deployment is enabled
     if (!featureFlags.github_deploy_status) {
       toast({
@@ -176,7 +144,6 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     setIsDeploying(true);
 
     try {
-      console.log("Calling github-deploy function...");
       // Call the github-deploy function without authentication
       const response = await fetch(
         `https://rlnlbdrlruuoffnyaltc.supabase.co/functions/v1/github-deploy`,
@@ -194,16 +161,11 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         }
       );
 
-      console.log("Deploy response status:", response.status);
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Deploy response error:", errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Deploy response data:", data);
 
       // Track successful GitHub deployment
       try {
@@ -211,7 +173,7 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
           stat_type: "github_deploy",
         });
       } catch (error) {
-        console.error("Failed to track portfolio stat:", error);
+        // Silent fail for analytics
       }
 
       setDeploymentResult({
@@ -224,7 +186,6 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         description: "Your portfolio is now live on GitHub Pages",
       });
     } catch (error) {
-      console.error("Publish error:", error);
       toast({
         title: "GitHub Publishing Failed",
         description:

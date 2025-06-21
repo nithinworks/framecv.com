@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Download, Home, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import confetti from "canvas-confetti";
 
 interface DownloadSuccessModalProps {
   open: boolean;
@@ -26,24 +25,6 @@ const DownloadSuccessModal: React.FC<DownloadSuccessModalProps> = ({
   fileName,
 }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (open) {
-      // Minimal confetti effect to match branding
-      confetti({
-        particleCount: 30,
-        startVelocity: 20,
-        spread: 50,
-        ticks: 40,
-        zIndex: 1000,
-        origin: {
-          x: 0.5,
-          y: 0.3,
-        },
-        colors: ['#ffffff', '#a3a3a3', '#737373'],
-      });
-    }
-  }, [open]);
 
   const handleGoHome = () => {
     onOpenChange(false);

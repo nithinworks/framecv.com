@@ -76,8 +76,6 @@ export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClos
         });
 
       if (error) {
-        console.error('Error saving user details:', error);
-        
         // Enhanced error handling with specific messages
         if (error.message.includes('Rate limit exceeded') || 
             error.message.includes('submissions per email per hour') ||
@@ -121,7 +119,6 @@ export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClos
       setIsLoading(false);
       return true;
     } catch (error) {
-      console.error('Submission error:', error);
       if (!isAutoSubmit) {
         toast.error("An error occurred. Please try again.");
       }
