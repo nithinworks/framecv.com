@@ -1,11 +1,10 @@
 
 // Enhanced CORS configuration with specific allowed origins
 const ALLOWED_ORIGINS = [
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'https://portfolio-builder-ai.netlify.app',
-  'https://portfoliopilot.app',
-  'https://www.portfoliopilot.app'
+  'http://localhost:8080',
+  'https://preview--awsome-nit-project.lovable.app',
+  'https://www.framecv.com',
+  'https://framecv.com'
 ];
 
 // Determine if origin is allowed
@@ -44,7 +43,7 @@ export function getCorsHeaders(request: Request): Record<string, string> {
   // Default restrictive headers for unknown origins
   return {
     ...corsHeaders,
-    'Access-Control-Allow-Origin': 'https://portfoliopilot.app',
+    'Access-Control-Allow-Origin': 'https://www.framecv.com',
   };
 }
 
