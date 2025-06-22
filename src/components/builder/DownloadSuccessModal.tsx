@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -8,7 +7,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Download, Home, ArrowLeft } from "lucide-react";
+import { CheckCircle, Home, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface DownloadSuccessModalProps {
@@ -37,47 +36,33 @@ const DownloadSuccessModal: React.FC<DownloadSuccessModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-[#171717] border-gray-800">
-        <DialogHeader>
-          <DialogTitle className="text-center flex items-center justify-center gap-2 text-white">
-            <CheckCircle className="h-6 w-6 text-white" />
-            Your Download is Ready!
+      <DialogContent className="sm:max-w-md bg-[#171717] border-gray-800 text-white">
+        <div className="flex flex-col items-center text-center p-6">
+          <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
+          <DialogTitle className="text-xl font-bold mb-2">
+            Download Successful
           </DialogTitle>
-          <DialogDescription className="text-center text-gray-400">
-            Thank you for using our portfolio builder! Your {downloadType === "source" ? "source code" : "portfolio data"} has been downloaded successfully.
+          <DialogDescription className="text-gray-400 mb-6">
+            {downloadType === "source"
+              ? `Your portfolio source code has been successfully downloaded as ${fileName}. You can now deploy it anywhere.`
+              : `Your portfolio data (${fileName}) has been saved for future use.`}
           </DialogDescription>
-        </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
-              <Download className="h-8 w-8 text-white" />
-            </div>
-            <p className="text-sm text-gray-400 mb-4">
-              Downloaded: <span className="font-medium text-white">{fileName}</span>
-            </p>
-            <p className="text-sm text-gray-400">
-              {downloadType === "source" 
-                ? "Your portfolio source code is ready to deploy anywhere you like!"
-                : "Your portfolio data has been saved for future use."}
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button
-              variant="outline"
-              onClick={handleGoHome}
-              className="flex items-center gap-2 border-gray-700 text-white hover:bg-gray-800"
-            >
-              <Home className="h-4 w-4" />
-              Go to Home
-            </Button>
+          <div className="flex w-full flex-col sm:flex-row-reverse gap-3">
             <Button
               onClick={handleBackToBuilder}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Builder
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleGoHome}
+              className="flex items-center gap-2 border-gray-700 hover:bg-gray-800 w-full"
+            >
+              <Home className="h-4 w-4" />
+              Go to Home
             </Button>
           </div>
         </div>
