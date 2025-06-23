@@ -37,7 +37,7 @@ const DownloadSuccessModal: React.FC<DownloadSuccessModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-[#171717] border-gray-800 text-white">
-        <div className="flex flex-col items-center text-center p-6">
+        <div className="flex flex-col items-center text-center p-6 max-w-sm mx-auto">
           <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
           <DialogTitle className="text-xl font-bold mb-2">
             Download Successful
@@ -48,7 +48,7 @@ const DownloadSuccessModal: React.FC<DownloadSuccessModalProps> = ({
               : `Your portfolio data (${fileName}) has been saved for future use.`}
           </DialogDescription>
 
-          <div className="flex w-full flex-col sm:flex-row-reverse gap-3">
+          <div className="flex w-full max-w-sm flex-col sm:flex-row-reverse gap-3">
             <Button
               onClick={handleBackToBuilder}
               className="flex items-center gap-2 w-full"
