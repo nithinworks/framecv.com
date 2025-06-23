@@ -21,39 +21,39 @@ const GitHubRepoSetup: React.FC<GitHubRepoSetupProps> = ({
   onClose,
 }) => {
   return (
-    <>
+    <div className="space-y-4 px-2 sm:px-0">
       <div className="p-3 rounded-md bg-gray-800 border border-gray-700 flex items-center gap-3">
-        <CheckCircle className="h-5 w-5 text-white" />
+        <CheckCircle className="h-5 w-5 text-white flex-shrink-0" />
         <p className="text-sm font-medium text-white">
           GitHub account connected successfully!
         </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="repoName" className="text-white">Repository Name</Label>
+        <Label htmlFor="repoName" className="text-white text-sm sm:text-base">Repository Name</Label>
         <Input
           id="repoName"
           value={repoName}
           onChange={(e) => setRepoName(e.target.value)}
           placeholder="e.g., my-awesome-portfolio"
           disabled={isDeploying}
-          className="bg-gray-800 border-gray-700 text-white"
+          className="bg-gray-800 border-gray-700 text-white text-sm sm:text-base"
         />
       </div>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col sm:flex-row justify-end gap-3">
         <Button
           variant="outline"
           onClick={onClose}
           disabled={isDeploying}
-          className="border-gray-700 text-white hover:bg-gray-800"
+          className="border-gray-700 text-white hover:bg-gray-800 w-full sm:w-auto text-sm sm:text-base py-2.5"
         >
           Cancel
         </Button>
         <Button
           onClick={onDeploy}
           disabled={isDeploying || !repoName.trim()}
-          className="min-w-[120px]"
+          className="min-w-[120px] w-full sm:w-auto text-sm sm:text-base py-2.5"
         >
           {isDeploying ? (
             <>
@@ -68,7 +68,7 @@ const GitHubRepoSetup: React.FC<GitHubRepoSetupProps> = ({
           )}
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 
