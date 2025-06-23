@@ -18,15 +18,15 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
   onClose,
 }) => {
   return (
-    <div className="space-y-6 px-2 sm:px-0">
+    <div className="space-y-6">
       <div className="text-center">
         <div className="w-20 h-20 mx-auto mb-4 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
           <CheckCircle className="h-10 w-10 text-white" />
         </div>
-        <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">
+        <h3 className="text-xl font-semibold text-white mb-2">
           Your portfolio is live! 🚀
         </h3>
-        <p className="text-sm text-gray-400 leading-relaxed">
+        <p className="text-sm text-gray-400">
           Your beautiful portfolio is now accessible to anyone on the internet.
         </p>
       </div>
@@ -38,7 +38,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
           <p className="font-medium text-white mb-1">
             First-time deployment may take a few minutes
           </p>
-          <p className="text-xs text-gray-400 leading-relaxed">
+          <p className="text-xs text-gray-400">
             GitHub Pages needs time to build and deploy your site. If the
             live URL doesn't work immediately, please wait 2-5 minutes and
             try again.
@@ -48,7 +48,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <Label className="flex items-center gap-2 text-sm sm:text-base font-medium text-white">
+          <Label className="flex items-center gap-2 text-base font-medium text-white">
             <Globe className="h-4 w-4 text-white" />
             Live Website
           </Label>
@@ -56,7 +56,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
             <Input
               value={deploymentResult.pagesUrl}
               readOnly
-              className="text-xs sm:text-sm bg-gray-800 border-gray-700 text-white"
+              className="text-sm bg-gray-800 border-gray-700 text-white"
             />
             <Button
               variant="outline"
@@ -64,7 +64,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
               onClick={() =>
                 window.open(deploymentResult.pagesUrl, "_blank")
               }
-              className="border-gray-700 hover:bg-gray-800 text-white flex-shrink-0"
+              className="border-gray-700 hover:bg-gray-800 text-white"
             >
               <ExternalLink className="h-4 w-4" />
             </Button>
@@ -72,7 +72,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
         </div>
 
         <div className="space-y-3">
-          <Label className="flex items-center gap-2 text-sm sm:text-base font-medium text-white">
+          <Label className="flex items-center gap-2 text-base font-medium text-white">
             <Github className="h-4 w-4 text-white" />
             Repository
           </Label>
@@ -80,7 +80,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
             <Input
               value={deploymentResult.repoUrl}
               readOnly
-              className="text-xs sm:text-sm bg-gray-800 border-gray-700 text-white"
+              className="text-sm bg-gray-800 border-gray-700 text-white"
             />
             <Button
               variant="outline"
@@ -88,7 +88,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
               onClick={() =>
                 window.open(deploymentResult.repoUrl, "_blank")
               }
-              className="border-gray-700 hover:bg-gray-800 text-white flex-shrink-0"
+              className="border-gray-700 hover:bg-gray-800 text-white"
             >
               <ExternalLink className="h-4 w-4" />
             </Button>
@@ -96,7 +96,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
         </div>
       </div>
 
-      <Button onClick={onClose} className="w-full text-sm sm:text-base py-2.5">
+      <Button onClick={onClose} className="w-full">
         Awesome! Close
       </Button>
     </div>

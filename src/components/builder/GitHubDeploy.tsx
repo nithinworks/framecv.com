@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -42,13 +41,13 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   if (!featureFlags.github_deploy_status) {
     return (
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md mx-4 max-w-[calc(100vw-2rem)] bg-[#171717] border-gray-800">
+        <DialogContent className="sm:max-w-md bg-[#171717] border-gray-800">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+            <DialogTitle className="flex items-center gap-2 text-white">
               <Github className="h-5 w-5" />
               Publish to GitHub
             </DialogTitle>
-            <DialogDescription className="text-gray-400 text-sm sm:text-base">
+            <DialogDescription className="text-gray-400">
               GitHub publishing is currently unavailable.
             </DialogDescription>
           </DialogHeader>
@@ -61,15 +60,15 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg mx-4 max-w-[calc(100vw-2rem)] bg-[#171717] border-gray-800">
+      <DialogContent className="sm:max-w-lg bg-[#171717] border-gray-800">
         {deploymentResult ? (
           <>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+              <DialogTitle className="flex items-center gap-2 text-white">
                 <CheckCircle className="h-5 w-5 text-green-500" />
                 Portfolio Published
               </DialogTitle>
-              <DialogDescription className="text-gray-400 text-sm sm:text-base">
+              <DialogDescription className="text-gray-400">
                 Your portfolio is now live on GitHub Pages.
               </DialogDescription>
             </DialogHeader>
@@ -86,11 +85,11 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+              <DialogTitle className="flex items-center gap-2 text-white">
                 <Github className="h-5 w-5" />
                 Configure and Publish
               </DialogTitle>
-              <DialogDescription className="text-gray-400 text-sm sm:text-base px-2 sm:px-0">
+              <DialogDescription className="text-gray-400">
                 Your GitHub account is connected. Enter a repository name to
                 publish.
               </DialogDescription>
