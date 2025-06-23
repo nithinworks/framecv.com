@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -62,47 +61,47 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg bg-[#171717] border-gray-800">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-white">
-            {deploymentResult ? (
-              <>
-                <CheckCircle className="h-5 w-5 text-white" />
-                🎉 Portfolio Published Successfully!
-              </>
-            ) : (
-              <>
-                <Github className="h-5 w-5" />
-                Publish to GitHub
-              </>
-            )}
-          </DialogTitle>
-          <DialogDescription className="text-gray-400">
-            {deploymentResult
-              ? "Congratulations! Your portfolio is now live on GitHub Pages. Share it with the world!"
-              : githubToken
-              ? "Your GitHub account is connected. Enter a repository name to publish your portfolio."
-              : "Connect your GitHub account to publish your portfolio directly to GitHub Pages."}
-          </DialogDescription>
-        </DialogHeader>
-
         {deploymentResult ? (
-          <GitHubSuccessState 
-            deploymentResult={deploymentResult}
-            onClose={handleClose}
-          />
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-white">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                Portfolio Published
+              </DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Your portfolio is now live on GitHub Pages.
+              </DialogDescription>
+            </DialogHeader>
+            <GitHubSuccessState
+              deploymentResult={deploymentResult}
+              onClose={handleClose}
+            />
+          </>
         ) : !githubToken ? (
           <GitHubConnectionState
             isConnecting={isConnecting}
             onConnect={handleConnect}
           />
         ) : (
-          <GitHubRepoSetup
-            repoName={repoName}
-            setRepoName={setRepoName}
-            isDeploying={isDeploying}
-            onDeploy={handleDeploy}
-            onClose={handleClose}
-          />
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-white">
+                <Github className="h-5 w-5" />
+                Configure and Publish
+              </DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Your GitHub account is connected. Enter a repository name to
+                publish.
+              </DialogDescription>
+            </DialogHeader>
+            <GitHubRepoSetup
+              repoName={repoName}
+              setRepoName={setRepoName}
+              isDeploying={isDeploying}
+              onDeploy={handleDeploy}
+              onClose={handleClose}
+            />
+          </>
         )}
       </DialogContent>
     </Dialog>

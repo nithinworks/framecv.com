@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Github, Key, Loader2 } from "lucide-react";
+import { Github, Loader2, ShieldCheck } from "lucide-react";
 
 interface GitHubConnectionStateProps {
   isConnecting: boolean;
@@ -13,22 +12,31 @@ const GitHubConnectionState: React.FC<GitHubConnectionStateProps> = ({
   onConnect,
 }) => {
   return (
-    <div className="text-center py-6">
-      <div className="w-16 h-16 mx-auto mb-4 bg-gray-800 rounded-full flex items-center justify-center">
-        <Key className="h-8 w-8 text-gray-400" />
-      </div>
-      <h3 className="text-lg font-medium text-white mb-2">
-        Connect to GitHub
+    <div className="text-center py-6 flex flex-col items-center">
+      <Github className="h-12 w-12 text-gray-400 mb-4" />
+      <h3 className="text-lg font-bold text-white mb-2">
+        Connect your GitHub Account
       </h3>
       <p className="text-sm text-gray-400 mb-6 max-w-sm mx-auto">
-        To publish your portfolio, you need to connect your GitHub
-        account. This grants temporary permission to create a repository
-        for you.
+        Allow FrameCV to connect to your GitHub account to publish your
+        portfolio directly.
       </p>
+
+      <div className="bg-green-900/30 border border-green-500/30 rounded-lg p-3 max-w-sm w-full text-left flex items-start gap-3 mb-6">
+        <ShieldCheck className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+        <div className="text-xs text-green-200">
+          <p className="font-bold">Temporary & Secure Access</p>
+          <p>
+            We use temporary permission to deploy your code to a new public
+            repository.
+          </p>
+        </div>
+      </div>
+
       <Button
         onClick={onConnect}
         disabled={isConnecting}
-        className="min-w-[140px]"
+        className="w-full max-w-sm"
       >
         {isConnecting ? (
           <>
