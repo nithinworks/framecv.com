@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,16 +20,16 @@ const GitHubRepoSetup: React.FC<GitHubRepoSetupProps> = ({
   onClose,
 }) => {
   return (
-    <>
-      <div className="p-3 rounded-md bg-gray-800 border border-gray-700 flex items-center gap-3">
-        <CheckCircle className="h-5 w-5 text-white" />
-        <p className="text-sm font-medium text-white">
-          GitHub account connected successfully!
-        </p>
+    <div className="flex flex-col items-center text-center gap-4 p-4">
+      <div className="flex items-center gap-2 text-sm text-green-400">
+        <CheckCircle className="h-5 w-5" />
+        <p>GitHub account connected!</p>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="repoName" className="text-white">Repository Name</Label>
+      <div className="w-full max-w-sm space-y-2 text-left">
+        <Label htmlFor="repoName" className="text-white">
+          Repository Name
+        </Label>
         <Input
           id="repoName"
           value={repoName}
@@ -41,7 +40,7 @@ const GitHubRepoSetup: React.FC<GitHubRepoSetupProps> = ({
         />
       </div>
 
-      <div className="flex justify-end gap-3">
+      <div className="w-full max-w-sm flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-4">
         <Button
           variant="outline"
           onClick={onClose}
@@ -68,7 +67,7 @@ const GitHubRepoSetup: React.FC<GitHubRepoSetupProps> = ({
           )}
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 
