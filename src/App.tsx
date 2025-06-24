@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import Builder from "./pages/Builder";
 import NotFound from "./pages/NotFound";
 import PageTransitionLoader from "./components/ui/page-transition";
+import ThemesPage from "./components/ThemesPage";
+import ReportIssuePage from "./components/ReportIssuePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +32,8 @@ const App = () => (
         {/* <Route path="/" element={<WaitlistPage />} />*/}
            <Route path="/" element={<Index />} />
           <Route path="/builder" element={<Builder />} />
+          <Route path="/themes" element={<ThemesPage />} />
+          <Route path="/report-issue" element={<ReportIssuePage />} />
             {/* <Route path="/about" element={<About />} /> */}
             {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
             {/* <Route path="/terms" element={<TermsAndConditions />} /> */}

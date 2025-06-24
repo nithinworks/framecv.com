@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import { Menu, X, Lock } from "lucide-react";
+import { Menu, X, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface LandingHeaderProps {
@@ -79,23 +80,25 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8 items-center">
-          <span className="flex items-center gap-1 text-muted-foreground opacity-60 cursor-not-allowed select-none">
-            <span>Themes</span>
-            <Lock className="w-4 h-4 inline-block align-middle" />
-            <span className="ml-1 text-xs">(Coming soon)</span>
-          </span>
+          <Link
+            to="/themes"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Themes
+          </Link>
           <Link
             to="/about"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             About
           </Link>
-          {/* <Link
-            to="/deploy-guide"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+          <Link
+            to="/report-issue"
+            className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
           >
-            Deploy Guide
-          </Link> */}
+            <AlertTriangle className="w-4 h-4" />
+            Report an issue
+          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -115,11 +118,13 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-sm">
           <nav className="container mx-auto px-4 py-4 space-y-4">
-            <span className="flex items-center gap-1 text-muted-foreground opacity-60 cursor-not-allowed select-none">
-              <span>Themes</span>
-              <Lock className="w-4 h-4 inline-block align-middle" />
-              <span className="ml-1 text-xs">(Coming soon)</span>
-            </span>
+            <Link
+              to="/themes"
+              className="block text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Themes
+            </Link>
             <Link
               to="/about"
               className="block text-muted-foreground hover:text-foreground transition-colors"
@@ -128,11 +133,12 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
               About
             </Link>
             <Link
-              to="/deploy-guide"
-              className="block text-muted-foreground hover:text-foreground transition-colors"
+              to="/report-issue"
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Deploy Guide
+              <AlertTriangle className="w-4 h-4" />
+              Report an issue
             </Link>
           </nav>
         </div>
