@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 
 export const useIframeRenderer = (portfolioData: any, currentView: string) => {
@@ -553,8 +552,8 @@ const getClientSideScript = (portfolioData: any): string => {
         if (data.sections.hero && data.sections.hero.enabled) {
           let ctas = "";
           (data.sections.hero.ctaButtons || []).forEach((btn) => {
-            let iconName = btn.icon;
-            if (btn.text.toLowerCase().includes("resume")) iconName = "document";
+            // Use the icon directly from the button data without any hardcoded overrides
+            const iconName = btn.icon || "";
             ctas += '<a href="' + btn.url + '" class="flex items-center gap-2 ' + (btn.isPrimary ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg" : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300 hover:shadow-md") + '">' + (iconName ? getIconSVG(iconName) : "") + "<span>" + btn.text + "</span></a>";
           });
           
