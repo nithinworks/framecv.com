@@ -34,11 +34,11 @@ const App = () => (
           <Route path="/builder" element={<Builder />} />
           <Route path="/themes" element={<ThemesPage />} />
           <Route path="/report-issue" element={<ReportIssuePage />} />
-            {/* <Route path="/about" element={<About />} /> */}
-            {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
-            {/* <Route path="/terms" element={<TermsAndConditions />} /> */}
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+           <Route path="/terms" element={<TermsAndConditions />} />
             {/* <Route path="/deploy-guide" element={<DeployGuide />} /> */}
-            {/* <Route path="/contact" element={<Contact />} /> */}
+          <Route path="/contact" element={<Contact />} /> 
             <Route path="*" element={<NotFound />} /> 
           </Routes>
         </PageTransitionLoader>
