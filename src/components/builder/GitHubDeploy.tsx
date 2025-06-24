@@ -62,21 +62,10 @@ const GitHubDeploy: React.FC<GitHubDeployProps> = ({ open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg bg-[#171717] border-gray-800">
         {deploymentResult ? (
-          <>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-white">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                Portfolio Published
-              </DialogTitle>
-              <DialogDescription className="text-gray-400">
-                Your portfolio is now live on GitHub Pages.
-              </DialogDescription>
-            </DialogHeader>
-            <GitHubSuccessState
-              deploymentResult={deploymentResult}
-              onClose={handleClose}
-            />
-          </>
+          <GitHubSuccessState
+            deploymentResult={deploymentResult}
+            onClose={handleClose}
+          />
         ) : !githubToken ? (
           <GitHubConnectionState
             isConnecting={isConnecting}
