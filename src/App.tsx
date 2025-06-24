@@ -34,9 +34,9 @@ const App = () => (
       <BrowserRouter>
         <PageTransitionLoader>
           <Routes>
-        {/* <Route path="/" element={<WaitlistPage />} />*/}
-           <Route path="/" element={<Index />} />
-          <Route path="/builder" element={<Builder />} />
+        <Route path="/" element={<WaitlistPage />} />
+         {/*  <Route path="/" element={<Index />} />*/}
+         {/* <Route path="/builder" element={<Builder />} />*/}
           <Route path="/themes" element={<ThemesPage />} />
           <Route path="/report-issue" element={<ReportIssuePage />} />
           <Route path="/about" element={<About />} />
