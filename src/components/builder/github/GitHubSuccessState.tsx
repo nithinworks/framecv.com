@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +25,7 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
   return (
     <div className="flex flex-col items-center text-center gap-4 p-4">
       <h3 className="text-xl font-semibold text-white mb-1 mt-2">
-        Your portfolio is live! 🚀
+        Your portfolio is live! 🥳
       </h3>
       <p className="text-sm text-gray-400 max-w-sm">
         Congratulations! Your portfolio is now accessible on the internet.
@@ -55,18 +54,14 @@ const GitHubSuccessState: React.FC<GitHubSuccessStateProps> = ({
         <AlertCircle className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
         <div className="text-xs text-gray-400">
           <p className="font-semibold text-white mb-1">
-            Deployment may take a few minutes
+            First-time deployment takes time
           </p>
           <p>
-            If the live URL isn't working yet, please wait 2-5 minutes and try
-            again.
+            If the live URL isn't working yet, please wait 2-5 minutes and
+            refresh the live site.
           </p>
         </div>
       </div>
-
-      <Button onClick={onClose} variant="ghost" className="w-full max-w-sm mt-2">
-        Close
-      </Button>
     </div>
   );
 };
