@@ -19,8 +19,8 @@ const EditorSidebar: React.FC = () => {
   const sections = [
     { id: "hero", label: "Personal Info", component: <HeroEditor />, icon: User },
     { id: "about", label: "Skills", component: <AboutEditor />, icon: Brain },
-    { id: "experience", label: "Experience", component: <ExperienceEditor />, icon: Briefcase },
     { id: "projects", label: "Projects", component: <ProjectsEditor />, icon: FolderOpen },
+    { id: "experience", label: "Experience", component: <ExperienceEditor />, icon: Briefcase },
     { id: "education", label: "Education", component: <EducationEditor />, icon: GraduationCap },
     { id: "contact", label: "Contact", component: <ContactEditor />, icon: Mail },
     { id: "settings", label: "Settings", component: <SettingsEditor />, icon: Settings }

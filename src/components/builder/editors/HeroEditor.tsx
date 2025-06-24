@@ -202,7 +202,10 @@ const HeroEditor: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs">Icon</Label>
-                  <Select value={cta.icon || "none"} onValueChange={(value) => handleCtaChange(index, "icon", value === "none" ? "" : value)}>
+                  <Select 
+                    value={cta.icon || "none"} 
+                    onValueChange={(value) => handleCtaChange(index, "icon", value === "none" ? "" : value)}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select icon" />
                     </SelectTrigger>
@@ -217,7 +220,10 @@ const HeroEditor: React.FC = () => {
                 </div>
                 <div>
                   <Label className="text-xs">Style</Label>
-                  <Select value={cta.isPrimary ? "primary" : "secondary"} onValueChange={(value) => handleCtaChange(index, "isPrimary", value === "primary")}>
+                  <Select 
+                    value={cta.isPrimary ? "primary" : "secondary"} 
+                    onValueChange={(value) => handleCtaChange(index, "isPrimary", value === "primary")}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
