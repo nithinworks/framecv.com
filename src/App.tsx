@@ -28,8 +28,8 @@ const App = () => (
         <PageTransitionLoader>
           <Routes>
         {/* <Route path="/" element={<WaitlistPage />} />*/}
-           <Route path="/" element={<Index />} />*/}
-          <Route path="/builder" element={<Builder />} />*/}
+           <Route path="/" element={<Index />} />
+          <Route path="/builder" element={<Builder />} />
             {/* <Route path="/about" element={<About />} /> */}
             {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
             {/* <Route path="/terms" element={<TermsAndConditions />} /> */}
