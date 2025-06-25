@@ -71,13 +71,16 @@ export const useIframeRenderer = (portfolioData: any, currentView: string) => {
 
 // Generate portfolio HTML with the updated theme
 const generatePortfolioHTML = (portfolioData: any): string => {
+  const pageTitle = portfolioData.settings.title
+    ? `${portfolioData.settings.name} | ${portfolioData.settings.title}`
+    : `${portfolioData.settings.name} - Portfolio`;
   return `
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio - ${portfolioData.settings.name}</title>
+    <title>${pageTitle}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -537,7 +540,7 @@ const getClientSideScript = (portfolioData: any): string => {
         const secondaryFontClass = getFontClass(data.settings.fonts?.secondary || "schibsted");
 
         const nameParts = (data.settings.name || "").trim().split(" ");
-        const logoName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
+        const logoName = nameParts[0];
 
         let navLinks = "";
         (data.navigation.items || []).forEach((link) => {
