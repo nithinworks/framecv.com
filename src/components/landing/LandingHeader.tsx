@@ -7,6 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface LandingHeaderProps {
   isLoaded: boolean;
@@ -140,31 +146,44 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-sm">
-          <nav className="container mx-auto px-4 py-4 space-y-4">
+          <nav className="container mx-auto px-4 py-4 space-y-2">
             <Link
               to="/themes"
-              className="block text-muted-foreground hover:text-foreground transition-colors"
+              className="block py-2 text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Themes
             </Link>
-            <Link
-              to="/free-certifications"
-              className="block text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Free Certifications
-            </Link>
-            <Link
-              to="/job-portals"
-              className="block text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Job Portals
-            </Link>
+
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="resources" className="border-b-0">
+                <AccordionTrigger className="py-2 text-muted-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                  Resources
+                </AccordionTrigger>
+                <AccordionContent className="pb-0">
+                  <div className="flex flex-col space-y-2 pl-4 pt-2 border-l border-border">
+                    <Link
+                      to="/free-certifications"
+                      className="block py-2 text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Free Certifications
+                    </Link>
+                    <Link
+                      to="/job-portals"
+                      className="block py-2 text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Job Portals
+                    </Link>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
             <Link
               to="/about"
-              className="block text-muted-foreground hover:text-foreground transition-colors"
+              className="block py-2 text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               About
