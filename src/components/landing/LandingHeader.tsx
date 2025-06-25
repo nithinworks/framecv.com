@@ -1,7 +1,12 @@
-
 import React, { useState } from "react";
-import { Menu, X, AlertTriangle } from "lucide-react";
+import { Menu, X, AlertTriangle, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface LandingHeaderProps {
   isLoaded: boolean;
@@ -86,6 +91,24 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
           >
             Themes
           </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors focus:outline-none">
+              Resources
+              <ChevronDown className="w-4 h-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <Link to="/free-certifications">
+                  Free Certifications Directory
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/job-portals">Job Portals Directory</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Link
             to="/about"
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -124,6 +147,20 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Themes
+            </Link>
+            <Link
+              to="/free-certifications"
+              className="block text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Free Certifications
+            </Link>
+            <Link
+              to="/job-portals"
+              className="block text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Job Portals
             </Link>
             <Link
               to="/about"
