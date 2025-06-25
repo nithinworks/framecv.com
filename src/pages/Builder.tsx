@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { PortfolioData } from "@/types/portfolio";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
-import { PageLoader } from "@/components/ui/branded-loader";
+import { BrandedLoader } from "@/components/ui/branded-loader";
 
 const Builder = () => {
   const location = useLocation();
@@ -49,12 +49,12 @@ const Builder = () => {
 
   // Show loader while initializing or loading feature flags
   if (isInitializing || flagsLoading) {
-    return <PageLoader message="Preparing Portfolio Builder..." />;
+    return <BrandedLoader message="Preparing Portfolio Builder..." size="lg" fullScreen={true} />;
   }
 
   // Don't render anything if no portfolio data
   if (!portfolioData) {
-    return <PageLoader message="Loading Portfolio Builder..." />;
+    return <BrandedLoader message="Loading Portfolio Builder..." size="lg" fullScreen={true} />;
   }
 
   return (

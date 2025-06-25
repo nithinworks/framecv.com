@@ -9,7 +9,7 @@ import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
 import PortfolioPreview from "./builder/PortfolioPreview";
 import CodeView from "./builder/CodeView";
-import { PageLoader } from "./ui/branded-loader";
+import { BrandedLoader } from "./ui/branded-loader";
 
 const BuilderPage: React.FC = () => {
   const { 
@@ -84,7 +84,7 @@ const BuilderPage: React.FC = () => {
   }, [toast]);
   
   if (isProcessing) {
-    return <PageLoader message="Processing Your Resume..." />;
+    return <BrandedLoader message="Processing Your Resume..." size="lg" fullScreen={true} />;
   }
 
   return (
