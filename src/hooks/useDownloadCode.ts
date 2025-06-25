@@ -158,8 +158,7 @@ async function renderPortfolio() {
     );
 
     const nameParts = (data.settings.name || "").trim().split(" ");
-    const logoName =
-      nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
+    const logoName = nameParts[0];
 
     // Build navigation links
     let navLinks = "";
@@ -373,13 +372,16 @@ document.addEventListener("DOMContentLoaded", renderPortfolio);`;
   };
 
   const downloadSourceCode = () => {
+    const pageTitle = portfolioData.settings.title
+      ? `${portfolioData.settings.name} | ${portfolioData.settings.title}`
+      : `${portfolioData.settings.name} - Portfolio`;
     // HTML template with all font support
     const htmlCode = `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${portfolioData.settings.name} - Portfolio</title>
+    <title>${pageTitle}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./tailwind.config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
