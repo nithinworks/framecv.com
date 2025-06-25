@@ -120,6 +120,25 @@ export const useGitHubDeploy = (open: boolean) => {
     setIsDeploying(true);
 
     try {
+      // Create enhanced portfolio data with first name logic and improved CTA icon handling
+      const enhancedPortfolioData = {
+        ...portfolioData,
+        // Add enhanced CTA button processing for GitHub deployment
+        sections: {
+          ...portfolioData.sections,
+          hero: portfolioData.sections.hero ? {
+            ...portfolioData.sections.hero,
+            ctaButtons: portfolioData.sections.hero.ctaButtons?.map(btn => ({
+              ...btn,
+              // Enhanced icon logic for secondary CTA buttons
+              icon: btn.text.toLowerCase().includes("resume") || btn.text.toLowerCase().includes("cv") 
+                ? "download" 
+                : btn.icon
+            }))
+          } : undefined
+        }
+      };
+
       // Call the github-deploy function without authentication
       const response = await fetch(
         `https://rlnlbdrlruuoffnyaltc.supabase.co/functions/v1/github-deploy`,
@@ -129,7 +148,7 @@ export const useGitHubDeploy = (open: boolean) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            portfolioData,
+            portfolioData: enhancedPortfolioData,
             repoName: repoName.trim(),
             description: `Portfolio website for ${portfolioData.settings.name}`,
             githubToken: githubToken.trim(),
