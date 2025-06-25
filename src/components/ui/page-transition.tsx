@@ -19,8 +19,8 @@ const PageTransitionLoader: React.FC<{ children: React.ReactNode }> = ({ childre
 
   if (isTransitioning) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#171717]">
-        <BrandedLoader size="md" />
+      <div className="min-h-screen flex items-center justify-center bg-[#171717] fixed inset-0 z-50">
+        <BrandedLoader size="md" fullScreen={false} />
       </div>
     );
   }

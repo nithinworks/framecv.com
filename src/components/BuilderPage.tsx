@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { useToast } from "@/hooks/use-toast";
@@ -8,7 +9,7 @@ import BuilderToolbar from "./builder/BuilderToolbar";
 import EditorSidebar from "./builder/EditorSidebar";
 import PortfolioPreview from "./builder/PortfolioPreview";
 import CodeView from "./builder/CodeView";
-import { BrandedLoader } from "./ui/branded-loader";
+import { PageLoader } from "./ui/branded-loader";
 
 const BuilderPage: React.FC = () => {
   const { 
@@ -83,14 +84,7 @@ const BuilderPage: React.FC = () => {
   }, [toast]);
   
   if (isProcessing) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#171717] px-4">
-        <div className="text-center animate-blur-in">
-          <BrandedLoader message="Processing Your Resume..." size="lg" />
-          <p className="text-gray-400 text-sm mt-4">Please wait while our AI analyzes your resume...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader message="Processing Your Resume..." />;
   }
 
   return (
