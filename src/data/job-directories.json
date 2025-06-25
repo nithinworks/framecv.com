@@ -1,0 +1,471 @@
+[
+  {
+    "id": "full-time",
+    "title": "Full-time Jobs",
+    "icon": "Briefcase",
+    "description": "Find permanent full-time opportunities across industries",
+    "portals": [
+      { "name": "Naukri.com", "url": "https://www.naukri.com/" },
+      { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs/" },
+      { "name": "Indeed", "url": "https://www.indeed.com/" },
+      { "name": "Foundit (Monster India)", "url": "https://www.foundit.in/" },
+      { "name": "Glassdoor", "url": "https://www.glassdoor.com/index.htm" },
+      { "name": "Shine", "url": "https://www.shine.com/" },
+      { "name": "TimesJobs", "url": "https://www.timesjobs.com/" },
+      { "name": "Hirist", "url": "https://www.hirist.com/" },
+      { "name": "IIMJobs", "url": "https://www.iimjobs.com/" },
+      { "name": "SimplyHired", "url": "https://www.simplyhired.com/" },
+      { "name": "QuikrJobs", "url": "https://www.quikr.com/jobs" },
+      { "name": "WorkIndia", "url": "https://www.workindia.in/" },
+      { "name": "Jobsora", "url": "https://in.jobsora.com/" },
+      { "name": "Google Jobs", "url": "https://www.google.com/search?q=jobs" },
+      { "name": "Instahyre", "url": "https://www.instahyre.com/" },
+      { "name": "Myamcat", "url": "https://www.myamcat.com/jobs" },
+      { "name": "Cutshort", "url": "https://cutshort.io/" },
+      { "name": "Updazz", "url": "https://www.updazz.com/" },
+      { "name": "Monster.com (Global)", "url": "https://www.monster.com/" },
+      { "name": "Jobrapido", "url": "https://in.jobrapido.com/" },
+      { "name": "Jooble", "url": "https://in.jooble.org/" },
+      { "name": "CareerBuilder", "url": "https://www.careerbuilder.com/" },
+      { "name": "AngelList (Wellfound)", "url": "https://wellfound.com/" },
+      { "name": "ZipRecruiter", "url": "https://www.ziprecruiter.com/" },
+      { "name": "CareerJet", "url": "https://www.careerjet.co.in/" },
+      { "name": "JobStreet", "url": "https://www.jobstreet.com/" },
+      { "name": "Neuvoo (Talent.com)", "url": "https://in.talent.com/" },
+      { "name": "CareerAge", "url": "https://www.careerage.com/" },
+      { "name": "WisdomJobs", "url": "https://www.wisdomjobs.com/" },
+      { "name": "Michael Page India", "url": "https://www.michaelpage.in/" },
+      { "name": "PlacementIndia", "url": "https://www.placementindia.com/" }
+    ]
+  },
+  {
+    "id": "remote",
+    "title": "Remote Jobs",
+    "icon": "Globe",
+    "description": "Discover remote work opportunities from anywhere in the world",
+    "portals": [
+      { "name": "FlexJobs", "url": "https://www.flexjobs.com/" },
+      { "name": "We Work Remotely", "url": "https://weworkremotely.com/" },
+      { "name": "Remote OK", "url": "https://remoteok.com/" },
+      { "name": "Remotive", "url": "https://remotive.com/" },
+      { "name": "Remote.co", "url": "https://remote.co/" },
+      { "name": "JustRemote", "url": "https://justremote.co/" },
+      { "name": "Himalayas", "url": "https://himalayas.app/" },
+      { "name": "Arc", "url": "https://arc.dev/" },
+      {
+        "name": "Virtual Vocations",
+        "url": "https://www.virtualvocations.com/"
+      },
+      { "name": "Pangian", "url": "https://pangian.com/" },
+      { "name": "Jobspresso", "url": "https://jobspresso.co/" },
+      { "name": "Working Nomads", "url": "https://www.workingnomads.com/jobs" },
+      { "name": "Skip the Drive", "url": "https://www.skipthedrive.com/" },
+      { "name": "Otta", "url": "https://otta.com/" },
+      { "name": "Contra", "url": "https://contra.com/" },
+      {
+        "name": "Wellfound (AngelList Talent)",
+        "url": "https://wellfound.com/"
+      },
+      { "name": "NoDesk", "url": "https://nodesk.co/remote-jobs/" },
+      { "name": "The Mom Project", "url": "https://themomproject.com/" },
+      { "name": "PowerToFly", "url": "https://powertofly.com/" },
+      { "name": "Dynamite Jobs", "url": "https://dynamitejobs.com/" },
+      { "name": "LetsWorkRemotely", "url": "https://letsworkremotely.com/" },
+      { "name": "People-First Jobs", "url": "https://peoplefirstjobs.com/" },
+      { "name": "EuropeRemotely", "url": "https://europeremotely.com/" },
+      { "name": "RemoteJobsClub", "url": "https://remotejobsclub.com/" },
+      { "name": "Remotely", "url": "https://remotely.jobs/" },
+      {
+        "name": "Dribbble (Remote filter)",
+        "url": "https://dribbble.com/jobs?location=Remote"
+      },
+      { "name": "Landing.Jobs", "url": "https://landing.jobs/remote-jobs" },
+      { "name": "Outsourcely", "url": "https://www.outsourcely.com/" },
+      { "name": "Crossover", "url": "https://www.crossover.com/" },
+      { "name": "RemoteLeads", "url": "https://remoteleads.io/" },
+      { "name": "Remote4Me", "url": "https://remote4me.com/" },
+      { "name": "RemoteJobs.today", "url": "https://remotejobs.today/" },
+      { "name": "Remote Europe", "url": "https://remote-europe.com/" },
+      {
+        "name": "Authentic Jobs (Remote filter)",
+        "url": "https://authenticjobs.com/"
+      },
+      { "name": "Remotees", "url": "https://remotees.com/" },
+      {
+        "name": "RubyNow (Remote filter)",
+        "url": "https://jobs.rubynow.com/remote"
+      },
+      {
+        "name": "AngelList India (Remote filter)",
+        "url": "https://angel.co/jobs?remote=true"
+      },
+      {
+        "name": "Stack Overflow Jobs (Remote filter)",
+        "url": "https://stackoverflow.com/jobs/remote"
+      },
+      {
+        "name": "GitHub Jobs (Remote filter)",
+        "url": "https://jobs.github.com/positions?description=remote"
+      },
+      { "name": "Jobgether", "url": "https://jobgether.com/" }
+    ]
+  },
+  {
+    "id": "internships",
+    "title": "Internships",
+    "icon": "GraduationCap",
+    "description": "Start your career with internship opportunities",
+    "portals": [
+      { "name": "Internshala", "url": "https://internshala.com/" },
+      {
+        "name": "LinkedIn",
+        "url": "https://www.linkedin.com/jobs/internship-jobs"
+      },
+      { "name": "Chegg Internships", "url": "https://www.internships.com/" },
+      { "name": "WayUp", "url": "https://www.wayup.com/" },
+      { "name": "Handshake", "url": "https://joinhandshake.com/" },
+      {
+        "name": "Glassdoor (Internships)",
+        "url": "https://www.glassdoor.com/Job/internship-jobs-SRCH_KO0,10.htm"
+      },
+      {
+        "name": "Indeed (Internships)",
+        "url": "https://www.indeed.com/q-Internship-jobs.html"
+      },
+      {
+        "name": "Naukri (Internships)",
+        "url": "https://www.naukri.com/internship-jobs"
+      },
+      { "name": "Foundit (Monster India)", "url": "https://www.foundit.in/" },
+      { "name": "LetsIntern", "url": "https://www.letsintern.com/" },
+      { "name": "HelloIntern", "url": "https://www.hellointern.com/" },
+      { "name": "InternWorld", "url": "https://www.internworld.in/" },
+      { "name": "StudentTribe", "url": "https://www.studenttribe.in/" },
+      { "name": "Youth4Work", "url": "https://www.youth4work.com/" },
+      {
+        "name": "Freshersworld (Internships)",
+        "url": "https://www.freshersworld.com/internship-jobs"
+      },
+      { "name": "Extern", "url": "https://www.extern.com/" },
+      { "name": "Generation Hired", "url": "https://www.generationhired.com/" },
+      { "name": "CoolWorks", "url": "https://www.coolworks.com/" },
+      {
+        "name": "Absolute Internship",
+        "url": "https://www.absoluteinternship.com/"
+      },
+      {
+        "name": "Idealist (Internships)",
+        "url": "https://www.idealist.org/en/internships"
+      },
+      {
+        "name": "PM Internship Scheme",
+        "url": "https://pminternshipscheme.com/"
+      },
+      { "name": "InternMatch", "url": "https://www.internmatch.com/" },
+      { "name": "Intern Avenue", "url": "https://www.internavenue.com/" },
+      {
+        "name": "Career Success Australia",
+        "url": "https://www.careersuccessaustralia.com.au/"
+      },
+      {
+        "name": "Prospects (UK)",
+        "url": "https://www.prospects.ac.uk/jobs-and-work-experience/work-experience-and-internships"
+      },
+      {
+        "name": "Google Internships",
+        "url": "https://buildyourfuture.withgoogle.com/internships"
+      },
+      {
+        "name": "AngelList (Wellfound)",
+        "url": "https://wellfound.com/roles/internships"
+      },
+      {
+        "name": "Remotive (Internships)",
+        "url": "https://remotive.com/remote-jobs/internships"
+      },
+      {
+        "name": "Otta (Internships)",
+        "url": "https://otta.com/jobs/internship"
+      },
+      {
+        "name": "PowerToFly (Internships)",
+        "url": "https://powertofly.com/jobs/?keywords=intern"
+      },
+      { "name": "InternQueen", "url": "https://www.internqueen.com/" },
+      {
+        "name": "CareerBuilder (Internships)",
+        "url": "https://www.careerbuilder.com/jobs-internship"
+      },
+      {
+        "name": "ZipRecruiter (Internships)",
+        "url": "https://www.ziprecruiter.com/Internship-Jobs"
+      },
+      {
+        "name": "CareerJet (Internships)",
+        "url": "https://www.careerjet.co.in/internship-jobs.html"
+      },
+      {
+        "name": "Jooble (Internships)",
+        "url": "https://in.jooble.org/jobs-internship"
+      },
+      {
+        "name": "Neuvoo/Talent.com (Internships)",
+        "url": "https://in.talent.com/jobs?k=internship"
+      },
+      {
+        "name": "PlacementIndia (Internships)",
+        "url": "https://www.placementindia.com/job-search/internship-jobs.htm"
+      },
+      { "name": "Intern Abroad HQ", "url": "https://www.internhq.com/" },
+      {
+        "name": "Internships.com.au (Australia)",
+        "url": "https://www.internships.com.au/"
+      },
+      { "name": "Internships USA", "url": "https://www.internships-usa.eu/" }
+    ]
+  },
+  {
+    "id": "freelancing",
+    "title": "Freelancing",
+    "icon": "Briefcase",
+    "description": "Find gig work and freelance opportunities across various skills",
+    "portals": [
+      { "name": "Upwork", "url": "https://www.upwork.com/" },
+      { "name": "Fiverr", "url": "https://www.fiverr.com/" },
+      { "name": "Freelancer.com", "url": "https://www.freelancer.com/" },
+      { "name": "Toptal", "url": "https://www.toptal.com/" },
+      { "name": "PeoplePerHour", "url": "https://www.peopleperhour.com/" },
+      { "name": "Guru", "url": "https://www.guru.com/" },
+      {
+        "name": "FlexJobs (Freelance section)",
+        "url": "https://www.flexjobs.com/"
+      },
+      {
+        "name": "SimplyHired (Freelance filter)",
+        "url": "https://www.simplyhired.com/"
+      },
+      { "name": "Jooble (Freelance filter)", "url": "https://jooble.org/" },
+      { "name": "Konker.io", "url": "https://konker.io/" },
+      {
+        "name": "We Work Remotely (Freelance section)",
+        "url": "https://weworkremotely.com/"
+      },
+      { "name": "Arc", "url": "https://arc.dev/" },
+      { "name": "99designs", "url": "https://99designs.com/" },
+      { "name": "DesignCrowd", "url": "https://www.designcrowd.com/" },
+      {
+        "name": "Dribbble (Freelance Jobs)",
+        "url": "https://dribbble.com/jobs?type=freelance"
+      },
+      { "name": "Truelancer", "url": "https://www.truelancer.com/" },
+      { "name": "Hubstaff Talent", "url": "https://talent.hubstaff.com/" },
+      { "name": "Outsourcely", "url": "https://www.outsourcely.com/" },
+      { "name": "TaskRabbit", "url": "https://www.taskrabbit.com/" },
+      { "name": "Workana", "url": "https://www.workana.com/" },
+      { "name": "Freelancermap", "url": "https://www.freelancermap.com/" },
+      { "name": "Nexxt (Freelance filter)", "url": "https://www.nexxt.com/" },
+      { "name": "SolidGigs", "url": "https://solidgigs.com/" },
+      { "name": "CloudPeeps", "url": "https://www.cloudpeeps.com/" },
+      {
+        "name": "Remote OK (Freelance filter)",
+        "url": "https://remoteok.com/remote-freelance-jobs"
+      }
+    ]
+  },
+  {
+    "id": "tech-it",
+    "title": "Tech & IT Jobs",
+    "icon": "Building",
+    "description": "Find opportunities in technology and information technology sectors",
+    "portals": [
+      { "name": "Dice", "url": "https://www.dice.com/" },
+      {
+        "name": "Stack Overflow Jobs",
+        "url": "https://stackoverflow.com/jobs"
+      },
+      { "name": "TechFetch", "url": "https://www.techfetch.com/" },
+      {
+        "name": "Wellfound (formerly AngelList Talent)",
+        "url": "https://wellfound.com/"
+      },
+      { "name": "Built In", "url": "https://builtin.com/jobs" },
+      { "name": "Levels.fyi", "url": "https://www.levels.fyi/jobs/" },
+      { "name": "Hired", "url": "https://hired.com/" },
+      { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs/" },
+      {
+        "name": "Glassdoor",
+        "url": "https://www.glassdoor.com/Job/technology-jobs-SRCH_KO0,10.htm"
+      },
+      {
+        "name": "Indeed",
+        "url": "https://www.indeed.com/q-Technology-jobs.html"
+      },
+      {
+        "name": "CareerBuilder",
+        "url": "https://www.careerbuilder.com/jobs-technology"
+      },
+      { "name": "TechCareers", "url": "https://www.techcareers.com/" },
+      { "name": "Jobier", "url": "https://www.jobier.com/" },
+      { "name": "SimplyHired", "url": "https://www.simplyhired.com/" },
+      { "name": "Authentic Jobs", "url": "https://authenticjobs.com/" }
+    ]
+  },
+  {
+    "id": "women",
+    "title": "Jobs for Women",
+    "icon": "Users",
+    "description": "Career opportunities focused on supporting women in the workforce",
+    "portals": [
+      {
+        "name": "HerKey (formerly JobsForHer)",
+        "url": "https://www.herkey.com"
+      },
+      {
+        "name": "The Female Factor",
+        "url": "https://jobs.femalefactor.global"
+      },
+      { "name": "Where Women Work", "url": "https://www.wherewomenwork.com" },
+      { "name": "InHerSight", "url": "https://www.inhersight.com" },
+      { "name": "Fairygodboss", "url": "https://fairygodboss.com" },
+      { "name": "PowerToFly", "url": "https://powertofly.com" },
+      { "name": "Career Contessa", "url": "https://www.careercontessa.com" },
+      { "name": "Tech Ladies", "url": "https://www.hiretechladies.com" },
+      { "name": "Jobs for Women", "url": "https://jobsforwomen.co.uk" },
+      { "name": "Women For Hire", "url": "https://womenforhire.com" },
+      { "name": "Elpha", "url": "https://elpha.com" },
+      { "name": "Girlboss", "url": "https://www.girlboss.com" },
+      {
+        "name": "International Association of Women",
+        "url": "https://www.iawomen.com"
+      },
+      { "name": "Society of Women Engineers", "url": "https://careers.swe.org" }
+    ]
+  },
+  {
+    "id": "freshers",
+    "title": "Freshers & Entry-Level",
+    "icon": "User",
+    "description": "Opportunities for recent graduates and those starting their careers",
+    "portals": [
+      { "name": "Naukri.com", "url": "https://www.naukri.com/" },
+      { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs/" },
+      { "name": "Indeed India", "url": "https://www.indeed.co.in/" },
+      { "name": "Foundit (Monster India)", "url": "https://www.foundit.in/" },
+      { "name": "Freshersworld", "url": "https://www.freshersworld.com/" },
+      { "name": "Shine.com", "url": "https://www.shine.com/" },
+      { "name": "TimesJobs", "url": "https://www.timesjobs.com/" },
+      { "name": "Internshala", "url": "https://internshala.com/" },
+      {
+        "name": "Glassdoor India",
+        "url": "https://www.glassdoor.co.in/Job/index.htm"
+      },
+      { "name": "Apna", "url": "https://apna.co/" },
+      { "name": "Quikr Jobs", "url": "https://www.quikr.com/jobs" },
+      { "name": "Hire You Soon", "url": "https://hireyousoon.com/" },
+      { "name": "JobsforHer", "url": "https://www.jobsforher.com/" },
+      { "name": "Youth4Work", "url": "https://www.youth4work.com/" },
+      { "name": "JobSarkari", "url": "https://www.jobsarkari.com/" },
+      { "name": "Sarkari Naukri", "url": "https://www.sarkari-naukri.in/" },
+      { "name": "FreshersLive", "url": "https://www.fresherslive.com/" },
+      { "name": "PlacementIndia", "url": "https://www.placementindia.com/" },
+      { "name": "Cutshort", "url": "https://cutshort.io/" },
+      { "name": "Monster.com (Global)", "url": "https://www.monster.com/" }
+    ]
+  },
+  {
+    "id": "management",
+    "title": "Management & Executive Jobs",
+    "icon": "Briefcase",
+    "description": "Leadership and executive level opportunities across industries",
+    "portals": [
+      { "name": "IIMJobs", "url": "https://www.iimjobs.com/" },
+      { "name": "Naukri.com", "url": "https://www.naukri.com/" },
+      { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs/" },
+      { "name": "Foundit (Monster India)", "url": "https://www.foundit.in/" },
+      { "name": "Glassdoor", "url": "https://www.glassdoor.com/Job/index.htm" },
+      { "name": "Indeed", "url": "https://www.indeed.com/" },
+      { "name": "Shine.com", "url": "https://www.shine.com/" },
+      { "name": "TimesJobs", "url": "https://www.timesjobs.com/" },
+      { "name": "Ladders", "url": "https://www.theladders.com/" },
+      { "name": "Michael Page India", "url": "https://www.michaelpage.in/" }
+    ]
+  },
+  {
+    "id": "government",
+    "title": "Government Jobs",
+    "icon": "Building",
+    "description": "Opportunities in government and public sector organizations",
+    "portals": [
+      {
+        "name": "National Career Service (NCS)",
+        "url": "https://www.ncs.gov.in/"
+      },
+      { "name": "Sarkari Naukri", "url": "https://www.sarkari-naukri.in/" },
+      { "name": "All Government Jobs", "url": "https://allgovernmentjobs.in/" },
+      { "name": "Rojgar.com", "url": "https://rojgar.com/" },
+      { "name": "Rojgar Result", "url": "https://rojgarresult.com/" },
+      {
+        "name": "Adda247 (Govt Jobs)",
+        "url": "https://www.adda247.com/jobs/government-jobs/"
+      },
+      { "name": "Sarkari Result", "url": "https://www.sarkariresult.com/" },
+      { "name": "Sarkari Prep", "url": "https://sarkariprep.in/en/jobs/" },
+      {
+        "name": "My Sarkari Naukri",
+        "url": "https://www.mysarkarinaukri.com/"
+      },
+      {
+        "name": "Sarkari Naukari Official",
+        "url": "https://www.sarkarinaukariofficial.com/"
+      },
+      {
+        "name": "TimesJobs (Government Jobs Section)",
+        "url": "https://www.timesjobs.com/government-jobs"
+      },
+      {
+        "name": "Naukri.com (Government Jobs Section)",
+        "url": "https://www.naukri.com/government-jobs"
+      },
+      { "name": "Foundit (Monster India)", "url": "https://www.foundit.in/" },
+      {
+        "name": "Indeed (Government Jobs India)",
+        "url": "https://www.indeed.co.in/Government-jobs"
+      },
+      {
+        "name": "Glassdoor (Government Jobs India)",
+        "url": "https://www.glassdoor.co.in/Job/government-jobs-SRCH_KO0,10.htm"
+      }
+    ]
+  },
+  {
+    "id": "international",
+    "title": "International Jobs",
+    "icon": "Globe",
+    "description": "Find career opportunities abroad and in global companies",
+    "portals": [
+      { "name": "LinkedIn", "url": "https://www.linkedin.com/jobs/" },
+      { "name": "Indeed", "url": "https://www.indeed.com/" },
+      { "name": "Glassdoor", "url": "https://www.glassdoor.com/Job/index.htm" },
+      { "name": "Monster", "url": "https://www.monster.com/" },
+      { "name": "SimplyHired", "url": "https://www.simplyhired.com/" },
+      { "name": "CareerBuilder", "url": "https://www.careerbuilder.com/" },
+      { "name": "GoAbroad", "url": "https://www.goabroad.com/" },
+      { "name": "Relocate.me", "url": "https://relocate.me/" },
+      {
+        "name": "Go Overseas",
+        "url": "https://www.gooverseas.com/jobs-abroad"
+      },
+      { "name": "Overseas Jobs", "url": "https://www.overseasjobs.com/" },
+      { "name": "Easy Expat", "url": "https://www.easyexpat.com/" },
+      { "name": "Job.com", "url": "https://www.job.com/" },
+      { "name": "Joblist", "url": "https://www.joblist.com/" },
+      { "name": "Ladders", "url": "https://www.theladders.com/" },
+      { "name": "LinkUp", "url": "https://www.linkup.com/" },
+      { "name": "Nexxt", "url": "https://www.nexxt.com/" },
+      { "name": "Jobbatical", "url": "https://jobbatical.com/" },
+      { "name": "Michael Page", "url": "https://www.michaelpage.com/" },
+      { "name": "Reed (UK)", "url": "https://www.reed.co.uk/" },
+      { "name": "SEEK (Australia & NZ)", "url": "https://www.seek.com.au/" }
+    ]
+  }
+]
