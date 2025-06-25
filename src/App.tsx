@@ -1,20 +1,24 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import WaitlistPage from "./components/WaitlistPage";
-import Index from "./pages/Index";
-import Builder from "./pages/Builder";
-import About from "./pages/About";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import DeployGuide from "./pages/DeployGuide";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
 import PageTransitionLoader from "./components/ui/page-transition";
-import ThemesPage from "./components/ThemesPage";
-import ReportIssuePage from "./components/ReportIssuePage";
+import { BrandedLoader } from "./components/ui/branded-loader";
+import { Suspense, lazy } from "react";
+
+const Index = lazy(() => import("./pages/Index"));
+const Builder = lazy(() => import("./pages/Builder"));
+const About = lazy(() => import("./pages/About"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const ThemesPage = lazy(() => import("./components/ThemesPage"));
+const ReportIssuePage = lazy(() => import("./components/ReportIssuePage"));
+const FreeCertificationsPage = lazy(
+  () => import("./pages/FreeCertificationsPage")
+);
+const JobPortalsDirectory = lazy(() => import("./pages/JobPortalsDirectory"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,19 +37,24 @@ const App = () => (
       <Toaster />
       <BrowserRouter>
         <PageTransitionLoader>
-          <Routes>
-        {/*<Route path="/" element={<WaitlistPage />} />*/}
-          <Route path="/" element={<Index />} />
-          <Route path="/builder" element={<Builder />} />
-          <Route path="/themes" element={<ThemesPage />} />
-          <Route path="/report-issue" element={<ReportIssuePage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-           <Route path="/terms" element={<TermsAndConditions />} />
-            {/* <Route path="/deploy-guide" element={<DeployGuide />} /> */}
-          <Route path="/contact" element={<Contact />} /> 
-            <Route path="*" element={<NotFound />} /> 
-          </Routes>
+          <Suspense fallback={<BrandedLoader />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/builder" element={<Builder />} />
+              <Route path="/themes" element={<ThemesPage />} />
+              <Route path="/report" element={<ReportIssuePage />} />
+              <Route path="/terms" element={<TermsAndConditions />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route
+                path="/free-certifications"
+                element={<FreeCertificationsPage />}
+              />
+              <Route path="/job-portals" element={<JobPortalsDirectory />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </PageTransitionLoader>
       </BrowserRouter>
     </TooltipProvider>
