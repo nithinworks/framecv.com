@@ -1,13 +1,12 @@
-
 import { PortfolioData } from "@/types/portfolio";
 
 export const generatePortfolioHTML = (
   portfolioData: PortfolioData,
   theme: "light" | "dark" = "light"
 ): string => {
-  // Get first name for logo
+  // Get last name for logo
   const nameParts = (portfolioData.settings.name || "").trim().split(" ");
-  const logoName = nameParts[0] || nameParts[nameParts.length - 1];
+  const logoName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
   
   // Generate HTML structure
   return `
@@ -92,7 +91,7 @@ export const generatePortfolioHTML = (
 // Navigation Section
 const renderNavigation = (data: PortfolioData): string => {
   const nameParts = (data.settings.name || "").trim().split(" ");
-  const logoName = nameParts[0] || nameParts[nameParts.length - 1];
+  const logoName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
   
   let navLinks = "";
   (data.navigation.items || []).forEach((link) => {
@@ -117,17 +116,11 @@ const renderHeroSection = (data: PortfolioData): string => {
 
   let ctas = "";
   (data.sections.hero.ctaButtons || []).forEach((btn) => {
-    // Enhanced icon logic for secondary CTA buttons
-    let iconName = btn.icon;
-    if (btn.text.toLowerCase().includes("resume") || btn.text.toLowerCase().includes("cv")) {
-      iconName = "download";
-    }
-    
     ctas += `<a href="${btn.url}" class="flex items-center gap-2 ${
       btn.isPrimary
         ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-transform duration-300"
         : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors duration-300"
-    }">${iconName ? getIconSVG(iconName) : ""}<span>${btn.text}</span></a>`;
+    }">${btn.icon ? getIconSVG(btn.icon) : ""}<span>${btn.text}</span></a>`;
   });
 
   return `<div class="hero-bg w-full"><header id="home" class="pt-36 pb-16 flex flex-col items-center text-center max-w-2xl mx-auto animate-fade-in px-4 sm:px-6 md:px-8 w-full">
@@ -307,7 +300,7 @@ const renderFooter = (data: PortfolioData): string => {
   if (!data.footer || !data.footer.enabled) return '';
 
   const nameParts = (data.settings.name || "").trim().split(" ");
-  const logoName = nameParts[0] || nameParts[nameParts.length - 1];
+  const logoName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
 
   const navLinks = (data.navigation.items || [])
     .map(

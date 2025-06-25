@@ -157,9 +157,9 @@ async function renderPortfolio() {
       data.settings.fonts?.secondary || "schibsted"
     );
 
-    // Use first name for logo
     const nameParts = (data.settings.name || "").trim().split(" ");
-    const logoName = nameParts[0] || nameParts[nameParts.length - 1];
+    const logoName =
+      nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
 
     // Build navigation links
     let navLinks = "";
@@ -185,12 +185,8 @@ async function renderPortfolio() {
     if (data.sections.hero && data.sections.hero.enabled) {
       let ctas = "";
       (data.sections.hero.ctaButtons || []).forEach((btn) => {
-        // Enhanced icon logic for secondary CTA buttons
         let iconName = btn.icon;
-        if (btn.text.toLowerCase().includes("resume") || btn.text.toLowerCase().includes("cv")) {
-          iconName = "download";
-        }
-        
+        if (btn.text.toLowerCase().includes("resume")) iconName = "document";
         const buttonClass = btn.isPrimary
           ? "px-8 py-3 rounded-full bg-dynamic-primary text-white font-medium shadow hover:scale-105 transition-all duration-300 hover:shadow-lg"
           : "px-8 py-3 rounded-full border border-gray-400 dynamic-primary bg-white dark:bg-darkTheme dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300 hover:shadow-md";
@@ -323,4 +319,406 @@ async function renderPortfolio() {
       ];
       contactInfo.forEach((card) => {
         if (card.value) {
-          contactCards += '<a href="' + card.link + '" target="_blank" rel="noopener noreferrer" class="modern-card w-full sm:w-auto min-w-0 max-w-full flex items-center gap-
+          contactCards += '<a href="' + card.link + '" target="_blank" rel="noopener noreferrer" class="modern-card w-full sm:w-auto min-w-0 max-w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center" style="font-size:14px;font-weight:500;">' +
+            card.icon + '<span class="break-words">' + card.value + '</span></a>';
+        }
+      });
+      contact = '<section id="contact" class="py-6 sm:py-8 bg-white dark:bg-black animate-fade-in px-4 sm:px-6 md:px-8 w-full">' +
+        '<div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4">' +
+          '<h2 class="' + primaryFontClass + ' text-3xl sm:text-4xl mb-3 sm:mb-4 primary-text">' + data.sections.contact.title + '</h2>' +
+          '<div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 px-4 sm:px-0">' + contactCards + '</div>' +
+        '</div>' +
+      '</section>';
+    }
+
+    // Social section
+    let social = "";
+    if (data.sections.social && data.sections.social.enabled) {
+      let socialLinks = "";
+      data.sections.social.items.forEach((item) => {
+        socialLinks += '<a href="' + item.url + '" class="modern-card flex items-center gap-2 px-4 py-3 rounded-xl text-sm ' + secondaryFontClass + ' text-gray-700 dark:text-gray-200 justify-center hover:scale-105 transition-transform duration-300">' +
+          getIconSVG(item.icon) + '<span>' + item.platform + '</span></a>';
+      });
+      social = '<section id="social" class="py-4 bg-white dark:bg-black animate-fade-in px-4 sm:px-0 w-full">' +
+        '<div class="max-w-2xl mx-auto text-center mb-3 sm:mb-4 w-full px-4 sm:px-0">' +
+          '<h3 class="' + primaryFontClass + ' text-xl sm:text-2xl mb-3 sm:mb-4 mt-4 primary-text">Social Media</h3>' +
+          '<div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-2 px-4 sm:px-0">' + socialLinks + '</div>' +
+        '</div>' +
+      '</section>';
+    }
+
+    // Footer
+    let footer = "";
+    if (data.footer && data.footer.enabled) {
+      const framecvBadge = '<div class="footer-badge-wrapper"><a href="https://framecv.com" class="framecv-badge" target="_blank" rel="noopener noreferrer" title="Built with FrameCV"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" zoomAndPan="magnify" viewBox="0 0 375 374.999991" height="24" preserveAspectRatio="xMidYMid meet" version="1.2"><defs><clipPath id="6219930390"><path d="M 4.1875 14.59375 L 371 14.59375 L 371 360.40625 L 4.1875 360.40625 Z M 4.1875 14.59375 "/></clipPath><clipPath id="a8f637eb54"><path d="M 45.4375 14.59375 L 329.5625 14.59375 C 352.34375 14.59375 370.8125 33.0625 370.8125 55.84375 L 370.8125 319.15625 C 370.8125 341.9375 352.34375 360.40625 329.5625 360.40625 L 45.4375 360.40625 C 22.65625 360.40625 4.1875 341.9375 4.1875 319.15625 L 4.1875 55.84375 C 4.1875 33.0625 22.65625 14.59375 45.4375 14.59375 Z M 45.4375 14.59375 "/></clipPath><clipPath id="1951409292"><path d="M 121 73.691406 L 296.957031 73.691406 L 296.957031 150 L 121 150 Z M 121 73.691406 "/></clipPath><clipPath id="702972dd2f"><path d="M 77.957031 149 L 210 149 L 210 226 L 77.957031 226 Z M 77.957031 149 "/></clipPath><clipPath id="32938a13ad"><path d="M 77.957031 225 L 166 225 L 166 300.941406 L 77.957031 300.941406 Z M 77.957031 225 "/></clipPath></defs><g id="dc681a35a4"><g clip-rule="nonzero" clip-path="url(#6219930390)"><g clip-rule="nonzero" clip-path="url(#a8f637eb54)"><path style=" stroke:none;fill-rule:nonzero;fill:#171717;fill-opacity:1;" d="M 4.1875 14.59375 L 370.261719 14.59375 L 370.261719 360.40625 L 4.1875 360.40625 Z M 4.1875 14.59375 "/></g></g><g clip-rule="nonzero" clip-path="url(#1951409292)"><path style=" stroke:none;fill-rule:nonzero;fill:#ffffff;fill-opacity:1;" d="M 141.574219 73.691406 L 121.722656 73.691406 L 165.457031 149.441406 L 252.929688 149.441406 L 296.664062 73.691406 Z M 141.574219 73.691406 "/></g><g clip-rule="nonzero" clip-path="url(#702972dd2f)"><path style=" stroke:none;fill-rule:nonzero;fill:#ffffff;fill-opacity:1;" d="M 121.71875 225.191406 L 209.191406 225.191406 L 165.453125 149.445312 L 77.984375 149.445312 Z M 121.71875 225.191406 "/></g><g clip-rule="nonzero" clip-path="url(#32938a13ad)"><path style=" stroke:none;fill-rule:nonzero;fill:#ffffff;fill-opacity:1;" d="M 165.453125 300.945312 L 121.71875 225.191406 L 77.984375 300.945312 Z M 165.453125 300.945312 "/></g></g></svg><span>Built with FrameCV</span></a></div>';
+      footer = '<footer class="footer-bg-smoke py-8 text-center text-sm text-gray-600 dark:text-gray-400 mt-auto w-full">' +
+        '<div class="footer-content max-w-2xl mx-auto px-4">' + data.footer.copyright + framecvBadge + '</div>' +
+      '</footer>';
+    } else {
+      footer = '<footer class="bg-white dark:bg-darkTheme py-4 mt-auto w-full"></footer>';
+    }
+    
+    // Combine all sections
+    const content = nav + '<div class="main-content">' + hero + about + projects + experience + education + contact + social + '</div>' + footer;
+    document.getElementById("app").innerHTML = content;
+    setThemeIcon();
+    
+  } catch (err) {
+    document.getElementById("app").innerHTML = "<pre style='color:red'>" + err + "</pre>";
+    console.error(err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", renderPortfolio);`;
+  };
+
+  const downloadSourceCode = () => {
+    // HTML template with all font support
+    const htmlCode = `<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${portfolioData.settings.name} - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./tailwind.config.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ovo&family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body
+    class="overflow-x-hidden font-Schibsted leading-8 bg-white text-primary dark:bg-darkTheme dark:text-white"
+  >
+    <div id="app"></div>
+    <script src="./script.js"></script>
+  </body>
+</html>`;
+
+    const cssCode = `:root {
+    --primary-color: ${portfolioData.settings.primaryColor};
+  --primary-color-light: rgba(22, 163, 74, 0.08);
+  --primary-color-rgb: 22, 163, 74;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+.dynamic-primary {
+  color: var(--primary-color) !important;
+}
+.bg-dynamic-primary {
+  background-color: var(--primary-color) !important;
+}
+.border-dynamic-primary {
+  border-color: var(--primary-color) !important;
+}
+.bg-primary-light {
+  background: var(--primary-color-light) !important;
+}
+.glass-bg {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hero-bg {
+  background: linear-gradient(135deg, var(--primary-color-light) 0%, #fff 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg .smoke-effect {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+      circle at 60% 40%,
+      var(--primary-color-light) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      var(--primary-color-light) 0%,
+      transparent 80%
+    );
+}
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.8) 0%,
+    transparent 50%
+  );
+  opacity: 0.5;
+}
+.dark .hero-bg {
+  background: linear-gradient(135deg, #000 0%, #111 100%) !important;
+}
+.dark .hero-bg::before {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
+}
+.footer-bg-smoke {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-color-rgb, 22, 163, 74), 0.06) 0%,
+    transparent 100%
+  );
+}
+.dark .footer-bg-smoke {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-color-rgb, 22, 163, 74), 0.1) 0%,
+    transparent 100%
+  ) !important;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.main-content {
+  flex: 1;
+}
+/* Modern Card Styles */
+.modern-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+.modern-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+.dark .modern-card {
+  background: rgba(17, 17, 17, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* Smooth Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-light);
+}
+/* Custom Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+/* Gradient Text */
+.gradient-text {
+  color: var(--primary-color) !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+}
+.primary-text {
+  color: var(--primary-color) !important;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7em;
+}
+
+.footer-badge-wrapper {
+  margin-top: 1.1em;
+  display: flex;
+  justify-content: center;
+}
+    .framecv-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      background: transparent;
+      border-radius: 1.2em;
+      padding: 0.25em 0.8em 0.25em 0.5em;
+      font-size: 0.85em;
+      color: var(--primary-color);
+      font-weight: 500;
+      border: 1px solid rgba(var(--primary-color-rgb, 22, 163, 74), 0.2);
+      box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+      text-decoration: none;
+      opacity: 0.9;
+      letter-spacing: 0.01em;
+    }
+    .framecv-badge:hover {
+      background: rgba(var(--primary-color-rgb, 22, 163, 74), 0.05);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      box-shadow: 0 2px 8px 0 rgba(var(--primary-color-rgb, 22, 163, 74), 0.1);
+      opacity: 1;
+    }
+    .framecv-badge svg {
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.15em;
+      border-radius: 0.25em;
+      background: transparent;
+      box-shadow: none;
+      padding: 0.05em;
+    }    
+    .dark .framecv-badge {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .dark .framecv-badge:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+.hero-title-spaced {
+  line-height: 1.22;
+}
+  `;
+
+    const twConfigCode = `tailwind.config = {
+    theme: {
+      extend: {
+        gridTemplateColumns: {
+          auto: "repeat(auto-fit, minmax(200px, 1fr))",
+        },
+        fontFamily: {
+          Ovo: ["Ovo", "serif"],
+          Playfair: ["Playfair Display", "serif"],
+          Poppins: ["Poppins", "sans-serif"],
+          Inter: ["Inter", "sans-serif"],
+          Montserrat: ["Montserrat", "sans-serif"],
+          Raleway: ["Raleway", "sans-serif"],
+          Schibsted: ["Schibsted Grotesk", "sans-serif"],
+          Outfit: ["Outfit", "sans-serif"],
+        },
+        animation: {
+          "fade-in": "fadeIn 0.7s ease-out both",
+          "slide-up": "slideUp 0.7s cubic-bezier(0.4,0,0.2,1) both",
+          float: "float 3s ease-in-out infinite",
+          "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+          "bounce-slow": "bounce 3s infinite",
+        },
+        keyframes: {
+          fadeIn: {
+            "0%": { opacity: "0" },
+            "100%": { opacity: "1" },
+          },
+          slideUp: {
+            "0%": { transform: "translateY(30px)", opacity: "0" },
+            "100%": { transform: "translateY(0)", opacity: "1" },
+          },
+          float: {
+            "0%, 100%": { transform: "translateY(0)" },
+            "50%": { transform: "translateY(-10px)" },
+          },
+        },
+        colors: {
+          darkTheme: "#111111",
+          white: "#fff",
+          black: "#000",
+          gray: {
+            100: "#f5f5f5",
+            200: "#e5e5e5",
+            300: "#d4d4d4",
+            400: "#a3a3a3",
+            500: "#737373",
+            600: "#525252",
+            700: "#404040",
+            800: "#262626",
+            900: "#181818",
+          },
+        },
+        boxShadow: {
+          soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
+          hover:
+            "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+        },
+        backdropBlur: {
+          xs: "2px",
+        },
+      },
+    },
+    darkMode: "selector",
+  };`;
+
+    // Use the complete JavaScript code with font support
+    const jsCode = generateCompleteJavaScript(portfolioData);
+    const jsonCode = JSON.stringify(portfolioData, null, 2);
+
+    const files = [
+      { name: "index.html", content: htmlCode },
+      { name: "styles.css", content: cssCode },
+      { name: "script.js", content: jsCode },
+      { name: "tailwind.config.js", content: twConfigCode },
+      { name: "portfolio-data.json", content: jsonCode },
+    ];
+
+    import("jszip").then((JSZip) => {
+      const zip = new JSZip.default();
+
+      files.forEach((file) => {
+        zip.file(file.name, file.content);
+      });
+
+      zip.generateAsync({ type: "blob" }).then((content) => {
+        const url = URL.createObjectURL(content);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${portfolioData.settings.name.replace(
+          /\s+/g,
+          "-"
+        )}-Portfolio-Code.zip`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    });
+  };
+
+  return { downloadSourceCode };
+};
