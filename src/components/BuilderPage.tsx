@@ -23,22 +23,18 @@ const BuilderPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  // Use the simple feature flags hook without caching
   const { featureFlags, isLoading: flagsLoading } = useFeatureFlags();
   
-  // Set initial view to desktop on load
   useEffect(() => {
     setCurrentView("desktop");
   }, [setCurrentView]);
 
-  // Hide editor hint when editor is opened
   useEffect(() => {
     if (showEditor) {
       setShowEditorHint(false);
     }
   }, [showEditor]);
 
-  // Disable right-click context menu globally on the builder page
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -58,7 +54,7 @@ const BuilderPage: React.FC = () => {
             iframe.contentDocument.addEventListener('contextmenu', handleContextMenu);
           }
         } catch (error) {
-          console.log('Cannot access iframe content for right-click protection');
+          // Cross-origin iframe, can't access content
         }
       });
     };
@@ -92,17 +88,14 @@ const BuilderPage: React.FC = () => {
       <BuilderToolbar showEditorHint={showEditorHint} />
       
       <div className="h-full pt-14 flex overflow-hidden">
-        {/* Editor Sidebar */}
         <EditorSidebar />
         
-        {/* Main Preview Area */}
         <div className={`flex-1 transition-all duration-300 ${
           showEditor && !isMobile ? "ml-96" : ""
         } h-full overflow-hidden`}>
           <PortfolioPreview />
         </div>
         
-        {/* Code View */}
         <CodeView />
       </div>
     </div>
