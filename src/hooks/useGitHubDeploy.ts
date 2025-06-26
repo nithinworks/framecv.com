@@ -21,6 +21,8 @@ export const useGitHubDeploy = (open: boolean) => {
     repoUrl: string;
     pagesUrl: string;
   } | null>(null);
+  const [showUserDetails, setShowUserDetails] = useState(false);
+  const [portfolioName] = useState(portfolioData.settings.name);
 
   // Check for token in URL hash and handle connection state
   useEffect(() => {
@@ -157,6 +159,9 @@ export const useGitHubDeploy = (open: boolean) => {
         pagesUrl: data.pagesUrl,
       });
 
+      // Show user details modal after successful deployment
+      setShowUserDetails(true);
+
       toast({
         title: "Portfolio published successfully!",
         description: "Your portfolio is now live on GitHub Pages",
@@ -176,6 +181,7 @@ export const useGitHubDeploy = (open: boolean) => {
   const resetState = () => {
     setDeploymentResult(null);
     setGithubToken(null);
+    setShowUserDetails(false);
   };
 
   return {
@@ -189,5 +195,8 @@ export const useGitHubDeploy = (open: boolean) => {
     handleConnect,
     handleDeploy,
     resetState,
+    showUserDetails,
+    setShowUserDetails,
+    portfolioName,
   };
 };

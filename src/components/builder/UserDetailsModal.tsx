@@ -21,6 +21,7 @@ interface UserDetailsModalProps {
   onOpenChange: (open: boolean) => void;
   actionType: "download" | "deploy";
   portfolioName: string;
+  portfolioLink?: string;
   onSuccess: () => void;
 }
 
@@ -29,6 +30,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   onOpenChange,
   actionType,
   portfolioName,
+  portfolioLink,
   onSuccess,
 }) => {
   const [name, setName] = useState("");
@@ -38,6 +40,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   const { isLoading, submitUserDetails } = useUserSubmission({
     actionType,
     portfolioName,
+    portfolioLink,
     onSuccess: async () => {
       // Track download if this is a download action
       if (actionType === "download") {

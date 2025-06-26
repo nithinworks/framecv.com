@@ -79,6 +79,7 @@ export type Database = {
           email: string
           id: string
           name: string
+          portfolio_link: string | null
           portfolio_name: string | null
         }
         Insert: {
@@ -87,6 +88,7 @@ export type Database = {
           email: string
           id?: string
           name: string
+          portfolio_link?: string | null
           portfolio_name?: string | null
         }
         Update: {
@@ -95,6 +97,7 @@ export type Database = {
           email?: string
           id?: string
           name?: string
+          portfolio_link?: string | null
           portfolio_name?: string | null
         }
         Relationships: []

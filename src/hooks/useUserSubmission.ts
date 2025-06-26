@@ -6,11 +6,12 @@ import { toast } from "sonner";
 interface UseUserSubmissionProps {
   actionType: "download" | "deploy";
   portfolioName: string;
+  portfolioLink?: string;
   onSuccess: () => void;
   onClose: () => void;
 }
 
-export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClose }: UseUserSubmissionProps) => {
+export const useUserSubmission = ({ actionType, portfolioName, portfolioLink, onSuccess, onClose }: UseUserSubmissionProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const submitUserDetails = async (name: string, email: string, isAutoSubmit: boolean = false) => {
@@ -69,7 +70,8 @@ export const useUserSubmission = ({ actionType, portfolioName, onSuccess, onClos
           name: trimmedName,
           email: trimmedEmail,
           action_type: actionType,
-          portfolio_name: sanitizedPortfolioName
+          portfolio_name: sanitizedPortfolioName,
+          portfolio_link: portfolioLink || null
         }, {
           onConflict: 'email',
           ignoreDuplicates: false
