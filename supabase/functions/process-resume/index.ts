@@ -326,6 +326,134 @@ async function callGeminiWithRetry(apiKeys: string[], requestBody: any, model = 
   throw lastError || new Error('All API keys exhausted');
 }
 
+// Background task to extract basic resume data
+async function extractResumeDataInBackground(
+  supabase: any, 
+  base64Data: string, 
+  fileType: string, 
+  geminiApiKeys: string[],
+  clientIP: string
+) {
+  try {
+    logRequest(clientIP, "BACKGROUND_EXTRACTION_STARTED");
+
+    // Create initial record with pending status
+    const { data: insertData, error: insertError } = await supabase
+      .from('resume_extractions')
+      .insert({
+        processing_status: 'processing'
+      })
+      .select('id')
+      .single();
+
+    if (insertError) {
+      console.error('Failed to create extraction record:', insertError);
+      return;
+    }
+
+    const recordId = insertData.id;
+
+    // Extract basic data using Gemini
+    const extractionPrompt = `
+Extract the following information from this resume PDF and return ONLY a valid JSON object:
+
+{
+  "name": "Full name of the person",
+  "email": "Email address if found",
+  "location": "City, Country or just Country",
+  "social_links": "LinkedIn, GitHub, portfolio URLs separated by commas"
+}
+
+If any field is not found, use null for that field. Do not include any other text or explanation.`;
+
+    const extractionRequestBody = {
+      contents: [{
+        parts: [
+          { text: extractionPrompt },
+          { 
+            inline_data: {
+              mime_type: fileType,
+              data: base64Data
+            }
+          }
+        ]
+      }],
+      generationConfig: {
+        temperature: 0,
+        maxOutputTokens: 500,
+        topP: 1.0
+      }
+    };
+
+    const extractionData = await callGeminiWithRetry(
+      geminiApiKeys, 
+      extractionRequestBody, 
+      'gemini-2.0-flash-001'
+    );
+
+    const extractionText = extractionData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    
+    if (!extractionText) {
+      throw new Error('No extraction data received');
+    }
+
+    // Parse the JSON response
+    let extractedData;
+    try {
+      const jsonMatch = extractionText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+      
+      extractedData = JSON.parse(jsonMatch[0]);
+      
+    } catch (parseError) {
+      logRequest(clientIP, "EXTRACTION_JSON_PARSE_ERROR", { error: parseError.message });
+      throw new Error(`JSON parsing failed: ${parseError.message}`);
+    }
+
+    // Update the record with extracted data
+    const { error: updateError } = await supabase
+      .from('resume_extractions')
+      .update({
+        name: extractedData.name || null,
+        email: extractedData.email || null,
+        location: extractedData.location || null,
+        social_links: extractedData.social_links || null,
+        processing_status: 'completed',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', recordId);
+
+    if (updateError) {
+      console.error('Failed to update extraction record:', updateError);
+      throw updateError;
+    }
+
+    logRequest(clientIP, "BACKGROUND_EXTRACTION_COMPLETED", { recordId });
+
+  } catch (error) {
+    console.error('Background extraction error:', error);
+    logRequest(clientIP, "BACKGROUND_EXTRACTION_ERROR", { error: error.message });
+
+    // Update record with error status if we have a record ID
+    try {
+      await supabase
+        .from('resume_extractions')
+        .update({
+          processing_status: 'failed',
+          error_message: error.message,
+          updated_at: new Date().toISOString()
+        })
+        .eq('processing_status', 'processing')
+        .order('created_at', { ascending: false })
+        .limit(1);
+    } catch (updateError) {
+      console.error('Failed to update error status:', updateError);
+    }
+  }
+}
+
 const handler = async (req: Request) => {
   // Get enhanced CORS headers based on request origin
   const corsHeaders = getCorsHeaders(req);
@@ -408,7 +536,6 @@ const handler = async (req: Request) => {
       });
     }
 
-    // ... keep existing code (Gemini API processing)
     const geminiApiKeys = getGeminiApiKeys();
     if (geminiApiKeys.length === 0) {
       logRequest(clientIP, "NO_API_KEYS");
@@ -597,6 +724,17 @@ Return ONLY valid JSON:
       logRequest(clientIP, "JSON_PARSE_ERROR", { error: parseError.message });
       throw new Error(`JSON parsing failed: ${parseError.message}`);
     }
+
+    // Start background extraction task (don't await)
+    EdgeRuntime.waitUntil(
+      extractResumeDataInBackground(
+        supabase,
+        base64Data,
+        file.type,
+        geminiApiKeys,
+        clientIP
+      )
+    );
     
     // Track successful resume portfolio creation
     try {
