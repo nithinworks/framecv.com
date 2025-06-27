@@ -72,6 +72,33 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_extractions: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          portfolio_data: Json
+          processing_status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          portfolio_data: Json
+          processing_status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          portfolio_data?: Json
+          processing_status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_submissions: {
         Row: {
           action_type: string
