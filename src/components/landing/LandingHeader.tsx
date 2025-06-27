@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Menu, X, AlertTriangle, ChevronDown } from "lucide-react";
+import {
+  Menu,
+  X,
+  AlertTriangle,
+  ChevronDown,
+  Award,
+  Briefcase,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -13,6 +20,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 
 interface LandingHeaderProps {
   isLoaded: boolean;
@@ -20,6 +28,7 @@ interface LandingHeaderProps {
 
 const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [resourcesMenuOpen, setResourcesMenuOpen] = useState(false);
 
   return (
     <header
@@ -98,19 +107,40 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
             Themes
           </Link>
 
-          <DropdownMenu>
+          <DropdownMenu
+            open={resourcesMenuOpen}
+            onOpenChange={setResourcesMenuOpen}
+          >
             <DropdownMenuTrigger className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors focus:outline-none">
               Resources
+              <Badge
+                variant="outline"
+                className="border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-400 rounded-md"
+              >
+                Trending
+              </Badge>
               <ChevronDown className="w-4 h-4" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className="w-72 space-y-1 p-2">
               <DropdownMenuItem asChild>
-                <Link to="/free-certifications">
+                <Link
+                  to="/free-certifications"
+                  className="flex items-center gap-2"
+                  onClick={() => setResourcesMenuOpen(false)}
+                >
+                  <Award className="h-4 w-4 text-muted-foreground" />
                   Free Certifications Directory
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/job-portals">Job Portals Directory</Link>
+                <Link
+                  to="/job-portals"
+                  className="flex items-center gap-2"
+                  onClick={() => setResourcesMenuOpen(false)}
+                >
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  Job Portals Directory
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -158,22 +188,32 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ isLoaded }) => {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="resources" className="border-b-0">
                 <AccordionTrigger className="py-2 text-muted-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
-                  Resources
+                  <div className="flex items-center gap-2">
+                    Resources
+                    <Badge
+                      variant="outline"
+                      className="border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-400 rounded-md"
+                    >
+                      Trending
+                    </Badge>
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent className="pb-0">
                   <div className="flex flex-col space-y-2 pl-4 pt-2 border-l border-border">
                     <Link
                       to="/free-certifications"
-                      className="block py-2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="flex items-center gap-2 py-2 text-muted-foreground hover:text-foreground transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
+                      <Award className="h-4 w-4" />
                       Free Certifications
                     </Link>
                     <Link
                       to="/job-portals"
-                      className="block py-2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="flex items-center gap-2 py-2 text-muted-foreground hover:text-foreground transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
+                      <Briefcase className="h-4 w-4" />
                       Job Portals
                     </Link>
                   </div>
